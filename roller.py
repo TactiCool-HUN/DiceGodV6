@@ -9,13 +9,15 @@ import re
 sa = gspread.service_account(filename = "service_account.json")
 
 
-async def text_to_pack(ctx, roll_txt):
+async def text_to_pack(ctx, roll_txt, crit = False):
 	if type(roll_txt) == str:
 		roll_txt = roll_txt.replace(" ", "").lower()
 	else:
 		roll_txt = str(roll_txt)
 	single_rolls = await text_to_singles(ctx, roll_txt)
 	for i, roll in enumerate(single_rolls):
+		if crit:
+			roll.args.crit = True
 		single_rolls[i] = random_roller(ctx, roll)
 
 	return c.Pack(ctx, single_rolls, roll_txt)
@@ -35,6 +37,8 @@ async def text_to_singles(ctx, roll_txt):
 
 	splits_raw = re.findall("[+-][^+-]+", roll_txt)
 	current_single = None
+	extra_die = None
+	sheet = None
 
 	for split in splits_raw:
 		if re.findall("[+-][0-9]+d[0-9]+[^+-]*", split):  # - - - - - vanilla roll - - - - -
@@ -46,10 +50,11 @@ async def text_to_singles(ctx, roll_txt):
 				current_single.add_vanilla_add(split)
 			else:
 				current_single = c.SingleRoll(split, "vanilla add")
-		elif t.is_sheet_based(split[1:]):  # - - - - - sheet roll - - - - -
+		elif t.is_sheet_based(split[1:]):  # - - - - - sheet based - - - - -
 			sheet_type, split_cut, args = t.is_sheet_based(split[1:])
-			sheet = c.Sheet(ctx)
-			sheet.get_sheet(sa)
+			if not sheet:
+				sheet = c.Sheet(ctx)
+				sheet.get_sheet(sa)
 
 			match sheet_type:
 				case "SKILLS":
@@ -84,13 +89,14 @@ async def text_to_singles(ctx, roll_txt):
 				case "ATTACKS":
 					if current_single:
 						single_rolls.append(current_single)
-					add, adv, followups = sh.get_attack(sheet, split_cut)
+					add, adv, followups, extra_die = sh.get_attack(sheet, split_cut)
 					current_single = c.SingleRoll(split, "dynamic roll", split_cut, 1, 20, add, True, followups = followups)
 					current_single.args.merge_args(adv)
 				case "DAMAGE":
 					if current_single:
 						single_rolls.append(current_single)
 					temp = sh.get_damage(sheet, split_cut)
+					# noinspection PyUnresolvedReferences
 					damage_singles = await text_to_singles(ctx, temp)
 					for single in damage_singles:
 						single.args.merge_args(args)
@@ -120,12 +126,13 @@ async def text_to_singles(ctx, roll_txt):
 					if current_single:
 						single_rolls.append(current_single)
 					temp = sh.get_c_damage(sheet, split_cut)
+					# noinspection PyUnresolvedReferences
 					damage_singles = await text_to_singles(ctx, temp)
 					for single in damage_singles:
 						single.args.merge_args(args)
 						single.dynamic = True
 						single.name = split_cut
-					single_rolls = single_rolls + damage_singles
+						single_rolls.append(single)
 					current_single = None
 				case "SPELL_ATTACK":
 					if current_single:
@@ -148,9 +155,56 @@ async def text_to_singles(ctx, roll_txt):
 				current_single.args.merge_args(args)
 			except AttributeError:
 				pass
+			try:
+				damage_type = re.findall("\[[a-z]+]", args)[0]
+				current_single.damage_type.append(damage_type[1:-1])
+			except IndexError:
+				pass
+		elif t.is_die(split[1:]):  # - - - - - custom die - - - - -
+			split_cut, args = t.is_die(split[1:])
+			if current_single:
+				single_rolls.append(current_single)
+			die = c.Die(split_cut)
+			die_rolls = await text_to_singles(ctx, die.roll)
+			for roll in die_rolls:
+				if not t.exists(roll.name, "die"):
+					roll.name = die.name
+				roll.args.merge_args(args)
+				roll.dynamic = True
+				roll.sign = t.sign_merger([roll.sign, split[0]])
+				single_rolls.append(roll)
+			current_single = None
+		else:  # - - - - - spells - - - - -
+			try:
+				if not sheet:
+					sheet = c.Sheet(ctx)
+					sheet.get_sheet(sa)
+			except IndexError:
+				pass
+			spell_out, found, remainder = await sh.get_spell(ctx, spell_inc = split[1:], sheet = sheet, exact_search = True)
+			if found == "exact" and len(spell_out.followups) > 1:
+				args = c.RollArgs(remainder)
+				if args.spell_level:
+					level = args.spell_level - int(spell_out.level[0]) + 1
+				else:
+					level = 1
+				spell_rolls = await text_to_singles(ctx, spell_out.followups[level].data)
+				for roll in spell_rolls:
+					if not t.exists(roll.name, "die"):
+						roll.name = spell_out.name
+					roll.args.merge_args(remainder)
+					roll.dynamic = True
+					roll.sign = t.sign_merger([roll.sign, split[0]])
+					single_rolls.append(roll)
+				current_single = None
+			else:
+				raise ValueError("Either too many, or no spell match found.")
 
 	if current_single:
 		single_rolls.append(current_single)
+
+	if extra_die:
+		single_rolls += await text_to_singles(ctx, extra_die)
 
 	if flexible_warning:
 		single_rolls[0].roll_note.append("Damage bonuses that solely apply to 1 or 2 handed attacks are NOT automatically added to Flexible damage rolls.")

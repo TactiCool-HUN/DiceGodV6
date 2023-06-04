@@ -63,14 +63,13 @@ with DatabaseConnection("data.db") as connection:
 	try:
 		cursor.execute(
 			f'CREATE TABLE sheet_rents('
-			f'sheet_id integer primary key,'
+			f'rent_id integer primary key,'
 			f'owner_id integer,'
-			f'character text,'
-			f'sheet text,'
-			f'last_warning timestamp)'
+			f'user_id integer,'
+			f'character text)'
 		)
 	except sqlite3.OperationalError:
-		print(f"sheets found")
+		print(f"sheet_rents found")
 
 	# - - - statistics - - -
 	try:
