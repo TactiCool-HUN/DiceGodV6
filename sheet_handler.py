@@ -31,6 +31,8 @@ def transfer_inventory(old_sheet, new_sheet):
 	new_inventory_lines = []
 	for line in inventory_old:
 		temp = new_empty_line[:]
+		while len(line) < len(old_empty_line):
+			temp.append('')
 
 		for k in old_spacing:
 			if k in ["count", "auto_fill"]:
@@ -1720,7 +1722,7 @@ async def clear_sheet(interaction, ctx, sheet, player, dm):
 		"AbilityPicker": [0, 4],
 		"Companion": [0, 16],
 		"Spellbook": [0, 3],
-		# "SpellSearch": [0, 5]
+		"SpellSearch": [0, 8]
 	}
 	temp = 0
 	for item in progress:
@@ -2589,8 +2591,31 @@ async def clear_sheet(interaction, ctx, sheet, player, dm):
 	asyncio.create_task(t.clear_progress(player, sheet, progress, start_time, current, 2, sent))
 	await asyncio.sleep(timer)
 	wks.update("AQ7:AV18", [["Harptos"], [], [], [1], ["Month", '', '', '', '', False], ["Hammer"], ['Day', '', '', '', 1], [], [], [], [], [1]])
-	asyncio.create_task(t.clear_progress(player, sheet, progress, start_time, current, 1, sent))
 	wks.update("AT35", 10)
+	raise NotImplemented
+	temp = wks.get("B35:AV")
+	quest_row = 35
+	people_row = 0
+	places_row = 0
+	other_row = 0
+	for i, line in enumerate(temp):
+		if line[0] == "- People -":
+			people_row = 35 + i
+		elif line[0] == "- Places -":
+			places_row = 35 + i
+		elif line[0] == "- Other Notes -":
+			other_row = 35 + i
+
+	quest_empty = ['', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', False, '']
+	i = 0
+	for i in range(people_row - quest_row - 3):
+		wks.update(f"B{quest_row + 2 + i}:AP{quest_row + 2 + i}", quest_empty)
+		if i % 5 == 0:
+			asyncio.create_task(t.clear_progress(player, sheet, progress, start_time, current, 5, sent))
+			await asyncio.sleep(timer)
+	asyncio.create_task(t.clear_progress(player, sheet, progress, start_time, current, i % 5, sent))
+	await asyncio.sleep(timer // (i % 5))
+
 	# - - - - - - - - - - - - - - - - - - - - MODIFIERS - - - - - - - - - - - - - - - - - - - -
 	current = "Modifiers"
 	print(sheet + ": " + current)
@@ -3127,6 +3152,7 @@ async def clear_sheet(interaction, ctx, sheet, player, dm):
 	wks.update("W5:W16", [[False], [False], [False], [], [], [False], [False], [False], [False], [False], [False], [False]])
 	wks.update("AB5:AB18", [[False], [False], [False], [False], [False], [False], [False], [False], [False], [False], [False], [False], [False], [False]])
 	wks.update("B20", '')
+	asyncio.create_task(t.clear_progress(player, sheet, progress, start_time, current, 5, sent))
 
 	text = f"Your new sheet is ready adventurer, best of luck out there!\n{sheet}\n<{link}>"
 	await t.send_dm(ctx, text, False, player.id)
