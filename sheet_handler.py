@@ -2654,7 +2654,7 @@ async def clear_sheet(interaction, ctx, sheet, player, dm):
 	filler = []
 	for _ in range(end_rows):
 		filler.append([''])
-	wks.update(f"", filler)
+	wks.update(f"B{other_row + 1}:B{other_row + end_rows}", filler)
 	asyncio.create_task(t.clear_progress(player, sheet, progress, start_time, current, 1, sent))
 	# - - - - - - - - - - - - - - - - - - - - MODIFIERS - - - - - - - - - - - - - - - - - - - -
 	current = "Modifiers"
