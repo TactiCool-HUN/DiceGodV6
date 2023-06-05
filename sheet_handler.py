@@ -3113,6 +3113,20 @@ async def clear_sheet(interaction, ctx, sheet, player, dm):
 	]
 	wks.update("Z4:AB128", filler)
 	asyncio.create_task(t.clear_progress(player, sheet, progress, start_time, current, 1, sent))
+	# - - - - - - - - - - - - - - - - - - - - SPELLSEARCH - - - - - - - - - - - - - - - - - - - -
+	current = "SpellSearch"
+	print(sheet + ": " + current)
+	wks = sh.worksheet(current)
+	wks.update("AG3:AL5", [['', 'Use Filter', '', '', '', False], [False, 'B. Action', '', '', '', False], [False, 'Other', '', '', '', False]])
+	wks.update("AH7:AH13", [['- -'], ['- -'], ['- -'], [], ['- -'], ['- -'], ['- -']])
+	wks.update("F5:F15", [[False], [False], [False], [False], [False], [False], [False], [False], [False], [False], [False]])
+	asyncio.create_task(t.clear_progress(player, sheet, progress, start_time, current, 3, sent))
+	await asyncio.sleep(timer)
+	wks.update("L5:L13", [[False], [False], [False], [False], [False], [False], [False], [False], [False]])
+	wks.update("R5:R17", [[False], [False], [False], [False], [False], [False], [False], [False], [False], [False], [False], [False], [False]])
+	wks.update("W5:W16", [[False], [False], [False], [], [], [False], [False], [False], [False], [False], [False], [False]])
+	wks.update("AB5:AB18", [[False], [False], [False], [False], [False], [False], [False], [False], [False], [False], [False], [False], [False], [False]])
+	wks.update("B20", '')
 
 	text = f"Your new sheet is ready adventurer, best of luck out there!\n{sheet}\n<{link}>"
 	await t.send_dm(ctx, text, False, player.id)
