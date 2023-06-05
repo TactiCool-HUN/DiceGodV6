@@ -302,6 +302,13 @@ def seconds_to_clock(seconds):
 async def clear_progress(player, sheet, progress, start_time, current_inc = None, add_inc = None, sent_inc = None):
 	player = c.Person(discord_id = player.id)
 
+	temp = 0
+	for item in progress:
+		if item == "Overall":
+			continue
+		temp = temp + progress[item][1]
+	progress["Overall"][1] = temp
+
 	if current_inc and add_inc:
 		progress[current_inc][0] = min(progress[current_inc][0] + add_inc, progress[current_inc][1])
 		progress["Overall"][0] = min(progress["Overall"][0] + add_inc, progress["Overall"][1])
@@ -332,7 +339,9 @@ async def clear_progress(player, sheet, progress, start_time, current_inc = None
 				seconds_spent = (datetime.now() - start_time).seconds  # 200
 				time_left = seconds_spent / current * remaining
 				time_left = seconds_to_clock(time_left)
-			add = f"\nEstimated time remaining: {time_left}"
+			add = f"\nEstimated time remaining: {time_left}\n(at this point random numbers might be more accurate xD)"
+		elif element == "Notes":
+			add = '\n(probably scamming you)'
 		else:
 			add = ""
 		embed.add_field(name = element.title(), value = f"{percentage}% | {bar} | {current}/{maximum}{add}", inline = False)

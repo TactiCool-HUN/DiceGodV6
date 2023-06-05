@@ -1707,6 +1707,7 @@ async def clear_sheet(interaction, ctx, sheet, player, dm):
 	timer = 10
 	sh = sa.open(sheet)
 	link = sh.url
+	temp = None
 
 	progress = {
 		"Overall": [0, 0],
@@ -1717,17 +1718,13 @@ async def clear_sheet(interaction, ctx, sheet, player, dm):
 		"Spells": [0, 4],
 		"Inventory": [0, 6],
 		"MoneyTracker": [0, 1],
-		"Notes": [0, 3],
+		"Notes": [0, 6],
 		"Modifiers": [0, 1],
 		"AbilityPicker": [0, 4],
 		"Companion": [0, 16],
 		"Spellbook": [0, 3],
 		"SpellSearch": [0, 8]
 	}
-	temp = 0
-	for item in progress:
-		temp = temp + progress[item][1]
-	progress["Overall"][1] = temp
 	start_time = datetime.now()
 
 	sent = await t.clear_progress(player, sheet, progress, start_time)
@@ -1811,7 +1808,7 @@ async def clear_sheet(interaction, ctx, sheet, player, dm):
 	wks.update("E49", False)
 	asyncio.create_task(t.clear_progress(player, sheet, progress, start_time, current, 4, sent))
 	await asyncio.sleep(timer)
-	# - - - - - - - - - - - - - - - - - - - - SETUP - - - - - - - - - - - - - - - - - - - -
+	# - - - - - - - - - - - - - - - - - - - - FEATURES - - - - - - - - - - - - - - - - - - - -
 	current = "Features"
 	print(sheet + ": " + current)
 	wks = sh.worksheet(current)
@@ -2200,6 +2197,7 @@ async def clear_sheet(interaction, ctx, sheet, player, dm):
 			wks.update("Q2:Q4", [[False], [], ['']])
 	match wks.acell("B13").value:
 		case "Spells (auto)":
+			temp = "J15:L174"
 			filler = [
 				['List', '', 'All'],
 				[''],
@@ -2359,6 +2357,7 @@ async def clear_sheet(interaction, ctx, sheet, player, dm):
 				['']
 			]
 		case "Spells":
+			temp = "B15:L174"
 			filler = [
 				[False, '', '', '', '', '', '', '', 'List', '', 'All'],
 				['', '', '', '', '', '', '', '', ''],
@@ -2517,7 +2516,7 @@ async def clear_sheet(interaction, ctx, sheet, player, dm):
 				[],
 				['', '', '', '', '', '', '', '', '']
 			]
-	wks.update("B15:L174", filler)
+	wks.update(temp, filler)
 	wks.update("AH4:AH6", [['AUTO'], ['AUTO'], ['AUTO']])
 	asyncio.create_task(t.clear_progress(player, sheet, progress, start_time, current, 4, sent))
 	# - - - - - - - - - - - - - - - - - - - - INVENTORY - - - - - - - - - - - - - - - - - - - -
@@ -2593,28 +2592,70 @@ async def clear_sheet(interaction, ctx, sheet, player, dm):
 	wks.update("AQ7:AV18", [["Harptos"], [], [], [1], ["Month", '', '', '', '', False], ["Hammer"], ['Day', '', '', '', 1], [], [], [], [], [1]])
 	wks.update("AT35", 10)
 	temp = wks.get("B35:AV")
+	asyncio.create_task(t.clear_progress(player, sheet, progress, start_time, current, 3, sent))
+	await asyncio.sleep(timer)
 	quest_row = 35
 	people_row = 0
 	places_row = 0
 	other_row = 0
+	end_rows = 0
 	for i, line in enumerate(temp):
+		if len(line) == 0:
+			continue
 		if line[0] == "- People -":
 			people_row = 35 + i
 		elif line[0] == "- Places -":
 			places_row = 35 + i
 		elif line[0] == "- Other Notes -":
 			other_row = 35 + i
+		if other_row != 0:
+			end_rows += 1
 
-	quest_empty = ['', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', False, '']
+	filler = [
+		['', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', False, '']
+	]
 	i = 0
 	for i in range(people_row - quest_row - 3):
-		wks.update(f"B{quest_row + 2 + i}:AP{quest_row + 2 + i}", quest_empty)
-		if i % 5 == 0:
+		wks.update(f"B{quest_row + 2 + i}:AP{quest_row + 2 + i}", filler)
+		if i % 5 == 0 and i != 0:
+			progress['Notes'][1] += 5
 			asyncio.create_task(t.clear_progress(player, sheet, progress, start_time, current, 5, sent))
 			await asyncio.sleep(timer)
+	progress['Notes'][1] += i % 5
 	asyncio.create_task(t.clear_progress(player, sheet, progress, start_time, current, i % 5, sent))
 	await asyncio.sleep(timer // (i % 5))
 
+	filler = [
+		['', '', '', '', '', '', '', '', '', 'Importance', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', 'Standing', '', '', '', ''],
+		['', '', '', '', '', '', '', '', '', 'Notes', '', '', '', ''],
+		[],
+		['', '', '', '', '', '', '', '', '', 'Notes', '', '', '', '']
+	]
+	for i in range(((places_row - people_row) - 3) // 4):
+		wks.update(f"B{people_row + 2 + i * 4}:AH{people_row + 5 + i * 4}", filler)
+		if i % 5 == 0 and i != 0:
+			progress['Notes'][1] += 5
+			asyncio.create_task(t.clear_progress(player, sheet, progress, start_time, current, 5, sent))
+			await asyncio.sleep(timer)
+	progress['Notes'][1] += i % 5
+	asyncio.create_task(t.clear_progress(player, sheet, progress, start_time, current, i % 5, sent))
+	await asyncio.sleep(timer // (i % 5))
+
+	for i in range(((other_row - places_row) - 3) // 4):
+		wks.update(f"B{places_row + 2 + i * 4}:AH{places_row + 5 + i * 4}", filler)
+		if i % 5 == 0 and i != 0:
+			progress['Notes'][1] += 5
+			asyncio.create_task(t.clear_progress(player, sheet, progress, start_time, current, 5, sent))
+			await asyncio.sleep(timer)
+	progress['Notes'][1] += i % 5
+	asyncio.create_task(t.clear_progress(player, sheet, progress, start_time, current, i % 5, sent))
+	await asyncio.sleep(timer // (i % 5))
+
+	filler = []
+	for _ in range(end_rows):
+		filler.append([''])
+	wks.update(f"", filler)
+	asyncio.create_task(t.clear_progress(player, sheet, progress, start_time, current, 1, sent))
 	# - - - - - - - - - - - - - - - - - - - - MODIFIERS - - - - - - - - - - - - - - - - - - - -
 	current = "Modifiers"
 	print(sheet + ": " + current)
