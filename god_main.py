@@ -599,7 +599,7 @@ async def rest_slash(interaction: discord.Interaction, length: Choice[str], hit_
 	app_commands.Choice(name = "private", value = 1),
 	app_commands.Choice(name = "public", value = 0),
 ])
-async def listing(interaction: discord.Interaction, what_to_list: Choice[str], based_on: str = None, ephemeral: Choice[int] = True):
+async def listing(interaction: discord.Interaction, what_to_list: Choice[str], based_on: str = None, ephemeral: Choice[int] = None):
 	if ephemeral is None:
 		ephemeral = True
 	else:
@@ -607,7 +607,8 @@ async def listing(interaction: discord.Interaction, what_to_list: Choice[str], b
 	ctx = await bot.get_context(interaction)
 	person = c.Person(ctx = ctx)
 	what_to_list = what_to_list.value
-	based_on = based_on.lower()
+	if based_on:
+		based_on = based_on.lower()
 	display = ""
 	await ctx.defer(ephemeral = ephemeral)
 
@@ -879,7 +880,7 @@ async def transfer_slash(interaction: discord.Interaction, what_to_transfer: Cho
 	app_commands.Choice(name = "Yes", value = 1),
 	app_commands.Choice(name = "No", value = 0)
 ])
-async def sort_inventory_slash(interaction: discord.Interaction, based_on: Choice[str], leave_spaces_between_types: Choice[int] = 1, reverse_order: Choice[int] = 0):
+async def sort_inventory_slash(interaction: discord.Interaction, based_on: Choice[str], leave_spaces_between_types: Choice[int] = None, reverse_order: Choice[int] = None):
 	ctx = await bot.get_context(interaction)
 	await ctx.defer(ephemeral = True)
 	person = c.Person(ctx)

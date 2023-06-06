@@ -13,7 +13,10 @@ sa = gspread.service_account(filename = "service_account.json")
 
 
 def ping_sheet(sheet_name):
-	sh = sa.open(sheet_name)
+	try:
+		sh = sa.open(sheet_name)
+	except gspread.SpreadsheetNotFound:
+		return False
 	wks = sh.worksheet("Setup")
 	value = wks.acell('B2').value
 	if value:

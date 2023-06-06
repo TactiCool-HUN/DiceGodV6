@@ -145,7 +145,7 @@ class Sheet:
 			cursor = connection.cursor()
 			cursor.execute(
 				f"UPDATE sheets SET sheet = ?, last_warning = ? WHERE character = {self.character}",
-				(self.character, self.sheet, self.last_warning)
+				(self.sheet, self.last_warning)
 			)
 
 	def delete(self):
