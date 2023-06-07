@@ -1399,6 +1399,7 @@ async def rest(ctx, length: str, hit_dice: str):
 						max_slots -= 1
 					else:
 						block[count].append(False)
+			spells.update("H3:S11", block)
 		elif cast_type == "Spellpoints":
 			spells.update("Q4", spells.acell("Q5").value)
 		# - - - - - - - - - - death saves - - - - - - - - - -
