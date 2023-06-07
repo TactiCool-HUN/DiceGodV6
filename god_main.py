@@ -552,7 +552,8 @@ async def temp_command(ctx, *, amount):
 		await t.send_message(ctx, "No active character found.", reply = True)
 	else:
 		sent = await t.load(ctx)
-		txt, followups = await asyncio.to_thread(com.sh.set_temp, ctx, amount, False, False)
+		temp = await asyncio.to_thread(com.sh.set_temp, ctx, amount, False, False)
+		txt, followups = await temp
 		asyncio.create_task(t.send_message(ctx, txt, reply = True, followups = followups))
 		await sent.delete()
 
