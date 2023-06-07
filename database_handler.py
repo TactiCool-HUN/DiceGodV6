@@ -21,15 +21,15 @@ with DatabaseConnection("data.db") as connection:
 	# - - - people - - -
 	try:
 		cursor.execute(
-			f'CREATE TABLE people('
-			f'discord_id integer primary key,'
-			f'name text,'
-			f'active text,'
-			f'tag text,'
-			f'color text,'
-			f'change_name integer,'
-			f'auto_tag integer,'
-			f'chat_ignore integer)'
+			'CREATE TABLE people('
+			'discord_id integer primary key,'
+			'name text,'
+			'active text,'
+			'tag text,'
+			'color text,'
+			'change_name integer,'
+			'auto_tag integer,'
+			'chat_ignore integer)'
 		)
 	except sqlite3.OperationalError:
 		print(f"people found")
@@ -37,11 +37,11 @@ with DatabaseConnection("data.db") as connection:
 	# - - - dice - - -
 	try:
 		cursor.execute(
-			f'CREATE TABLE dice('
-			f'die_id integer primary key,'
-			f'name text,'
-			f'owner_id integer,'
-			f'roll text)'
+			'CREATE TABLE dice('
+			'die_id integer primary key,'
+			'name text,'
+			'owner_id integer,'
+			'roll text)'
 		)
 	except sqlite3.OperationalError:
 		print(f"dice found")
@@ -49,12 +49,12 @@ with DatabaseConnection("data.db") as connection:
 	# - - - sheets - - -
 	try:
 		cursor.execute(
-			f'CREATE TABLE sheets('
-			f'sheet_id integer primary key,'
-			f'owner_id integer,'
-			f'character text,'
-			f'sheet text,'
-			f'last_warning timestamp)'
+			'CREATE TABLE sheets('
+			'sheet_id integer primary key,'
+			'owner_id integer,'
+			'character text,'
+			'sheet text,'
+			'last_warning timestamp)'
 		)
 	except sqlite3.OperationalError:
 		print(f"sheets found")
@@ -62,11 +62,11 @@ with DatabaseConnection("data.db") as connection:
 	# - - - sheet rents - - -
 	try:
 		cursor.execute(
-			f'CREATE TABLE sheet_rents('
-			f'rent_id integer primary key,'
-			f'owner_id integer,'
-			f'user_id integer,'
-			f'character text)'
+			'CREATE TABLE sheet_rents('
+			'rent_id integer primary key,'
+			'owner_id integer,'
+			'user_id integer,'
+			'character text)'
 		)
 	except sqlite3.OperationalError:
 		print(f"sheet_rents found")
@@ -74,15 +74,15 @@ with DatabaseConnection("data.db") as connection:
 	# - - - statistics - - -
 	try:
 		cursor.execute(
-			f'CREATE TABLE statistics('
-			f'id integer primary key,'
-			f'owner_id integer,'
-			f'outcome integer,'
-			f'size integer,'
-			f'used integer,'
-			f'roll_text text,'
-			f'tag text,'
-			f'date timestamp)'
+			'CREATE TABLE statistics('
+			'id integer primary key,'
+			'owner_id integer,'
+			'outcome integer,'
+			'size integer,'
+			'used integer,'
+			'roll_text text,'
+			'tag text,'
+			'date timestamp)'
 		)
 	except sqlite3.OperationalError:
 		print(f"statistics found")
@@ -90,11 +90,11 @@ with DatabaseConnection("data.db") as connection:
 	# - - - table - - -
 	try:
 		cursor.execute(
-			f'CREATE TABLE tables('
-			f'table_name text primary key,'
-			f'dm_id integer, role_id integer,'
-			f'guest_id integer,'
-			f'message_id integer)'
+			'CREATE TABLE tables('
+			'table_name text primary key,'
+			'dm_id integer, role_id integer,'
+			'guest_id integer,'
+			'message_id integer)'
 		)
 	except sqlite3.OperationalError:
 		print(f"tables found")
@@ -102,11 +102,11 @@ with DatabaseConnection("data.db") as connection:
 	# - - - role_bot - - -
 	try:
 		cursor.execute(
-			f'CREATE TABLE role_bot('
-			f'id integer primary key,'
-			f'channel_id text,'
-			f'message_id text,'
-			f'emoji text, role_id text)'
+			'CREATE TABLE role_bot('
+			'id integer primary key,'
+			'channel_id text,'
+			'message_id text,'
+			'emoji text, role_id text)'
 		)
 	except sqlite3.OperationalError:
 		print(f"role_bot found")

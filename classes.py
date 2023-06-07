@@ -35,8 +35,8 @@ class Person:
 		with t.DatabaseConnection("data.db") as connection:
 			cursor = connection.cursor()
 			cursor.execute(
-				f"INSERT INTO people(discord_id, name, active, tag, color, change_name, auto_tag, chat_ignore)"
-				f"VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+				"INSERT INTO people(discord_id, name, active, tag, color, change_name, auto_tag, chat_ignore)"
+				"VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
 				(self.user.id, self.user.name, self.active, self.tag, self.color, self.change_name, self.auto_tag, self.chat_ignore)
 			)
 
@@ -45,7 +45,7 @@ class Person:
 	def load(self):
 		with t.DatabaseConnection("data.db") as connection:
 			cursor = connection.cursor()
-			cursor.execute(f"SELECT * FROM people WHERE discord_id = ?", (self.user.id,))
+			cursor.execute("SELECT * FROM people WHERE discord_id = ?", (self.user.id,))
 			raw = cursor.fetchall()[0]
 
 		self.active = raw[2]
@@ -59,23 +59,23 @@ class Person:
 		with t.DatabaseConnection("data.db") as connection:
 			cursor = connection.cursor()
 			cursor.execute(
-				f"UPDATE people SET name = ?, active = ?, tag = ?, color = ?, change_name = ?, auto_tag = ?, chat_ignore = ?"
-				f"WHERE discord_id = {self.user.id}",
-				(self.user.name, self.active, self.tag, self.color, self.change_name, self.auto_tag, self.chat_ignore)
+				"UPDATE people SET name = ?, active = ?, tag = ?, color = ?, change_name = ?, auto_tag = ?, chat_ignore = ?"
+				"WHERE discord_id = ?",
+				(self.user.name, self.active, self.tag, self.color, self.change_name, self.auto_tag, self.chat_ignore, self.user.id)
 			)
 
 	def add_roll(self, outcome, size, used, roll_text):
 		with t.DatabaseConnection("data.db") as connection:
 			cursor = connection.cursor()
 			cursor.execute(
-				f"INSERT INTO statistics(owner_id, outcome, size, used, roll_text, tag, date) VALUES (?, ?, ?, ?, ?, ?, ?)",
+				"INSERT INTO statistics(owner_id, outcome, size, used, roll_text, tag, date) VALUES (?, ?, ?, ?, ?, ?, ?)",
 				(self.user.id, outcome, size, int(used), roll_text, self.tag, datetime.datetime.now())
 			)
 
 	def get_rolls(self):
 		with t.DatabaseConnection("data.db") as connection:
 			cursor = connection.cursor()
-			cursor.execute(f"SELECT * FROM statistics WHERE owner_id = ?", (self.user.id,))
+			cursor.execute("SELECT * FROM statistics WHERE owner_id = ?", (self.user.id,))
 			raw = cursor.fetchall()
 		return raw
 
@@ -108,8 +108,8 @@ class Sheet:
 		with t.DatabaseConnection("data.db") as connection:
 			cursor = connection.cursor()
 			cursor.execute(
-				f"INSERT INTO sheets(owner_id, character, sheet, last_warning)"
-				f"VALUES (?, ?, ?, ?)",
+				"INSERT INTO sheets(owner_id, character, sheet, last_warning)"
+				"VALUES (?, ?, ?, ?)",
 				(ctx.author.id, self.character, self.sheet, self.last_warning)
 			)
 
@@ -118,7 +118,7 @@ class Sheet:
 	def load(self, ctx):
 		with t.DatabaseConnection("data.db") as connection:
 			cursor = connection.cursor()
-			cursor.execute(f"SELECT * FROM sheets WHERE character = ?", (self.character,))
+			cursor.execute("SELECT * FROM sheets WHERE character = ?", (self.character,))
 			raw = cursor.fetchall()
 
 		if not raw:
@@ -144,22 +144,14 @@ class Sheet:
 		with t.DatabaseConnection("data.db") as connection:
 			cursor = connection.cursor()
 			cursor.execute(
-				f'UPDATE sheets SET sheet = ?, last_warning = ? WHERE character = ?',
+				'UPDATE sheets SET sheet = ?, last_warning = ? WHERE character = ?',
 				(self.sheet, self.last_warning, self.character)
 			)
-
-	"""with t.DatabaseConnection("data.db") as connection:
-		cursor = connection.cursor()
-		cursor.execute(
-			f"UPDATE people SET name = ?, active = ?, tag = ?, color = ?, change_name = ?, auto_tag = ?, chat_ignore = ?"
-			f"WHERE discord_id = {self.user.id}",
-			(self.user.name, self.active, self.tag, self.color, self.change_name, self.auto_tag, self.chat_ignore)
-		)"""
 
 	def delete(self):
 		with t.DatabaseConnection("data.db") as connection:
 			cursor = connection.cursor()
-			cursor.execute(f"DELETE FROM sheets WHERE character = ?", (self.character,))
+			cursor.execute("DELETE FROM sheets WHERE character = ?", (self.character,))
 
 	def get_sheet(self, sa):
 		self.google_sheet = sa.open(self.sheet)
@@ -187,13 +179,13 @@ class Die:
 	def create(self, owner_id):
 		with t.DatabaseConnection("data.db") as connection:
 			cursor = connection.cursor()
-			cursor.execute(f"INSERT INTO dice(name, owner_id, roll) VALUES (?, ?, ?)", (self.name, owner_id, self.roll))
+			cursor.execute("INSERT INTO dice(name, owner_id, roll) VALUES (?, ?, ?)", (self.name, owner_id, self.roll))
 		self.load()
 
 	def load(self):
 		with t.DatabaseConnection("data.db") as connection:
 			cursor = connection.cursor()
-			cursor.execute(f"SELECT * FROM dice WHERE name = ?", (self.name,))
+			cursor.execute("SELECT * FROM dice WHERE name = ?", (self.name,))
 			raw = cursor.fetchall()[0]
 		self.die_id = raw[0]
 		self.owner_id = raw[2]
@@ -202,12 +194,15 @@ class Die:
 	def update(self):
 		with t.DatabaseConnection("data.db") as connection:
 			cursor = connection.cursor()
-			cursor.execute(f"UPDATE dice SET name = ?, owner_id = ?, roll = ? WHERE die_id = {self.die_id}", (self.name, self.owner_id, self.roll))
+			cursor.execute(
+				"UPDATE dice SET name = ?, owner_id = ?, roll = ? WHERE die_id = ?",
+				(self.name, self.owner_id, self.roll, self.die_id)
+			)
 
 	def delete(self):
 		with t.DatabaseConnection("data.db") as connection:
 			cursor = connection.cursor()
-			cursor.execute(f"DELETE FROM dice WHERE die_id = ?", (self.die_id,))
+			cursor.execute("DELETE FROM dice WHERE die_id = ?", (self.die_id,))
 
 
 class Pack:

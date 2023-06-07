@@ -617,7 +617,7 @@ async def listing(interaction: discord.Interaction, what_to_list: Choice[str], b
 			display = f"{person.user.name}'s characters:"
 			with t.DatabaseConnection("data.db") as connection:
 				cursor = connection.cursor()
-				cursor.execute(f"SELECT * FROM sheets WHERE owner_id = ?", (person.user.id,))
+				cursor.execute("SELECT * FROM sheets WHERE owner_id = ?", (person.user.id,))
 				raw_pack = cursor.fetchall()
 			for raw in raw_pack:
 				if raw[2] == person.active:
@@ -648,7 +648,7 @@ async def listing(interaction: discord.Interaction, what_to_list: Choice[str], b
 			display = f"{person.user.name}'s dice:"
 			with t.DatabaseConnection("data.db") as connection:
 				cursor = connection.cursor()
-				cursor.execute(f"SELECT * FROM dice WHERE owner_id = ?", (person.user.id,))
+				cursor.execute("SELECT * FROM dice WHERE owner_id = ?", (person.user.id,))
 				raw_pack = cursor.fetchall()
 			if raw_pack:
 				for raw in raw_pack:
@@ -735,7 +735,7 @@ async def statistics(interaction: discord.Interaction, person: discord.Member = 
 	if get_all_rolls:
 		with t.DatabaseConnection("data.db") as connection:
 			cursor = connection.cursor()
-			cursor.execute(f"SELECT * FROM statistics")
+			cursor.execute("SELECT * FROM statistics")
 			rolls = cursor.fetchall()
 	else:
 		rolls = person.get_rolls()

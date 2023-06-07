@@ -17,28 +17,28 @@ def exists(identifier, data_type, ctx = None):
 		case "person":
 			with DatabaseConnection("data.db") as connection:
 				cursor = connection.cursor()
-				cursor.execute(f"SELECT * FROM people WHERE discord_id = ?", (identifier,))
+				cursor.execute("SELECT * FROM people WHERE discord_id = ?", (identifier,))
 				person = cursor.fetchall()
 			if person:
 				return True
 		case "char":
 			with DatabaseConnection("data.db") as connection:
 				cursor = connection.cursor()
-				cursor.execute(f"SELECT * FROM sheets WHERE character = ?", (identifier,))
+				cursor.execute("SELECT * FROM sheets WHERE character = ?", (identifier,))
 				char = cursor.fetchall()
 			if char:
 				return True
 		case "sheet_name":
 			with DatabaseConnection("data.db") as connection:
 				cursor = connection.cursor()
-				cursor.execute(f"SELECT * FROM sheets WHERE sheet = ?", (identifier,))
+				cursor.execute("SELECT * FROM sheets WHERE sheet = ?", (identifier,))
 				sheet = cursor.fetchall()
 			if sheet:
 				return True
 		case "die":
 			with DatabaseConnection("data.db") as connection:
 				cursor = connection.cursor()
-				cursor.execute(f"SELECT * FROM dice WHERE name = ?", (identifier,))
+				cursor.execute("SELECT * FROM dice WHERE name = ?", (identifier,))
 				die = cursor.fetchall()
 			if die:
 				return True
@@ -49,7 +49,7 @@ def exists(identifier, data_type, ctx = None):
 def is_rented(sheet, user):
 	with DatabaseConnection("data.db") as connection:
 		cursor = connection.cursor()
-		cursor.execute(f"SELECT * FROM sheet_rents WHERE user_id = ?", (user.id,))
+		cursor.execute("SELECT * FROM sheet_rents WHERE user_id = ?", (user.id,))
 		raw = cursor.fetchall()
 	for rent in raw:
 		if rent[3] == sheet.character:
