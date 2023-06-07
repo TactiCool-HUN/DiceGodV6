@@ -182,6 +182,9 @@ def is_sheet_based(split):
 	for i in s.SPELL_ATTACK:
 		if i == split[:len(i)]:
 			return "SPELL_ATTACK", split[:len(i)], split[len(i):]
+	for i in s.ABILITIES:
+		if i == split[:len(i)]:
+			return "ABILITIES", split[:len(i)], split[len(i):]
 	return False
 
 

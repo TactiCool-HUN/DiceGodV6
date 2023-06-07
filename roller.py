@@ -150,6 +150,16 @@ async def text_to_singles(ctx, roll_txt):
 							current_single.name = split_cut
 					else:
 						current_single = c.SingleRoll(split, "dynamic add", split_cut, add = add)
+				case "ABILITIES":
+					add = sh.get_ability_mod(sheet, split_cut)
+
+					if current_single:
+						current_single.add += add
+						current_single.dynamic = True
+						if not current_single.name:
+							current_single.name = split_cut
+					else:
+						current_single = c.SingleRoll(split, "dynamic add", split_cut, add = add)
 
 			try:
 				current_single.args.merge_args(args)

@@ -233,6 +233,16 @@ async def set_deathsave(ctx, natural, result) -> None:
 		await t.send_message(ctx, txt, True)
 
 
+def get_ability_mod(sheet_inc, ability_score: str):
+	sh = sheet_inc.google_sheet
+	wks = sh.worksheet("BotRead")
+	area = wks.get("A40:B46")
+
+	for line in area:
+		if line[0] == ability_score:
+			return line[1]
+
+
 def get_skill(sheet_inc, skill_inc: str):
 	sh = sheet_inc.google_sheet
 	wks = sh.worksheet("BotRead")
