@@ -144,9 +144,17 @@ class Sheet:
 		with t.DatabaseConnection("data.db") as connection:
 			cursor = connection.cursor()
 			cursor.execute(
-				f"UPDATE sheets SET sheet = ?, last_warning = ? WHERE character = {self.character}",
-				(self.sheet, self.last_warning)
+				f'UPDATE sheets SET sheet = ?, last_warning = ? WHERE character = ?',
+				(self.sheet, self.last_warning, self.character)
 			)
+
+	"""with t.DatabaseConnection("data.db") as connection:
+		cursor = connection.cursor()
+		cursor.execute(
+			f"UPDATE people SET name = ?, active = ?, tag = ?, color = ?, change_name = ?, auto_tag = ?, chat_ignore = ?"
+			f"WHERE discord_id = {self.user.id}",
+			(self.user.name, self.active, self.tag, self.color, self.change_name, self.auto_tag, self.chat_ignore)
+		)"""
 
 	def delete(self):
 		with t.DatabaseConnection("data.db") as connection:

@@ -3202,6 +3202,7 @@ async def clear_sheet(interaction, ctx, sheet, player, dm):
 	if dm:
 		text = f"One of your players got a new sheet, here is the access link:\n{sheet}\n<{link}>"
 		await t.send_dm(ctx, text, False, dm.id)
+	await interaction.followup.send("Done.")
 	print("- - - - - - - - done - - - - - - - -")
 
 
