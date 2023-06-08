@@ -9,6 +9,7 @@ import settings as s
 import classes as c
 import roller as r
 import tools as t
+import textwrap
 import chatbot
 import discord
 import asyncio
@@ -983,9 +984,10 @@ async def help_slash(interaction: discord.Interaction, help_type: Choice[str], e
 
 		temp = "``, ``".join(inner_dict["calls"])
 		embed.add_field(name = "Call", value = f"Call Type: {inner_dict['call_type']}\nCalls: ``{temp}``", inline = False)
-		if help_type == "roll":
-			for line in inner_dict["long_description"]:
-				embed.add_field(name = "", value = line, inline = False)
+		if len(inner_dict["long_description"]) > 1024:
+			chunks = textwrap.wrap(inner_dict["long_description"], 1024, break_long_words = False, replace_whitespace = False)
+			for part in chunks:
+				embed.add_field(name = "", value = part, inline = False)
 		else:
 			embed.add_field(name = "Description", value = inner_dict["long_description"], inline = False)
 		if inner_dict["example_uses"]:

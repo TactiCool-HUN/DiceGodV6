@@ -13,7 +13,7 @@ help_list = [
 		"call_type": "prefix",
 		"calls": ["roll", "r", "e", "yeet"],
 		"short_description": "Roll dice with the bot.",
-		"long_description": ["""
+		"long_description": """
 A roll command consist of "roll"s or "add"s separated by either + or - signs.
 A "roll" can be either static or sheet based.
 - Static rolls are made up of a number of equal sized dice the following way: ``[number of dice]d[size of dice]``
@@ -27,7 +27,9 @@ A "roll" can be either static or sheet based.
 - - ``dmg<a number between 1 and 5>`` to trigger your damage roll for said weapon slot leaving it empty triggers the 1st slot (it triggers the 1 handed if exists, if it doesn't it triggers the 2 handed damage)
 - - ``dmg<a number between 1 and 5>_2h`` to trigger your 2 handed damage roll for said weapon slot leaving it empty triggers the 1st slot
 - - ``spell<a number between 1 and 5>``to roll your spell attack roll, giving no number adds your first class's spellattack, 2 gives your 2nd class's, 3 gives the 3rd
-- - ``[full or partial name of a spell]`` rolls the base level of the spell or auto scales cantrips to your active character""", """
+- - ``[full or partial name of a spell]`` rolls the base level of the spell or auto scales cantrips to your active character
+
+
 An "add" can be either static or sheet based.
 - Static adds are just a basic number.
 
@@ -53,7 +55,7 @@ Example of argumented rolls:
 If there are several arguments on a roll they'll be run in the following order: crit -> min/max -> kh/kl -> adv/dis/emp
 The pairs in the previous line cannot be used together on a single roll.
 If an argument is placed on an "add" it will affect the first "roll" on it's left.
-"""],
+""",
 		"example_uses": ["-r 1d20+5", "-r initadv+1d4"]
 	},
 	{
