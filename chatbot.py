@@ -1,3 +1,5 @@
+import discord.channel
+
 from tools import choice
 import classes as c
 import bot_setup
@@ -8,6 +10,8 @@ import re
 
 async def bot_responses(ctx):
 	if bot_setup.prefix == "--" and ctx.guild.id != 953258116496097340:
+		return
+	if isinstance(ctx.channel, discord.channel.DMChannel):
 		return
 	if ctx.channel.category_id == 996065301055688794:
 		return

@@ -240,7 +240,7 @@ def get_ability_mod(sheet_inc, ability_score: str):
 
 	for line in area:
 		if line[0] == ability_score:
-			return line[1]
+			return int(line[1])
 
 
 def get_skill(sheet_inc, skill_inc: str):

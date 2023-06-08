@@ -1,7 +1,9 @@
 from discord.app_commands import Choice
 from discord import app_commands
+from ast import literal_eval
 # import sheet_handler as sh
 from bot_setup import bot
+import help_descirption
 import commands as com
 import settings as s
 import classes as c
@@ -305,7 +307,7 @@ async def die_stuff(interaction: discord.Interaction, command: Choice[str], new_
 				else:
 					message = f"You cannot modify <@{die.owner_id}>'s die."
 		case "delete":
-			if old_die_name == "":
+			if not old_die_name:
 				message = f"``old_die_name`` is required for the ``create`` command."
 			else:
 				die = c.Die(old_die_name)
@@ -905,6 +907,92 @@ async def sort_inventory_slash(interaction: discord.Interaction, based_on: Choic
 		await interaction.followup.send(f"{sheet.character}'s inventory successfully sorted!")
 	else:
 		await interaction.followup.send(reply)
+
+
+help_list = help_descirption.help_list
+help_type_fix = [
+	app_commands.Choice(name = "Command List", value = "command_list"),
+	app_commands.Choice(name = "Emoji Lookup", value = "emoji_lookup"),
+]
+for help_dict in help_list:
+	help_type_fix.append(app_commands.Choice(name = help_dict["name"], value = help_dict["name"]))
+
+
+@bot.tree.command(name = "help", description = "Display the command list or the documentation of each command.")
+@app_commands.choices(help_type = help_type_fix)
+@app_commands.choices(ephemeral = [
+	app_commands.Choice(name = "private", value = 1),
+	app_commands.Choice(name = "public", value = 0),
+])
+async def help_slash(interaction: discord.Interaction, help_type: Choice[str], ephemeral: Choice[int] = None):
+	ctx = await bot.get_context(interaction)
+	person = c.Person(ctx)
+	help_type = help_type.value
+	if not ephemeral:
+		ephemeral = True
+	else:
+		ephemeral = bool(ephemeral.value)
+	await ctx.defer(ephemeral = ephemeral)
+
+	if help_type == "command_list":
+		embed = discord.Embed(
+			title = "Emoji Lookup Table",
+			description = "",
+			color = literal_eval(person.color)
+		)
+		embed.set_author(name = person.user.display_name, icon_url = person.user.avatar.url)
+
+		for inner_dict in help_list:
+			embed.add_field(name = inner_dict["name"], value = inner_dict["short_description"], inline = False)
+	elif help_type == "emoji_lookup":
+		embed = discord.Embed(
+			title = "Emoji Lookup Table",
+			description = """
+				:arrows_counterclockwise:  - reroll the same roll
+				:boom: - crit
+				:regional_indicator_q: - queue rolls
+				:wave: - one handed damage
+				:open_hands: - two handed damage
+				:muscle: - flexible damage 
+				:rosette: - zealot barb extra damage
+				:fireworks: - paladin 2d8 smite damage
+				:sparkler: - paladin 1d8 smite damage
+				:stars: - paladin improved divine smite
+				:dart: - runner precision smite
+				:eye: - runner's hunter ambush strike
+				:brain: - psychic blades
+				:drop_of_blood: - blood hunter crimson rite damage
+				[no icon yet] - charger feat (not implemented yet)
+				:four_leaf_clover: - inspiration point give
+				:EldritchSmite: - eldritch smite
+				:magic_wand: - polearm master
+			""",
+			color = literal_eval(person.color)
+		)
+		embed.set_author(name = person.user.display_name, icon_url = person.user.avatar.url)
+	else:
+		inner_dict = None
+		for inner_dict in help_list:
+			if inner_dict["name"] == help_type:
+				break
+		embed = discord.Embed(
+			title = inner_dict["name"].capitalize(),
+			color = literal_eval(person.color)
+		)
+		embed.set_author(name = person.user.display_name, icon_url = person.user.avatar.url)
+
+		temp = "``, ``".join(inner_dict["calls"])
+		embed.add_field(name = "Call", value = f"Call Type: {inner_dict['call_type']}\nCalls: ``{temp}``", inline = False)
+		if help_type == "roll":
+			for line in inner_dict["long_description"]:
+				embed.add_field(name = "", value = line, inline = False)
+		else:
+			embed.add_field(name = "Description", value = inner_dict["long_description"], inline = False)
+		if inner_dict["example_uses"]:
+			temp = "``, ``".join(inner_dict["example_uses"])
+			embed.add_field(name = "Example(s):", value = f"``{temp}``", inline = False)
+
+	await interaction.followup.send(embed = embed)
 
 
 with open("token.txt", "r") as f:
