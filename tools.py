@@ -9,10 +9,9 @@ import discord
 import asyncio
 import random
 import math
-import re
 
 
-def exists(identifier, data_type, ctx = None):
+def exists(identifier, data_type):
 	match data_type:
 		case "person":
 			with DatabaseConnection("data.db") as connection:

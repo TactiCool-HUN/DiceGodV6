@@ -115,7 +115,7 @@ async def init_resources(ctx):
 	limited_area = wks.get("A1:AW53")
 
 	monk_level = 0
-	sorcerer_level = 0
+	# sorcerer_level = 0
 
 	for line in class_area:
 		while len(line) < 4:

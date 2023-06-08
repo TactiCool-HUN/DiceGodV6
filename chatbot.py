@@ -141,6 +141,14 @@ async def bot_responses(ctx):
 			"The one who wages a war with Lady Luck herself. Your efforts are cute, but futile.", 0.3,
 			"I can feel you are slowly giving in. You see? Peace is an option.\n**Now kneel before me!**", 0.2,
 		]
+		mark = [
+			"Yes", 1,
+			"No.", 1,
+			"Maybe?", 1,
+			"<:Kyrihihihi:1058348961523576872>", 1,
+			"Be careful when you speak my name, mortal.", 1,
+			"🐸", 1,
+		]
 		pack = None
 		match author.id:
 			case 145980699961196544:
@@ -157,6 +165,8 @@ async def bot_responses(ctx):
 				pack = agi
 			case 875753704685436938:
 				pack = nika
+			case 377469395007438849:
+				pack = mark
 		if not pack:
 			if is_admin:
 				pack = admin_base
