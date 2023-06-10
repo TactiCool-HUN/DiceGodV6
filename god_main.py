@@ -128,15 +128,18 @@ async def kill_command(ctx, *, other = None):
 	print(f'{ctx.author} said "{other}", how rude...')
 	# noinspection SpellCheckingInspection
 	await ctx.message.add_reaction("<:angycat:817122720227524628>")
-	# noinspection SpellCheckingInspection
-	response_list = [
-		"Don't be so rude...", 1,
-		"ruuuuude", 1,
-		"You accidentally mispelled the \"-die\" command.", 1,
-		f"-die {ctx.author.mention}", 1,
-		f"Quit it {ctx.author.mention}!", 1
-	]
-	result = t.choice(response_list)
+	if ctx.author.id in s.ADMINS and ctx.message.mentions:
+		result = f"-die {ctx.message.mentions[0].mention}"
+	else:
+		# noinspection SpellCheckingInspection
+		response_list = [
+			"Don't be so rude...", 1,
+			"ruuuuude", 1,
+			"You accidentally mispelled the \"-die\" command.", 1,
+			f"-die {ctx.author.mention}", 1,
+			f"Quit it {ctx.author.mention}!", 1
+		]
+		result = t.choice(response_list)
 	if result[0] == "-":
 		sent = await t.send_message(ctx, result, reply = True, is_return = True)
 		sent = await sent.reply("Contacting Pinkertons, please do not leave your current area. (○)")
@@ -146,11 +149,11 @@ async def kill_command(ctx, *, other = None):
 			else:
 				await sent.edit(content = "Contacting Pinkertons, please do not leave your current area. (○)")
 			await asyncio.sleep(1)
-		await sent.edit(content = "Connection established: Publishing address.")
+		await sent.edit(content = "Pinkertons connection established: Publishing address.")
 		await asyncio.sleep(5)
-		await sent.edit(content = "Connection established: Requesting agent.")
+		await sent.edit(content = "Pinkertons connection established: Requesting agent.")
 		await asyncio.sleep(6)
-		await sent.edit(content = "Connection established: Agent granted.\nStandby for annihilation.")
+		await sent.edit(content = "Pinkertons connection established: Agent granted.\nStandby for annihilation.")
 	else:
 		await t.send_message(ctx, result, reply = True)
 
