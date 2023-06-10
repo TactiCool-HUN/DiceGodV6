@@ -128,15 +128,18 @@ async def kill_command(ctx, *, other = None):
 	print(f'{ctx.author} said "{other}", how rude...')
 	# noinspection SpellCheckingInspection
 	await ctx.message.add_reaction("<:angycat:817122720227524628>")
-	# noinspection SpellCheckingInspection
-	response_list = [
-		"Don't be so rude...", 1,
-		"ruuuuude", 1,
-		"You accidentally mispelled the \"-die\" command.", 1,
-		f"-die {ctx.author.mention}", 1,
-		f"Quit it {ctx.author.mention}!", 1
-	]
-	result = t.choice(response_list)
+	if ctx.author.id in s.ADMINS and ctx.message.mentions:
+		result = f"-die {ctx.message.mentions[0].mention}"
+	else:
+		# noinspection SpellCheckingInspection
+		response_list = [
+			"Don't be so rude...", 1,
+			"ruuuuude", 1,
+			"You accidentally mispelled the \"-die\" command.", 1,
+			f"-die {ctx.author.mention}", 1,
+			f"Quit it {ctx.author.mention}!", 1
+		]
+		result = t.choice(response_list)
 	if result[0] == "-":
 		sent = await t.send_message(ctx, result, reply = True, is_return = True)
 		sent = await sent.reply("Contacting Pinkertons, please do not leave your current area. (○)")

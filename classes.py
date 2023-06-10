@@ -705,6 +705,7 @@ class Spell:
 
 		return embed
 
+
 class Components:
 	def __init__(self, verbal = False, somatic = False, material = False):
 		self.verbal = verbal
