@@ -1000,6 +1000,11 @@ async def help_slash(interaction: discord.Interaction, help_type: Choice[str], e
 	await interaction.followup.send(embed = embed)
 
 
+@bot.tree.command(name = "vote", description = "Create an interactive vote!")
+async def vote_modal(interaction: discord.Interaction):
+	await interaction.response.send_modal(c.VoteModal(interaction))
+
+
 with open("token.txt", "r") as f:
 	_lines_ = f.readlines()
 

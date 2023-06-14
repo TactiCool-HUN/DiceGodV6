@@ -733,4 +733,29 @@ class Components:
 		return disp
 
 
+class VoteModal(discord.ui.Modal, title = "Vote Builder"):
+	def __init__(self, inter_inc):
+		super().__init__()
+		self.inter_inc = inter_inc
+
+	description = discord.ui.TextInput(label = "Vote Description", style = discord.TextStyle.paragraph, placeholder = "What are we voting on?", required = True, max_length = 1024)
+	option_1 = discord.ui.TextInput(label = "Option 1", style = discord.TextStyle.long, placeholder = "Emoji - Option", required = True, max_length = 254)
+	option_2 = discord.ui.TextInput(label = "Option 2", style = discord.TextStyle.long, placeholder = "Emoji - Option", default = None, required = False, max_length = 254)
+	option_3 = discord.ui.TextInput(label = "Option 3", style = discord.TextStyle.long, placeholder = "Emoji - Option", default = None, required = False, max_length = 254)
+	option_4 = discord.ui.TextInput(label = "Option 4", style = discord.TextStyle.long, placeholder = "Emoji - Option", default = None, required = False, max_length = 254)
+
+	async def on_submit(self, interaction: discord.Interaction) -> None:
+		ctx = await bot.get_context(self.inter_inc)
+		txt = f"Vote by {interaction.user.mention}\n{self.description}\n{self.option_1}"
+		if self.option_2:
+			txt = f"{txt}\n{self.option_2}"
+		if self.option_3:
+			txt = f"{txt}\n{self.option_3}"
+		if self.option_4:
+			txt = f"{txt}\n{self.option_4}"
+
+		sent = await interaction.response.send_message(txt)
+		return sent
+
+
 pass

@@ -1175,7 +1175,7 @@ async def heal_hurt(ctx, is_heal: bool, amount: str, is_companion: bool = False)
 					else:
 						responses.append("They have some temporary hitpoints to their name.")
 				elif temp < max_hp / 2:
-					responses.append("A patch of temporary hit points are still remain.")
+					responses.append("A patch of temporary hit points still remain.")
 				elif temp < max_hp:
 					responses.append("Temporary hit points still going strong!")
 				elif temp > 10:
