@@ -184,7 +184,7 @@ async def pc_command(ctx, command: str, char_name: str, sheet_name: str, person_
 					f"``{char_name}`` has been eliminated.",
 					f"``{char_name}`` met their doom.",
 					f"``{char_name}`` has been torn to a thousand pieces and fed to abyssal chickens.",
-					f"``{person.user.name}`` has murdered ``{char_name}`` in cold blood! This cannot go unanswered, may the Dice God bring you bad luck when you most need it!|| ...oh, that's me.||"
+					f"``{person.user.display_name}`` has murdered ``{char_name}`` in cold blood! This cannot go unanswered, may the Dice God bring you bad luck when you most need it!|| ...oh, that's me.||"
 				])
 				if sheet.user != sheet.owner and ctx.author.id in s.ADMINS:
 					await t.send_dm(ctx, f"An admin just deleted your character: {char_name}.\nYes they can do that.", False, discord_id = sheet.owner.user.id)
@@ -224,12 +224,12 @@ async def pc_command(ctx, command: str, char_name: str, sheet_name: str, person_
 						person_inc.tag = None
 					person_inc.update()
 					await t.send_dm(ctx, f"{sheet.character} is no longer rented to you.", False, discord_id = person_inc.user.id)
-					txt = f"{sheet.character} is no longer rented to {person_inc.user.name}."
+					txt = f"{sheet.character} is no longer rented to {person_inc.user.display_name}."
 				else:
 					with t.DatabaseConnection("data.db") as connection:
 						cursor = connection.cursor()
 						cursor.execute("INSERT INTO sheet_rents(owner_id, user_id, character) VALUES (?, ?, ?)", (person.user.id, person_inc.id, sheet.character))
-					await t.send_dm(ctx, f"{sheet.character} is now rented to you. You can set and clear the character through Dice God but have no other permissions for it.\nSheet Owner: {sheet.owner.user.name}\nAccess Granted by: {ctx.author.name}", False, discord_id = person_inc.id)
+					await t.send_dm(ctx, f"{sheet.character} is now rented to you. You can set and clear the character through Dice God but have no other permissions for it.\nSheet Owner: {sheet.owner.user.display_name}\nAccess Granted by: {ctx.author.name}", False, discord_id = person_inc.id)
 					txt = f"{sheet.character} is now rented to {person_inc.name}."
 
 	if interaction:

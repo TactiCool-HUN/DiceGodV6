@@ -37,7 +37,7 @@ class Person:
 			cursor.execute(
 				"INSERT INTO people(discord_id, name, active, tag, color, change_name, auto_tag, chat_ignore)"
 				"VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
-				(self.user.id, self.user.name, self.active, self.tag, self.color, self.change_name, self.auto_tag, self.chat_ignore)
+				(self.user.id, self.user.display_name, self.active, self.tag, self.color, self.change_name, self.auto_tag, self.chat_ignore)
 			)
 
 		self.load()
@@ -61,7 +61,7 @@ class Person:
 			cursor.execute(
 				"UPDATE people SET name = ?, active = ?, tag = ?, color = ?, change_name = ?, auto_tag = ?, chat_ignore = ?"
 				"WHERE discord_id = ?",
-				(self.user.name, self.active, self.tag, self.color, self.change_name, self.auto_tag, self.chat_ignore, self.user.id)
+				(self.user.display_name, self.active, self.tag, self.color, self.change_name, self.auto_tag, self.chat_ignore, self.user.id)
 			)
 
 	def add_roll(self, outcome, size, used, roll_text):
@@ -81,11 +81,11 @@ class Person:
 
 	def set_name(self):
 		self.clear_name()
-		return f"{self.user.name} [{self.active}]"
+		return f"{self.user.display_name} [{self.active}]"
 
 	def clear_name(self):
-		if re.findall(" \[.*]", self.user.name):
-			return self.user.name.replace(re.findall(" \[.*]", self.user.name)[0], "")
+		if re.findall(" \[.*]", self.user.display_name):
+			return self.user.display_name.replace(re.findall(" \[.*]", self.user.display_name)[0], "")
 
 
 class Sheet:
@@ -745,17 +745,20 @@ class VoteModal(discord.ui.Modal, title = "Vote Builder"):
 	option_4 = discord.ui.TextInput(label = "Option 4", style = discord.TextStyle.long, placeholder = "Emoji - Option", default = None, required = False, max_length = 254)
 
 	async def on_submit(self, interaction: discord.Interaction) -> None:
-		ctx = await bot.get_context(self.inter_inc)
 		txt = f"Vote by {interaction.user.mention}\n{self.description}\n{self.option_1}"
-		if self.option_2:
+		emoticons = [re.split(" - ", str(self.option_1))[0]]
+		if str(self.option_2):
 			txt = f"{txt}\n{self.option_2}"
-		if self.option_3:
+			emoticons.append(re.split(" - ", str(self.option_2))[0])
+		if str(self.option_3):
 			txt = f"{txt}\n{self.option_3}"
-		if self.option_4:
+			emoticons.append(re.split(" - ", str(self.option_3))[0])
+		if str(self.option_4):
 			txt = f"{txt}\n{self.option_4}"
+			emoticons.append(re.split(" - ", str(self.option_4))[0])
 
 		sent = await interaction.response.send_message(txt)
-		return sent
+		await t.place_emojis(sent, emoticons)
 
 
 pass

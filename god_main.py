@@ -180,9 +180,9 @@ async def _yeet_command_(ctx, *, text):
 @bot.command(name = "coinflip", aliases = ["coin"])
 async def coin_old(ctx):
 	response_list = [
-		f"{c.Person(ctx).user.name} flipped a coin and it landed on... it's side?", 1,
-		f"{c.Person(ctx).user.name} flipped a coin and it landed on **heads**!", 49,
-		f"{c.Person(ctx).user.name} flipped a coin and it landed on **tails**!", 51
+		f"{c.Person(ctx).user.display_name} flipped a coin and it landed on... it's side?", 1,
+		f"{c.Person(ctx).user.display_name} flipped a coin and it landed on **heads**!", 49,
+		f"{c.Person(ctx).user.display_name} flipped a coin and it landed on **tails**!", 51
 	]
 	await t.send_message(ctx, t.choice(response_list))
 
@@ -191,9 +191,9 @@ async def coin_old(ctx):
 async def coin_slash(interaction: discord.Interaction):
 	ctx = await bot.get_context(interaction)
 	response_list = [
-		f"{c.Person(ctx).user.name} flipped a coin and it landed on... it's side?", 1,
-		f"{c.Person(ctx).user.name} flipped a coin and it landed on **heads**!", 51,
-		f"{c.Person(ctx).user.name} flipped a coin and it landed on **tails**!", 49
+		f"{c.Person(ctx).user.display_name} flipped a coin and it landed on... it's side?", 1,
+		f"{c.Person(ctx).user.display_name} flipped a coin and it landed on **heads**!", 51,
+		f"{c.Person(ctx).user.display_name} flipped a coin and it landed on **tails**!", 49
 	]
 	await t.send_message(ctx, t.choice(response_list))
 
@@ -323,7 +323,7 @@ async def die_stuff(interaction: discord.Interaction, command: Choice[str], new_
 						f"``{old_die_name}`` met it's doom.",
 						f"``{old_die_name}`` has been torn to a thousand pieces and fed to abyssal chickens.",
 						f"The die died. ||{old_die_name}||",
-						f"``{person.user.name}`` has murdered ``{old_die_name}`` in cold blood! This cannot go unanswered, may the Dice God bring you bad luck when you most need it!|| ...oh, that's me.||"
+						f"``{person.user.display_name}`` has murdered ``{old_die_name}`` in cold blood! This cannot go unanswered, may the Dice God bring you bad luck when you most need it!|| ...oh, that's me.||"
 					])
 				elif person.user.id in s.ADMINS:
 					die.delete()
@@ -621,7 +621,7 @@ async def listing(interaction: discord.Interaction, what_to_list: Choice[str], b
 
 	match what_to_list:
 		case "characters":
-			display = f"{person.user.name}'s characters:"
+			display = f"{person.user.display_name}'s characters:"
 			with t.DatabaseConnection("data.db") as connection:
 				cursor = connection.cursor()
 				cursor.execute("SELECT * FROM sheets WHERE owner_id = ?", (person.user.id,))
@@ -652,7 +652,7 @@ async def listing(interaction: discord.Interaction, what_to_list: Choice[str], b
 			else:
 				display = "No active character found."
 		case "dice":
-			display = f"{person.user.name}'s dice:"
+			display = f"{person.user.display_name}'s dice:"
 			with t.DatabaseConnection("data.db") as connection:
 				cursor = connection.cursor()
 				cursor.execute("SELECT * FROM dice WHERE owner_id = ?", (person.user.id,))
@@ -661,7 +661,7 @@ async def listing(interaction: discord.Interaction, what_to_list: Choice[str], b
 				for raw in raw_pack:
 					display = f"{display}\n{raw[1]} ({raw[3]})"
 			else:
-				display = f"{person.user.name} has no dice."
+				display = f"{person.user.display_name} has no dice."
 
 	await interaction.followup.send(display, ephemeral = ephemeral)
 
@@ -811,7 +811,7 @@ async def statistics(interaction: discord.Interaction, person: discord.Member = 
 	members = ctx.guild.members
 	for member in members:
 		if member.id == person.user.id:
-			embed.set_author(name = person.user.name, icon_url = member.avatar.url)
+			embed.set_author(name = person.user.display_name, icon_url = member.avatar.url)
 			break
 
 	for element in fields:
