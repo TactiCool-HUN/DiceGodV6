@@ -80,8 +80,8 @@ class Person:
 		return raw
 
 	def set_name(self):
-		self.clear_name()
-		return f"{self.user.display_name} [{self.active}]"
+		temp = self.clear_name()
+		return f"{temp} [{self.active}]"
 
 	def clear_name(self):
 		if re.findall(" \[.*]", self.user.display_name):
