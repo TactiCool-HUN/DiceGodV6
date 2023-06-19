@@ -535,6 +535,16 @@ async def followup_instance(ctx, sent_inc, followups):
 							reply = await com.sh.set_condition(ctx, condition[0], condition[1], None)
 							if reply:
 								await send_message(ctx, reply, reply = True)
+					case "coin":
+						response_list = [
+							f"{c.Person(ctx).user.display_name} flipped a coin and it landed on... it's side?", 1,
+							f"{c.Person(ctx).user.display_name} flipped a coin and it landed on **heads**!", 49,
+							f"{c.Person(ctx).user.display_name} flipped a coin and it landed on **tails**!", 51
+						]
+						await send_message(ctx, choice(response_list))
+						if followup.data:
+							await send_message(ctx, followup.data)
+						active = False
 					case "confirm_temphp":
 						txt, _ = await com.sh.set_temp(ctx, followup.data[0], True, followup.data[1])
 						await send_message(ctx, txt, reply = True)

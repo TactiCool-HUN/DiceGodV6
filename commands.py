@@ -17,6 +17,8 @@ async def roll_command(ctx, text, crit = False):
 		await t.send_message(ctx, f"Did you want to use ``{prefix}{text}``?", reply = True, followups = [c.Followup("✅", [text[4:], True, False], "heal_hurt"), c.Followup("❎", None, "disable_followup")])
 	elif text[:4] == "rest":
 		await t.send_message(ctx, f"Did you want to use ``{prefix}rest long``?", reply = True, followups = [c.Followup("✅", None, "rest"), c.Followup("❎", None, "disable_followup")])
+	elif text[:4] == "coin":
+		await t.send_message(ctx, f"Did you want to use ``{prefix}coin``?", reply = True, followups = [c.Followup("✅", None, "coin"), c.Followup("❎", None, "disable_followup")])
 	else:
 		loader = await t.load(ctx, f"-roll {text}")
 		try:
