@@ -720,10 +720,10 @@ def get_spell_attack(sheet_inc, spell_attack_inc: str):
 	wks = sh.worksheet("BotRead")
 	spell_attacks = wks.get("G17:I19")
 
-	if len(spell_attack_inc) == 3:
+	if len(spell_attack_inc) == 5:
 		slot = 1
 	else:
-		slot = int(spell_attack_inc[3])
+		slot = int(spell_attack_inc[5])
 
 	add = 0
 	adv = None
@@ -737,7 +737,7 @@ def get_spell_attack(sheet_inc, spell_attack_inc: str):
 			adv = line[2]
 			break
 
-	return add, adv
+	return int(add), adv
 
 
 def get_spell_mod(sheet_inc, spell_mod_inc: str):
