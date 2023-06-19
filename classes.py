@@ -80,7 +80,10 @@ class Person:
 		return raw
 
 	def set_name(self):
-		temp = self.clear_name()
+		if "[" in self.user.display_name and "]" in self.user.display_name:
+			temp = self.clear_name()
+		else:
+			temp = self.user.display_name
 		return f"{temp} [{self.active}]"
 
 	def clear_name(self):
