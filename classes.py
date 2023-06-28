@@ -235,11 +235,11 @@ class Pack:
 		for roll in self.single_rolls:
 			if roll.pre_send:
 				for text in roll.pre_send:
-					if roll.pre_send == "lol" and person.user.id == 875753704685436938:
+					if "lol" in roll.pre_send and person.user.id == 875753704685436938:
 						tts = True
 					else:
 						tts = False
-					asyncio.create_task(t.send_message(self.ctx, text, reply = True, silent = True, tts = tts))
+					asyncio.create_task(t.send_message(self.ctx, text, reply = True, silent = False, tts = tts))
 
 			all_roll_notes += roll.roll_note
 
