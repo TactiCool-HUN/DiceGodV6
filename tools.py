@@ -433,6 +433,14 @@ def most_frequent(list_inc):
 	return num
 
 
+def mention_texts(id_list: list) -> str:
+	new_list = []
+	for i, my_id in enumerate(id_list):
+		new_list.append(f"<@{my_id}>")
+
+	return ", ".join(new_list)
+
+
 async def place_emojis(sent, emojis):
 	for emoji in emojis:
 		await sent.add_reaction(emoji)

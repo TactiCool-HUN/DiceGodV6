@@ -1,5 +1,5 @@
-from discord.app_commands import Choice
 from discord import app_commands
+from discord.app_commands import Choice
 from ast import literal_eval
 # import sheet_handler as sh
 from bot_setup import bot
@@ -1000,9 +1000,154 @@ async def help_slash(interaction: discord.Interaction, help_type: Choice[str], e
 	await interaction.followup.send(embed = embed)
 
 
-@bot.tree.command(name = "vote", description = "Create an interactive vote!")
+"""@bot.tree.command(name = "vote", description = "Create an interactive vote!")
 async def vote_modal(interaction: discord.Interaction):
-	await interaction.response.send_modal(c.VoteModal(interaction))
+	await interaction.response.send_modal(c.VoteModal(interaction))"""
+
+
+@bot.command(name = "vote", aliases = ["v"])
+async def cast_old(ctx, *, text_dump_):
+	text_dump = text_dump_.split("\n")
+	index_1 = None
+	index_2 = None
+
+	for i, line in enumerate(text_dump):
+		if line == "---" and index_1 is None:
+			index_1 = i
+		elif line == "---":
+			index_2 = i
+			break
+
+	voting_options = text_dump[:index_1]
+	vote_text = text_dump[index_1 + 1]
+
+	vote = c.Vote(ctx.author, vote_text = vote_text)
+
+	match len(voting_options):
+		case 1:
+			if "type: " in voting_options[0]:
+				vote_type = re.findall("[0-9]+", voting_options[0])
+				if vote_type:
+					vote.vote_amount = int(vote_type[0])
+			else:
+				temp = voting_options[0].replace(" ", "")
+				temp = re.split("><@", temp[2:-1])
+				for element in temp:
+					if element[0] == "&":
+						roles = ctx.guild.roles
+						members = []
+						for role in roles:
+							if role.id == int(element[1:]):
+								members = role.members
+								break
+						for member in members:
+							vote.voters.append(member.id)
+					else:
+						vote.voters.append(int(element))
+		case 2:
+			temp = voting_options[0].replace(" ", "")
+			temp = re.split("><@", temp[9:-1])
+			for element in temp:
+				if element[0] == "&":
+					roles = ctx.guild.roles
+					members = []
+					for role in roles:
+						if role.id == int(element[1:]):
+							members = role.members
+							break
+					for member in members:
+						vote.voters.append(member.id)
+				else:
+					vote.voters.append(int(element))
+
+			vote_type = re.findall("[0-9]+", voting_options[1])
+			if vote_type:
+				vote.vote_amount = int(vote_type[0])
+
+	poll_options = text_dump[index_2 + 1:]
+	for i, line in enumerate(poll_options):
+		option = c.PollOption()
+		temp = line.find("-")
+		option.emoji = line[:temp].replace(" ", "")
+		line_text = line[temp + 1:]
+		if line_text[0] == " ":
+			line_text = line_text[1:]
+		option.option_text = line_text
+		vote.poll_options.append(option)
+
+	embed = vote.create_embed()
+
+	await ctx.send(embed = embed, view = c.VoteView(vote))
+	await ctx.message.delete()
+
+	"""asyncio.create_task(t.place_emojis(message, emoticons))
+
+	def check(reaction_, user_):
+		return (user_ == ctx.author) and (str(reaction_.emoji) in emoticons or reaction_.emoji in emoticons) and (reaction_.message.id == message.id)
+
+	active = True
+	while active:
+		try:
+			reaction, user = await bot.wait_for("reaction_add", timeout = 24 * 60 * 60, check = check)
+			if user.id in voters.keys():
+				if vote_type.isnumeric():
+					if int(vote_type) >= voters[user.id]:
+						await message.remove_reaction(reaction, user)
+					else:
+						voters[user.id] = voters[user.id] + 1
+			else:
+				await message.remove_reaction(reaction, user)
+		except asyncio.TimeoutError:
+			for emoji in emoticons:
+				await message.clear_reaction(emoji)
+			active = False"""
+
+	"""
+	options:
+		pick any
+		pick <number>
+	"""
+
+	"""if text_dump[0][:6].lower() == "voters":
+		temp = text_dump.pop(0)[8:]
+		if temp == "anyone":
+			voters = set()
+		else:
+			temp = temp.replace(" ", "")
+			temp = re.split("><@", temp[2:-1])
+			voters = set()
+			for element in temp:
+				if element[0] == "&":
+					roles = ctx.guild.roles
+					members = []
+					for role in roles:
+						if role.id == int(element[1:]):
+							members = role.members
+							break
+					for member in members:
+						voters.add(member.id)
+				else:
+					voters.add(element)
+	else:
+		voters = set()
+
+	vote_type = text_dump.pop(1)
+	
+	temp = re.findall("Vote *Type:* *".lower(), text_dump[0].lower())
+	if temp:
+		temp = text_dump[0].lower().replace(temp[0], "")
+		temp = re.findall("any", temp)
+		if temp:
+			vote_type = "pick any"
+		else:
+			temp = re.findall("[0-9]+", temp[0])[0]
+			vote_type = f"pick {temp}"
+	else:
+		vote_type = "pick any"
+
+	vote_text: str = """""
+
+	# vote_option: list[list[str, str]] = []  # list of options [emoji, text]
 
 
 with open("token.txt", "r") as f:

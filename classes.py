@@ -1,3 +1,4 @@
+from discord.ui import Button
 from ast import literal_eval
 from bot_setup import bot
 import settings as s
@@ -736,7 +737,130 @@ class Components:
 		return disp
 
 
-class VoteModal(discord.ui.Modal, title = "Vote Builder"):
+class PollOption:
+	def __init__(self):
+		self.emoji: str = ""
+		self.option_text: str = ""
+		self.voters: list[int] = []
+
+
+class Vote:
+	def __init__(self, original_author, vote_amount = 0, vote_text = ""):
+		self.original_author: discord.User = original_author
+		self.voters: list[int] = []
+		self.vote_amount: int = vote_amount
+		self.poll_options: list[PollOption] = []
+		self.vote_text: str = vote_text
+
+	def get_vote_amount(self, user_id: int):
+		amount = 0
+		for option in self.poll_options:
+			if user_id in option.voters:
+				amount += 1
+
+		return amount
+
+	def create_embed(self) -> discord.Embed:
+		person = Person(discord_id = self.original_author.id)
+		embed = discord.Embed(
+			title = f"Vote by {person.user.display_name}",
+			description = self.vote_text,
+			color = literal_eval(person.color)
+		)
+
+		for option in self.poll_options:
+			if option.voters:
+				temp = t.mention_texts(option.voters)
+			else:
+				temp = "None"
+
+			embed.add_field(name = f"{option.emoji} - {option.option_text}", value = temp, inline = False)
+
+		no_votes_ppl = self.voters[:]
+		for option in self.poll_options:
+			for being in option.voters:
+				no_votes_ppl.remove(being)
+		if no_votes_ppl:
+			temp = t.mention_texts(no_votes_ppl)
+		else:
+			temp = "None"
+		embed.add_field(name = "No Vote", value = temp, inline = False)
+		embed.set_author(name = person.user.display_name, icon_url = person.user.avatar.url)
+		if self.vote_amount == 0:
+			temp = "You may pick any number of options."
+		else:
+			temp = f"You may pick {self.vote_amount} of options."
+		embed.set_footer(text = temp)
+
+		return embed
+
+
+class VoteButton(discord.ui.Button):
+	def __init__(self, vote: Vote, emoji = None, style = discord.ButtonStyle.blurple):
+		super().__init__(emoji = emoji, style = style)
+		self.vote: Vote = vote
+		for index, option in enumerate(self.vote.poll_options):
+			if option.emoji == self.emoji.name:
+				self.poll_index = index
+				break
+		else:
+			raise ValueError
+
+	async def callback(self, interaction: discord.Interaction):
+		if interaction.user.id in self.vote.voters:
+			if interaction.user.id in self.vote.poll_options[self.poll_index].voters:
+				self.vote.poll_options[self.poll_index].voters.remove(interaction.user.id)
+				await interaction.response.edit_message(embed = self.vote.create_embed())
+			else:
+				if self.vote.vote_amount > 0:
+					if self.vote.get_vote_amount(interaction.user.id) >= self.vote.vote_amount:
+						await interaction.response.send_message("You have too many votes here.", ephemeral = True)
+					else:
+						self.vote.poll_options[self.poll_index].voters.append(interaction.user.id)
+						await interaction.response.edit_message(embed = self.vote.create_embed())
+				else:
+					self.vote.poll_options[self.poll_index].voters.append(interaction.user.id)
+					await interaction.response.edit_message(embed = self.vote.create_embed())
+		else:
+			await interaction.response.send_message("You cannot vote here.", ephemeral = True)
+
+
+class VoteView(discord.ui.View):
+	def __init__(self, vote: Vote):
+		super().__init__()
+		for option in vote.poll_options:
+			button = VoteButton(vote, emoji = option.emoji, style = discord.ButtonStyle.blurple)
+
+			self.add_item(button)
+
+	"""@discord.ui.button(label = "🇶", style=discord.ButtonStyle.grey)
+	async def queue(self, interaction: discord.Interaction, button: discord.ui.Button):
+		if self.queue:
+			self.queue = False
+			await interaction.response.send_message(self.combined_text)
+			self.combined_text = ""
+		else:
+			self.queue = True
+			await interaction.response.defer()
+
+	@discord.ui.button(label = "👋", style = discord.ButtonStyle.grey)
+	async def message_a(self, interaction: discord.Interaction, button: discord.ui.Button):
+		if self.queue:
+			self.combined_text += "+1d8+2"
+			await interaction.response.defer()
+		else:
+			await interaction.response.send_message("1d8+2")
+
+	@discord.ui.button(label = "🔪", style = discord.ButtonStyle.grey)
+	async def message_b(self, interaction: discord.Interaction, button: discord.ui.Button):
+		if self.queue:
+			self.combined_text += "+2d6"
+			await interaction.response.defer()
+		else:
+			await interaction.response.send_message("2d6")"""
+
+
+"""class VoteModal(discord.ui.Modal, title = "Vote Builder"):
 	def __init__(self, inter_inc):
 		super().__init__()
 		self.inter_inc = inter_inc
@@ -761,7 +885,7 @@ class VoteModal(discord.ui.Modal, title = "Vote Builder"):
 			emoticons.append(re.split(" - ", str(self.option_4))[0])
 
 		sent = await interaction.response.send_message(txt)
-		await t.place_emojis(sent, emoticons)
+		await t.place_emojis(sent, emoticons)"""
 
 
 pass
