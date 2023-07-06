@@ -293,16 +293,14 @@ Write vote options here, each should be in it's own line and each option should 
 :emoji: - vote option text
 		""",
 		"example_uses": [
-			"""
--vote
+			"""-vote
 voters: @Drakkenheim @tacticool_
 vote type: pick 1
 ---
 Is drakkenheim great?
 ---
 :one: - yes!
-:two: - no :c
-			"""
+:two: - no :c"""
 		]
 	},
 	{
