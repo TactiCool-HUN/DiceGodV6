@@ -276,6 +276,36 @@ If you turn ephemeral to private the return will only visible to you.
 		"example_uses": []
 	},
 	{
+		"name": "vote",
+		"call_type": "prefix",
+		"calls": ["-vote"],
+		"short_description": "Create a vote for people to use!",
+		"long_description": """
+You can create votes with the following formating:
+```
+-vote
+voters: [ping the people seperated by spaces]
+vote type: pick [number between 0 and infinite, people will be able to choose this many option, 0 = any]
+---
+Write the text of your vote here
+---
+Write vote options here, each should be in it's own line and each option should look like this:
+:emoji: - vote option text
+		""",
+		"example_uses": [
+			"""
+			-vote
+			voters: @Drakkenheim @tacticool_
+			vote type: pick 1
+			---
+			Is drakkenheim great?
+			---
+			:one: - yes!
+			:two: - no :c
+			"""
+		]
+	},
+	{
 		"name": "help",
 		"call_type": "slash command",
 		"calls": ["/help"],
