@@ -255,7 +255,7 @@ async def hp_command(ctx, amount, is_heal = None, is_companion = False):
 			# noinspection SpellCheckingInspection
 			is_heal = is_heal == "cheal"
 		else:
-			is_heal = is_heal == "heal"
+			is_heal = is_heal == "heal" or is_heal == "healing"
 	person = c.Person(ctx)
 	if person.active is None:
 		await sent.delete()

@@ -540,7 +540,8 @@ async def spell_points(interaction: discord.Interaction, command: Choice[str], a
 	asyncio.create_task(t.send_message(ctx, public))
 
 
-@bot.command(name = "hurt", aliases = ["heal", "healing"])
+# noinspection SpellCheckingInspection
+@bot.command(name = "hurt", aliases = ["heal", "healing", "hert"])
 async def hp_stuff(ctx, *, amount):
 	await com.hp_command(ctx, amount)
 
