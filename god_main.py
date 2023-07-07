@@ -1020,9 +1020,9 @@ async def cast_old(ctx, *, text_dump_):
 			break
 
 	voting_options = text_dump[:index_1]
-	vote_text = text_dump[index_1 + 1]
+	vote_text = text_dump[index_1 + 1:index_2]
 
-	vote = c.Vote(ctx.author, vote_text = vote_text)
+	vote = c.Vote(ctx.author, vote_text = "\n".join(vote_text))
 
 	match len(voting_options):
 		case 1:
@@ -1032,7 +1032,7 @@ async def cast_old(ctx, *, text_dump_):
 					vote.vote_amount = int(vote_type[0])
 			else:
 				temp = voting_options[0].replace(" ", "")
-				temp = re.split("><@", temp[2:-1])
+				temp = re.split("><@", temp[9:-1])
 				for element in temp:
 					if element[0] == "&":
 						roles = ctx.guild.roles

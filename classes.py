@@ -787,7 +787,8 @@ class Vote:
 			temp = t.mention_texts(no_votes_ppl)
 		else:
 			temp = "None"
-		embed.add_field(name = "No Vote", value = temp, inline = False)
+		if not self.voters == []:
+			embed.add_field(name = "No Vote", value = temp, inline = False)
 		embed.set_author(name = person.user.display_name, icon_url = person.user.avatar.url)
 		if self.vote_amount == 0:
 			temp = "You may pick any number of options."
@@ -803,14 +804,14 @@ class VoteButton(discord.ui.Button):
 		super().__init__(emoji = emoji, style = style)
 		self.vote: Vote = vote
 		for index, option in enumerate(self.vote.poll_options):
-			if option.emoji == self.emoji.name:
+			if option.emoji == f"<:{self.emoji.name}:{self.emoji.id}>" or option.emoji == self.emoji.name:
 				self.poll_index = index
 				break
 		else:
 			raise ValueError
 
 	async def callback(self, interaction: discord.Interaction):
-		if interaction.user.id in self.vote.voters:
+		if interaction.user.id in self.vote.voters or self.vote.voters == []:
 			if interaction.user.id in self.vote.poll_options[self.poll_index].voters:
 				self.vote.poll_options[self.poll_index].voters.remove(interaction.user.id)
 				await interaction.response.edit_message(embed = self.vote.create_embed())
