@@ -779,7 +779,10 @@ class Vote:
 		no_votes_ppl = self.voters[:]
 		for option in self.poll_options:
 			for being in option.voters:
-				no_votes_ppl.remove(being)
+				try:
+					no_votes_ppl.remove(being)
+				except ValueError:
+					pass
 		if no_votes_ppl:
 			temp = t.mention_texts(no_votes_ppl)
 		else:
@@ -832,60 +835,6 @@ class VoteView(discord.ui.View):
 			button = VoteButton(vote, emoji = option.emoji, style = discord.ButtonStyle.blurple)
 
 			self.add_item(button)
-
-	"""@discord.ui.button(label = "🇶", style=discord.ButtonStyle.grey)
-	async def queue(self, interaction: discord.Interaction, button: discord.ui.Button):
-		if self.queue:
-			self.queue = False
-			await interaction.response.send_message(self.combined_text)
-			self.combined_text = ""
-		else:
-			self.queue = True
-			await interaction.response.defer()
-
-	@discord.ui.button(label = "👋", style = discord.ButtonStyle.grey)
-	async def message_a(self, interaction: discord.Interaction, button: discord.ui.Button):
-		if self.queue:
-			self.combined_text += "+1d8+2"
-			await interaction.response.defer()
-		else:
-			await interaction.response.send_message("1d8+2")
-
-	@discord.ui.button(label = "🔪", style = discord.ButtonStyle.grey)
-	async def message_b(self, interaction: discord.Interaction, button: discord.ui.Button):
-		if self.queue:
-			self.combined_text += "+2d6"
-			await interaction.response.defer()
-		else:
-			await interaction.response.send_message("2d6")"""
-
-
-"""class VoteModal(discord.ui.Modal, title = "Vote Builder"):
-	def __init__(self, inter_inc):
-		super().__init__()
-		self.inter_inc = inter_inc
-
-	description = discord.ui.TextInput(label = "Vote Description", style = discord.TextStyle.paragraph, placeholder = "What are we voting on?", required = True, max_length = 1024)
-	option_1 = discord.ui.TextInput(label = "Option 1", style = discord.TextStyle.long, placeholder = "Emoji - Option", required = True, max_length = 254)
-	option_2 = discord.ui.TextInput(label = "Option 2", style = discord.TextStyle.long, placeholder = "Emoji - Option", default = None, required = False, max_length = 254)
-	option_3 = discord.ui.TextInput(label = "Option 3", style = discord.TextStyle.long, placeholder = "Emoji - Option", default = None, required = False, max_length = 254)
-	option_4 = discord.ui.TextInput(label = "Option 4", style = discord.TextStyle.long, placeholder = "Emoji - Option", default = None, required = False, max_length = 254)
-
-	async def on_submit(self, interaction: discord.Interaction) -> None:
-		txt = f"Vote by {interaction.user.mention}\n{self.description}\n{self.option_1}"
-		emoticons = [re.split(" - ", str(self.option_1))[0]]
-		if str(self.option_2):
-			txt = f"{txt}\n{self.option_2}"
-			emoticons.append(re.split(" - ", str(self.option_2))[0])
-		if str(self.option_3):
-			txt = f"{txt}\n{self.option_3}"
-			emoticons.append(re.split(" - ", str(self.option_3))[0])
-		if str(self.option_4):
-			txt = f"{txt}\n{self.option_4}"
-			emoticons.append(re.split(" - ", str(self.option_4))[0])
-
-		sent = await interaction.response.send_message(txt)
-		await t.place_emojis(sent, emoticons)"""
 
 
 pass
