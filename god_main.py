@@ -1001,9 +1001,103 @@ async def help_slash(interaction: discord.Interaction, help_type: Choice[str], e
 	await interaction.followup.send(embed = embed)
 
 
-"""@bot.tree.command(name = "vote", description = "Create an interactive vote!")
-async def vote_modal(interaction: discord.Interaction):
-	await interaction.response.send_modal(c.VoteModal(interaction))"""
+@bot.tree.command(name = "x_admin_table", description = "Admin command used to create or destroy tables.")
+@app_commands.choices(command = [
+	app_commands.Choice(name = "create table", value = "create"),
+	app_commands.Choice(name = "delete table", value = "delete"),
+])
+@app_commands.describe(table_name = "name of the table")
+@app_commands.describe(gm = "@ the GM")
+@app_commands.describe(player_role = "player role")
+@app_commands.describe(guest_role = "guest role")
+async def table_admin(interaction: discord.Interaction, command: Choice[str], table_name: str, gm: discord.Member = None, player_role: discord.Role = None, guest_role: discord.Role = None):
+	ctx = await bot.get_context(interaction)
+	person = c.Person(ctx)
+	if person.user.id not in s.ADMINS:
+		await interaction.response.send_message("This command is made for admins only. Please use /table to manage your tables.", ephemeral = True)
+	else:
+		ctx.defer()
+		command = command.value
+		table_name = table_name.capitalize()
+
+		if command == "create":
+			if not gm or not player_role or not guest_role:
+				await interaction.response.send_message("Missing Argument", ephemeral = True)
+			with t.DatabaseConnection("data.db") as connection:
+				cursor = connection.cursor()
+				cursor.execute(
+					f"INSERT INTO tables(table_name, dm_id, role_id, guest_id) VALUES (?, ?, ?, ?)",
+					(table_name, gm.id, player_role.id, guest_role.id)
+				)
+			await interaction.response.send_message(f"Table with name ``{table_name}`` created.", ephemeral = True)
+			await t.send_dm(ctx, f"You are the DM of the following table: ``{table_name}``.\nYou can add a player with the /table command.\nAll changes will notify the person in question!", discord_id = gm.id)
+		else:
+			with t.DatabaseConnection("data.db") as connection:
+				cursor = connection.cursor()
+				cursor.execute(f"SELECT * FROM tables WHERE table_name = ?", (table_name,))
+				raw = cursor.fetchall()
+
+			if raw is not []:
+				with t.DatabaseConnection("data.db") as connection:
+					cursor = connection.cursor()
+					cursor.execute(f"DELETE FROM tables WHERE table_name = ?", (table_name,))
+
+				await interaction.response.send_message(f"Table ``{table_name}`` has been deleted.", ephemeral = True)
+				await t.send_dm(ctx, f"You are no longer the DM of the following table: ``{table_name}``.\nReason: table no longer exists.", discord_id = raw[0][1])
+			else:
+				await interaction.response.send_message(f"Table ``{table_name}`` not found.", ephemeral = True)
+
+
+@bot.tree.command(name = "table", description = "Manage your own tables! (send it in empty)")
+async def table_slash(interaction: discord.Interaction):
+	ctx = await bot.get_context(interaction)
+	person = c.Person(ctx)
+	if person.user.id in s.ADMINS:
+		with t.DatabaseConnection("data.db") as connection:
+			cursor = connection.cursor()
+			cursor.execute("SELECT * FROM tables")
+			raw = cursor.fetchall()
+	else:
+		with t.DatabaseConnection("data.db") as connection:
+			cursor = connection.cursor()
+			cursor.execute("SELECT * FROM tables WHERE dm_id = ?", (person.user.id, ))
+			raw = cursor.fetchall()
+
+	tables = []
+	for line in raw:
+		tables.append(discord.SelectOption(label = line[0]))
+
+	table = c.TableCommand(interaction)
+
+	select_table = c.TableSelect(
+		table,
+		placeholder = "Select which table you want to edit.",
+		min_values = 1,
+		options = tables
+	)
+	select_option = c.OptionSelect(
+		table,
+		placeholder = "Select what you want to do.",
+		min_values = 1,
+		options = [
+			discord.SelectOption(label = "Change to Player"),
+			discord.SelectOption(label = "Change to Guest"),
+			discord.SelectOption(label = "Remove from Table")
+		])
+	people = c.MyUserSelect(
+		table,
+		placeholder = "Select the target user(s).",
+		min_values = 1,
+		max_values = 5
+	)
+
+	view = discord.ui.View()
+	view.add_item(select_table)
+	view.add_item(select_option)
+	view.add_item(people)
+	view.add_item(c.TableButton(table))
+
+	await interaction.response.send_message("", view = view, ephemeral = True)
 
 
 @bot.command(name = "vote", aliases = ["v"])

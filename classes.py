@@ -838,4 +838,110 @@ class VoteView(discord.ui.View):
 			self.add_item(button)
 
 
+class Table:
+	def __init__(self, table_raw):
+		self.name = table_raw[0]
+		self.dm = t.bot.get_user(table_raw[1])
+		self.player_role = t.bot.get_guild(562373378967732226).get_role(table_raw[2])
+		self.guest_role = t.bot.get_guild(562373378967732226).get_role(table_raw[3])
+
+
+class TableCommand:
+	def __init__(self, interaction: discord.Interaction):
+		self.interaction = interaction
+		self.table_name: str = ""
+		self.command: str = ""
+		self.people: list[discord.User] = []
+
+
+class TableSelect(discord.ui.Select):
+	def __init__(self, table: TableCommand, options: list[discord.SelectOption], placeholder = None, min_values = None, max_values = None):
+		super().__init__(options = options, placeholder = placeholder, min_values = min_values, max_values = max_values)
+		self.table = table
+
+	async def callback(self, interaction: discord.Interaction):
+		self.table.table_name = self.values[0]
+		await interaction.response.defer()
+
+
+class OptionSelect(discord.ui.Select):
+	def __init__(self, table: TableCommand, options: list[discord.SelectOption], placeholder = None, min_values = None, max_values = None):
+		super().__init__(options = options, placeholder = placeholder, min_values = min_values, max_values = max_values)
+		self.table = table
+
+	async def callback(self, interaction: discord.Interaction):
+		self.table.command = self.values[0]
+		await interaction.response.defer()
+
+
+class MyUserSelect(discord.ui.UserSelect):
+	def __init__(self, table: TableCommand, placeholder = None, min_values = None, max_values = None):
+		super().__init__(placeholder = placeholder, min_values = min_values, max_values = max_values)
+		self.table = table
+
+	async def callback(self, interaction: discord.Interaction):
+		self.table.people = self.values
+		await interaction.response.defer()
+
+
+class TableButton(discord.ui.Button):
+	def __init__(self, table: TableCommand, emoji = "✅", style = discord.ButtonStyle.green, label = "submit"):
+		super().__init__(emoji = emoji, style = style, label = label)
+		self.table = table
+
+	async def callback(self, interaction: discord.Interaction):
+		if self.table.command == "" or self.table.table_name == "" or self.table.people == []:
+			await interaction.response.send_message("Missing Arguments, please fill out all fields", ephemeral = True)
+			return
+
+		with t.DatabaseConnection("data.db") as connection:
+			cursor = connection.cursor()
+			cursor.execute("SELECT * FROM tables WHERE table_name = ?", (self.table.table_name,))
+			table_raw = cursor.fetchall()[0]
+
+		table_full = Table(table_raw)
+		ctx = await bot.get_context(self.table.interaction)
+
+		if self.table.command == "Change to Player":
+			for person in self.table.people:
+				for role in person.roles:
+					if table_full.guest_role == role:
+						await person.remove_roles(table_full.guest_role)
+						break
+
+				await person.add_roles(table_full.player_role)
+				await t.send_dm(ctx, f"Your access to table ``{self.table.table_name}`` has been set to Player by the DM.", discord_id = person.id)
+		elif self.table.command == "Change to Guest":
+			for person in self.table.people:
+				for role in person.roles:
+					if table_full.player_role == role:
+						await person.remove_roles(table_full.player_role)
+						break
+
+				await person.add_roles(table_full.guest_role)
+				await t.send_dm(ctx, f"Your access to table ``{self.table.table_name}`` has been set to Guest by the DM.", discord_id = person.id)
+		else:  # remove
+			for person in self.table.people:
+				for role in person.roles:
+					if table_full.guest_role == role:
+						await person.remove_roles(table_full.guest_role)
+						await t.send_dm(ctx, f"Your access to table ``{self.table.table_name}`` has been removed by the DM.", discord_id = person.id)
+						break
+					elif table_full.player_role == role:
+						await person.remove_roles(table_full.player_role)
+						await t.send_dm(ctx, f"Your access to table ``{self.table.table_name}`` has been removed by the DM.", discord_id = person.id)
+						break
+
+		await interaction.response.edit_message(content = "Role(s) successfully updated!", view = None)
+
+
+"""class TableModal(discord.ui.Modal, title = "Table Management"):
+	players = discord.ui.TextInput(label = "Change to Player", style = discord.TextStyle.paragraph, placeholder = "@ people who you want to make into a player.", required = False)
+	guests = discord.ui.TextInput(label = "Change to Guest", style = discord.TextStyle.paragraph, placeholder = "@ people who you want to make into a guest.", required = False)
+	remove = discord.ui.TextInput(label = "Remove from Table", style = discord.TextStyle.paragraph, placeholder = "@ people who you want to remove from the table completely.", required = False)
+
+	async def on_submit(self, interaction: discord.Interaction):
+		print("yey")"""
+
+
 pass

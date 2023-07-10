@@ -92,7 +92,8 @@ with DatabaseConnection("data.db") as connection:
 		cursor.execute(
 			'CREATE TABLE tables('
 			'table_name text primary key,'
-			'dm_id integer, role_id integer,'
+			'dm_id integer,'
+			'role_id integer,'
 			'guest_id integer,'
 			'message_id integer)'
 		)
