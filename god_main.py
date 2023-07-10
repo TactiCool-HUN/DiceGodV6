@@ -220,7 +220,7 @@ async def pc_slash(interaction: discord.Interaction, command: Choice[str], char_
 	await com.pc_command(ctx, command.value, char_name, sheet_name, person, interaction)
 
 
-@bot.tree.command(name = "die", description = "Create custom named dice, any complex roll. You can also: update, or delete already existing ones.")
+"""@bot.tree.command(name = "die", description = "Create custom named dice, any complex roll. You can also: update, or delete already existing ones.")
 @app_commands.choices(command=[
 	app_commands.Choice(name = "create", value = "create"),
 	app_commands.Choice(name = "update", value = "update"),
@@ -335,7 +335,34 @@ async def die_stuff(interaction: discord.Interaction, command: Choice[str], new_
 					])
 
 	if send_reply:
-		await ctx.send(message)
+		await ctx.send(message)"""
+
+
+@bot.tree.command(name = "die", description = "Create custom named dice, any complex roll. You can also: update, or delete already existing ones.")
+async def die_stuff(interaction: discord.Interaction):
+	ctx = await bot.get_context(interaction)
+	person = c.Person(ctx)
+
+	with t.DatabaseConnection("data.db") as connection:
+		cursor = connection.cursor()
+		cursor.execute("SELECT * FROM dice WHERE owner_id = ?", (person.user.id,))
+		raw = cursor.fetchall()
+
+	if len(raw) > 0:
+		select_options = c.DieCommandSelect(
+			person,
+			placeholder = "Select what you want to do.",
+			options = [
+				discord.SelectOption(label = "Create New Die"),
+				discord.SelectOption(label = "Edit Existing Die"),
+				discord.SelectOption(label = "Delete Die")
+			]
+		)
+		view = discord.ui.View()
+		view.add_item(select_options)
+		await interaction.response.send_message("", view = view, ephemeral = True)
+	else:
+		await interaction.response.send_modal(c.DieCreateModal())
 
 
 @bot.tree.command(name = "settings", description = "Change your global settings for DiceGod, like name changing, roll tags, or chat ignore.")
@@ -826,7 +853,7 @@ async def statistics(interaction: discord.Interaction, person: discord.Member = 
 	await ctx.reply(embed = embed)
 
 
-@bot.tree.command(name = "clear", description = "Admin only.")
+@bot.tree.command(name = "x_clear", description = "Admin only.")
 @app_commands.describe(sheet = "Sheet name.")
 @app_commands.describe(player = "@player")
 @app_commands.describe(dm = "@dm (optional)")
@@ -1069,13 +1096,13 @@ async def table_slash(interaction: discord.Interaction):
 
 	table = c.TableCommand(interaction)
 
-	select_table = c.TableSelect(
+	select_table = c.TableOptionSelect(
 		table,
 		placeholder = "Select which table you want to edit.",
 		min_values = 1,
 		options = tables
 	)
-	select_option = c.OptionSelect(
+	select_option = c.TableCommandSelect(
 		table,
 		placeholder = "Select what you want to do.",
 		min_values = 1,
@@ -1084,7 +1111,7 @@ async def table_slash(interaction: discord.Interaction):
 			discord.SelectOption(label = "Change to Guest"),
 			discord.SelectOption(label = "Remove from Table")
 		])
-	people = c.MyUserSelect(
+	people = c.TableUserSelect(
 		table,
 		placeholder = "Select the target user(s).",
 		min_values = 1,
