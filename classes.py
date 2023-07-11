@@ -831,7 +831,7 @@ class VoteButton(discord.ui.Button):
 
 class VoteView(discord.ui.View):
 	def __init__(self, vote: Vote):
-		super().__init__()
+		super().__init__(timeout = 7 * 24 * 60 * 60)  # 7 days
 		for option in vote.poll_options:
 			button = VoteButton(vote, emoji = option.emoji, style = discord.ButtonStyle.blurple)
 
@@ -1009,7 +1009,6 @@ class DieEditModal(discord.ui.Modal, title = "Edit Die"):
 			die.update()
 
 			await interaction.response.send_message("\n".join(message), ephemeral = True)
-
 
 
 class DieCommandSelect(discord.ui.Select):

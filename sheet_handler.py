@@ -1420,14 +1420,21 @@ async def rest(ctx, length: str, hit_dice: str):
 		if temp.acell("B233").value == "TRUE":
 			temp = sh.worksheet("BotRead")
 			temp = temp.get("A2:C4")
+			ranger = False
+			dancer = False
 			for line in temp:
 				while len(line) < 3:
 					line.append("")
-				if line[0] == "Ranger":
-					temp = int(line[2])
+				if line[0] == "Ranger" and int(line[2]) > 9 and not ranger:
+					main.update("K45", max(0, int(main.acell("K45").value) - 1))
+					ranger = True
+					continue
+				if line[0] == "Dancer" and int(line[2]) > 6 and not dancer:
+					main.update("K45", max(0, int(main.acell("K45").value) - 1))
+					dancer = True
+					continue
+				if dancer and ranger:
 					break
-			if temp > 9:
-				main.update("K45", max(0, int(main.acell("K45").value) - 1))
 		# - - - - - - - - - - temporary - - - - - - - - - -
 		main.update("AM14", 0)
 		main.update("AM19", 0)
