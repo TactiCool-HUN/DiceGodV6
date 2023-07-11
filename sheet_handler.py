@@ -1798,7 +1798,7 @@ async def clear_sheet(interaction, ctx, sheet, player, dm):
 		[],
 		[],
 		[],
-		['Official D&D']
+		['', '', '', 'Official D&D']
 	]
 	wks.update("AN20:AU31", filler)
 	asyncio.create_task(t.clear_progress(player, sheet, progress, start_time, current, 5, sent))
