@@ -1782,17 +1782,17 @@ async def clear_sheet(interaction, ctx, sheet, player, dm):
 	wks.update("AL18", False)
 	asyncio.create_task(t.clear_progress(player, sheet, progress, start_time, current, 5, sent))
 	await asyncio.sleep(timer)
-	wks.update("E21:L21", [[False, '', 'Class Choices', '', '', '', '', False]])
-	wks.update("X21", False)
-	wks.update("J23:J31", [['AUTO'], ['AUTO'], ['AUTO'], ['AUTO'], ['AUTO'], ['AUTO'], ['AUTO'], ['AUTO'], ['AUTO']])
-	wks.update("X23:X31", [['AUTO'], ['AUTO'], ['AUTO'], ['AUTO'], ['AUTO'], ['AUTO'], ['AUTO'], ['AUTO'], ['AUTO']])
+	wks.update("E21:O21", [[False, '', 'Class Choices', '', '', '', '', '', '', '', False]])
+	wks.update("AB21", False)
+	wks.update("I23:I31", [['AUTO'], ['AUTO'], ['AUTO'], ['AUTO'], ['AUTO'], ['AUTO'], ['AUTO'], ['AUTO'], ['AUTO']])
+	wks.update("Y23:Y31", [['AUTO'], ['AUTO'], ['AUTO'], ['AUTO'], ['AUTO'], ['AUTO'], ['AUTO'], ['AUTO'], ['AUTO']])
 	filler = [
-		['', '', '', '', '', '', '', '', '', '', '', False],
-		[True, '', 'Base Health', '', '', '', '', '', '', '', 0],
+		['', '', '', '', '', '', '', '', False],
+		[True, '', 'Base Health', '', '', '', '', 0],
 		[],
-		[True, '', 'Custom add (one time)', '', '', '', '', '', '', '', 0],
+		[True, '', 'Custom add (one time)', '', '', '', '', 0],
 		[],
-		[True, '', 'Custom add (per level)', '', '', '', '', '', '', '', 0],
+		[True, '', 'Custom add (per level)', '', '', '', '', 0],
 		[],
 		[True],
 		[],
@@ -1800,7 +1800,7 @@ async def clear_sheet(interaction, ctx, sheet, player, dm):
 		[],
 		['Official D&D']
 	]
-	wks.update("AK20:AV31", filler)
+	wks.update("AN20:AU31", filler)
 	asyncio.create_task(t.clear_progress(player, sheet, progress, start_time, current, 5, sent))
 	await asyncio.sleep(timer)
 	wks.update("E33:AQ33", [[False, 'Armor Proficiencies', '', '', '', '', '', '', '', 'Manual', '', '', False, 'Tool Proficiencies', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', 'Auto EXP on all PROF ', '', '', '', '', '', '', False]])
