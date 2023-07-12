@@ -1800,7 +1800,7 @@ async def clear_sheet(interaction, ctx, sheet, player, dm):
 		[],
 		['', '', '', 'Official D&D']
 	]
-	wks.update("AN20:AU31", filler)
+	wks.update("AN20:AV31", filler)
 	asyncio.create_task(t.clear_progress(player, sheet, progress, start_time, current, 5, sent))
 	await asyncio.sleep(timer)
 	wks.update("E33:AQ33", [[False, 'Armor Proficiencies', '', '', '', '', '', '', '', 'Manual', '', '', False, 'Tool Proficiencies', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', 'Auto EXP on all PROF ', '', '', '', '', '', '', False]])
@@ -2681,10 +2681,10 @@ async def clear_sheet(interaction, ctx, sheet, player, dm):
 	current = "Modifiers"
 	print(sheet + ": " + current)
 	wks = sh.worksheet(current)
-	filler = [[False, '', '', '', False, '', '', '', False, '', '', '', 'TRUE', '', '', '', False, '', '', '', False, '', '', '', False, '', '', '', False, '', '', '', False]]
+	filler = [[False, '', '', '', False, '', '', '', False, '', '', '', False, '', '', '', False, '', '', '', False, '', '', '', False, '', '', '', False, '', '', '', False]]
 	for i in range(174):
 		filler.append(['', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', ''])
-	filler.append([False, '', '', '', False, '', '', '', False, '', '', '', 'TRUE', '', '', '', False, '', '', '', False, '', '', '', False, '', '', '', False, '', '', '', False])
+	filler.append([False, '', '', '', False, '', '', '', False, '', '', '', False, '', '', '', False, '', '', '', False, '', '', '', False, '', '', '', False, '', '', '', False])
 	wks.update("M3:AV178", filler)
 	asyncio.create_task(t.clear_progress(player, sheet, progress, start_time, current, 1, sent))
 	# - - - - - - - - - - - - - - - - - - - - ABILITY PICKER - - - - - - - - - - - - - - - - - - - -
