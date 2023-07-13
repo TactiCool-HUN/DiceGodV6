@@ -324,7 +324,7 @@ def random_roller(ctx, roll: c.SingleRoll):
 		elif roll.args.adv == "dis" and roll.results[0][0] == roll.die_size and roll.results[1][0] == roll.die_size:
 			pre_send.append("Lady Luck smiles on you!")
 
-	if size == 20 and person.user.id == 875753704685436938 and roll.results[0][0] == 1 and random.randint(1, 2) == 1:
+	if size == 20 and person.user.id == 875753704685436938 and roll.results[0][0] == 1 and roll.results[0][1] and random.randint(1, 2) == 1:
 		msg = t.choice([
 			"lol", 3,
 			"Well, no luck (take a guess who has it...)", 1,

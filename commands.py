@@ -22,10 +22,25 @@ async def roll_command(ctx, text, crit = False):
 	else:
 		loader = await t.load(ctx, f"-roll {text}")
 		try:
-			pack_maker = await asyncio.to_thread(r.text_to_pack, ctx, text, crit)
-			pack = await pack_maker
-			await loader.delete()
-			await pack.send_pack()
+			temp = re.split("x", text)
+			if temp and temp[0].isnumeric():
+				text = temp[1]
+				temp = int(temp[0])
+				if temp == 0:
+					raise ValueError("I can't roll something zero times you dumdum")
+				packs = []
+				for i in range(temp):
+					pack_maker = await asyncio.to_thread(r.text_to_pack, ctx, text, crit)
+					temp2 = await pack_maker
+					packs.append(temp2)
+				await loader.delete()
+				for pack in packs:
+					await t.send_pack(pack)
+			else:
+				pack_maker = await asyncio.to_thread(r.text_to_pack, ctx, text, crit)
+				pack = await pack_maker
+				await loader.delete()
+				await t.send_pack(pack)
 		except Exception as e:
 			try:
 				await loader.delete()

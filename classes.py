@@ -223,7 +223,7 @@ class Pack:
 		for roll in single_rolls:
 			self.followups += roll.followups
 
-	async def send_pack(self, is_reply = True, secret = False):
+	"""async def send_pack(self, is_reply = True, secret = False):
 		person = Person(self.ctx)
 		result = 0
 		complex_roll = ""
@@ -308,6 +308,8 @@ class Pack:
 			color = literal_eval(person.color)
 		)
 
+		embed.timestamp = datetime.datetime.now()
+
 		if has_dynamic:
 			embed.set_author(name = person.active, icon_url = person.user.avatar.url)
 		else:
@@ -330,7 +332,7 @@ class Pack:
 
 		if has_death:
 			await t.com.sh.set_deathsave(self.ctx, has_death, result)
-		asyncio.create_task(t.send_message(self.ctx, embed, is_reply, True, self.followups, False, secret, True))
+		asyncio.create_task(t.send_message(self.ctx, embed, is_reply, True, self.followups, False, secret, True))"""
 
 
 class SingleRoll:

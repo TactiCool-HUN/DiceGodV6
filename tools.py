@@ -564,4 +564,116 @@ async def followup_instance(ctx, sent_inc, followups):
 			active = False
 
 
+async def send_pack(pack, is_reply = True, secret = False):
+	person = c.Person(pack.ctx)
+	result = 0
+	complex_roll = ""
+	has_dynamic = False
+	has_death = False
+	all_damage_types = ""
+	roll_display_pack = []
+	all_roll_notes = []
+
+	for roll in pack.single_rolls:
+		if roll.pre_send:
+			for text in roll.pre_send:
+				if "lol" in roll.pre_send and person.user.id == 875753704685436938:
+					tts = True
+				else:
+					tts = False
+				asyncio.create_task(send_message(pack.ctx, text, reply = True, silent = False, tts = tts))
+
+		all_roll_notes += roll.roll_note
+
+		for damage in roll.damage_type:
+			temp = s.DAMAGE_TYPES.get(damage)
+			if temp not in all_damage_types:
+				all_damage_types += temp
+
+		match roll.speciality:
+			case "init":
+				asyncio.create_task(com.sh.init_resources(pack.ctx))
+			case "deathsave":
+				has_death = roll.die_result
+
+		if roll.dynamic:
+			has_dynamic = True
+		if roll.sign == "-":
+			result += -int(roll.full_result)
+		else:
+			result += int(roll.full_result)
+
+		if roll.dice_number:
+			if complex_roll == "":
+				complex_roll = f"{roll.full_result} [{roll.create_name()}]"
+				if roll.sign == "-":
+					complex_roll = f"- {complex_roll}"
+			else:
+				complex_roll = f"{complex_roll} {roll.sign} {roll.full_result} [{roll.create_name()}]"
+
+			value_disp = ""
+			count = 1
+			for roll_no, local_result in enumerate(roll.results):
+				person.add_roll(local_result[0], roll.die_size, local_result[1], roll.raw_text)
+				if len(value_disp) > 900:
+					roll_display_pack.append([f"**Rolls [{roll.create_name(short = True)}]**", value_disp])
+					value_disp = ""
+					continue
+				if local_result[1]:
+					if count == 1:
+						value_disp = f"{value_disp}Roll #{roll_no + 1}: **{local_result[0]}**"
+						count = 2
+					else:
+						value_disp = f"{value_disp} | Roll #{roll_no + 1}: **{local_result[0]}**\n"
+						count = 1
+				else:
+					if count == 1:
+						value_disp = f"{value_disp}~~Roll #{roll_no + 1}: **{local_result[0]}**~~"
+						count = 2
+					else:
+						value_disp = f"{value_disp} | ~~Roll #{roll_no + 1}: **{local_result[0]}**~~\n"
+						count = 1
+			roll_display_pack.append([f"**Rolls [{roll.create_name(short = True)}]**", value_disp])
+		else:
+			if complex_roll == "":
+				if roll.sign == "+":
+					complex_roll = f"{roll.full_result}"
+				else:
+					complex_roll = f"{roll.sign} {roll.full_result}"
+			else:
+				complex_roll = f"{complex_roll} {roll.sign} {roll.full_result}"
+
+	embed = discord.Embed(
+		title = f"**Roll Result:** {num2word(result)} {all_damage_types}",
+		description = complex_roll,
+		color = literal_eval(person.color)
+	)
+
+	embed.timestamp = datetime.now()
+
+	if has_dynamic:
+		embed.set_author(name = person.active, icon_url = person.user.avatar.url)
+	else:
+		embed.set_author(name = person.user.display_name, icon_url = person.user.avatar.url)
+
+	for element in roll_display_pack:
+		embed.add_field(name = element[0], value = element[1])
+
+	if all_roll_notes:
+		first = True
+		footer = ""
+		for roll_note in all_roll_notes:
+			if first:
+				footer = roll_note
+				first = False
+			else:
+				footer = footer + " | " + roll_note
+
+		embed.set_footer(text = footer)
+
+	if has_death:
+		await com.sh.set_deathsave(pack.ctx, has_death, result)
+	asyncio.create_task(send_message(pack.ctx, embed, is_reply, True, pack.followups, False, secret, True))
+
+
 pass
