@@ -28,6 +28,8 @@ async def roll_command(ctx, text, crit = False):
 				temp = int(temp[0])
 				if temp == 0:
 					raise ValueError("I can't roll something zero times you dumdum")
+				elif temp > 10:
+					raise ValueError("That's like a lot of rolls, I can't do that.")
 				packs = []
 				for i in range(temp):
 					pack_maker = await asyncio.to_thread(r.text_to_pack, ctx, text, crit)
