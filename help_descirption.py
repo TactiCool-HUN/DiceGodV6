@@ -55,8 +55,10 @@ Example of argumented rolls:
 If there are several arguments on a roll they'll be run in the following order: crit -> min/max -> kh/kl -> adv/dis/emp
 The pairs in the previous line cannot be used together on a single roll.
 If an argument is placed on an "add" it will affect the first "roll" on it's left.
+
+You can use ``[number]x[rest of the roll text]`` to submit a roll several times and get organised but seperate results from it.
 """,
-		"example_uses": ["-r 1d20+5", "-r initadv+1d4"]
+		"example_uses": ["-r 1d20+5", "-r initadv+1d4", "-r 6x1d20adv+5"]
 	},
 	{
 		"name": "coinflip",

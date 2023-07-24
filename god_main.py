@@ -1012,7 +1012,7 @@ async def help_slash(interaction: discord.Interaction, help_type: Choice[str], e
 				:drop_of_blood: - blood hunter crimson rite damage
 				[no icon yet] - charger feat (not implemented yet)
 				:four_leaf_clover: - inspiration point give
-				:EldritchSmite: - eldritch smite
+				<:EldritchSmite:1071167194165170207> - eldritch smite
 				:magic_wand: - polearm master
 			""",
 			color = literal_eval(person.color)
