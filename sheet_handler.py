@@ -1468,7 +1468,7 @@ async def rest(ctx, length: str, hit_dice: str):
 			# subclass_name = line[11]
 			try:
 				level = int(line[23])
-			except ValueError:
+			except IndexError:
 				continue
 
 			if class_name == "Sorcerer" and level > 19:
