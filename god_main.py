@@ -88,8 +88,24 @@ async def on_message(ctx):
 @bot.command(name = 'thing')
 async def _thingy(ctx):
 	c.Person(ctx)
-	# await ctx.send(f"lol", tts = True)
-	pass
+
+	embed = discord.Embed(
+		title = f"Multi-Roll",
+		description = "Combined Sum: 12\nRoll text: 2d12+1d6\nTimes: 2"
+	)
+
+	embed.add_field(name = f"Sum #1 - :two:", value = "__Rolls [d12]__\nRoll #1: **1** | Roll #2: **1**\n__Rolls [d6]__\nRoll #1: **5**", inline = True)
+	embed.add_field(name = f"Sum #2 - :one::zero:", value = "__Rolls [d12]__\nRoll #1: **8** | Roll #2: **2**\n__Rolls [d6]__\nRoll #1: **5**", inline = True)
+	embed.add_field(name = f"Sum #2 - :one::zero:", value = "__Rolls [d12]__\nRoll #1: **8** | Roll #2: **2**\n__Rolls [d6]__\nRoll #1: **5**", inline = True)
+	embed.add_field(name = f"Sum #2 - :one::zero:", value = "__Rolls [d12]__\nRoll #1: **8** | Roll #2: **2**\n__Rolls [d6]__\nRoll #1: **5**", inline = True)
+	embed.add_field(name = f"Sum #2 - :one::zero:", value = "__Rolls [d12]__\nRoll #1: **8** | Roll #2: **2**\n__Rolls [d6]__\nRoll #1: **5**", inline = True)
+	embed.add_field(name = f"Sum #2 - :one::zero:", value = "__Rolls [d12]__\nRoll #1: **8** | Roll #2: **2**\n__Rolls [d6]__\nRoll #1: **5**", inline = True)
+	embed.add_field(name = f"Sum #2 - :one::zero:", value = "__Rolls [d12]__\nRoll #1: **8** | Roll #2: **2**\n__Rolls [d6]__\nRoll #1: **5**", inline = True)
+	embed.add_field(name = f"Sum #2 - :one::zero:", value = "__Rolls [d12]__\nRoll #1: **8** | Roll #2: **2**\n__Rolls [d6]__\nRoll #1: **5**", inline = True)
+	embed.add_field(name = f"Sum #2 - :one::zero:", value = "__Rolls [d12]__\nRoll #1: **8** | Roll #2: **2**\n__Rolls [d6]__\nRoll #1: **5**", inline = True)
+	embed.add_field(name = f"Sum #2 - :one::zero:", value = "__Rolls [d12]__\nRoll #1: **8** | Roll #2: **2**\n__Rolls [d6]__\nRoll #1: **5**", inline = True)
+
+	await ctx.send(embed = embed)
 
 
 @bot.command(name = "ping")

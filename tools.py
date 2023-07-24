@@ -570,7 +570,7 @@ async def send_pack(pack, is_reply = True, secret = False):
 	complex_roll = ""
 	has_dynamic = False
 	has_death = False
-	all_damage_types = ""
+	all_damage_types = []
 	roll_display_pack = []
 	all_roll_notes = []
 
@@ -579,16 +579,18 @@ async def send_pack(pack, is_reply = True, secret = False):
 			for text in roll.pre_send:
 				if "lol" in roll.pre_send and person.user.id == 875753704685436938:
 					tts = True
+					reply = False
 				else:
 					tts = False
-				asyncio.create_task(send_message(pack.ctx, text, reply = True, silent = False, tts = tts))
+					reply = True
+				asyncio.create_task(send_message(pack.ctx, text, reply = reply, silent = False, tts = tts))
 
 		all_roll_notes += roll.roll_note
 
 		for damage in roll.damage_type:
 			temp = s.DAMAGE_TYPES.get(damage)
 			if temp not in all_damage_types:
-				all_damage_types += temp
+				all_damage_types.append(temp)
 
 		match roll.speciality:
 			case "init":
@@ -618,7 +620,7 @@ async def send_pack(pack, is_reply = True, secret = False):
 				if len(value_disp) > 900:
 					roll_display_pack.append([f"**Rolls [{roll.create_name(short = True)}]**", value_disp])
 					value_disp = ""
-					continue
+					count = 1
 				if local_result[1]:
 					if count == 1:
 						value_disp = f"{value_disp}Roll #{roll_no + 1}: **{local_result[0]}**"
@@ -644,12 +646,10 @@ async def send_pack(pack, is_reply = True, secret = False):
 				complex_roll = f"{complex_roll} {roll.sign} {roll.full_result}"
 
 	embed = discord.Embed(
-		title = f"**Roll Result:** {num2word(result)} {all_damage_types}",
+		title = f"**Roll Result:** {num2word(result)} {''.join(all_damage_types)}",
 		description = complex_roll,
 		color = literal_eval(person.color)
 	)
-
-	embed.timestamp = datetime.now()
 
 	if has_dynamic:
 		embed.set_author(name = person.active, icon_url = person.user.avatar.url)
@@ -660,20 +660,117 @@ async def send_pack(pack, is_reply = True, secret = False):
 		embed.add_field(name = element[0], value = element[1])
 
 	if all_roll_notes:
-		first = True
-		footer = ""
-		for roll_note in all_roll_notes:
-			if first:
-				footer = roll_note
-				first = False
-			else:
-				footer = footer + " | " + roll_note
+		footer = "".join(all_roll_notes)
 
 		embed.set_footer(text = footer)
 
 	if has_death:
 		await com.sh.set_deathsave(pack.ctx, has_death, result)
 	asyncio.create_task(send_message(pack.ctx, embed, is_reply, True, pack.followups, False, secret, True))
+
+
+async def send_multipack(packs, roll_text, is_reply = True, secret = False) -> None:
+	person = c.Person(packs[0].ctx)
+	packs: list[c.Pack]
+	all_roll_notes = []
+	all_damage_types = []
+
+	if len(packs) > 4:
+		inline = True
+	else:
+		inline = False
+
+	result = 0
+	has_dynamic = False
+
+	embed = discord.Embed(
+		title = f"Multi-Roll",
+		color = literal_eval(person.color)
+	)
+
+	for i, pack in enumerate(packs):
+		has_death = False
+		pack_result = 0
+		pack_descriptions = []
+
+		for roll in pack.single_rolls:
+			roll_descriptions = []
+
+			if roll.pre_send:
+				for text in roll.pre_send:
+					if "lol" in roll.pre_send and person.user.id == 875753704685436938:
+						tts = True
+						reply = False
+					else:
+						tts = False
+						reply = True
+					asyncio.create_task(send_message(pack.ctx, text, reply = reply, silent = False, tts = tts))
+
+			all_roll_notes += roll.roll_note
+
+			for damage in roll.damage_type:
+				temp = s.DAMAGE_TYPES.get(damage)
+				if temp not in all_damage_types:
+					all_damage_types.append(temp)
+
+			match roll.speciality:
+				case "init":
+					asyncio.create_task(com.sh.init_resources(pack.ctx))
+				case "deathsave":
+					has_death = roll.die_result
+
+			if roll.dynamic:
+				has_dynamic = True
+			if roll.sign == "-":
+				result += -int(roll.full_result)
+				pack_result += -int(roll.full_result)
+			else:
+				result += int(roll.full_result)
+				pack_result += int(roll.full_result)
+
+			value_disp = ""
+			count = 1
+			for roll_no, local_result in enumerate(roll.results):
+				person.add_roll(local_result[0], roll.die_size, local_result[1], roll.raw_text)
+				if len(value_disp) > 900:
+					roll_descriptions.append(f"__Rolls [{roll.create_name(short = True)}]__\n{value_disp}")
+					value_disp = ""
+					count = 1
+				if local_result[1]:
+					if count == 1:
+						value_disp = f"{value_disp}Roll #{roll_no + 1}: **{local_result[0]}**"
+						count = 2
+					else:
+						value_disp = f"{value_disp} | Roll #{roll_no + 1}: **{local_result[0]}**\n"
+						count = 1
+				else:
+					if count == 1:
+						value_disp = f"{value_disp}~~Roll #{roll_no + 1}: **{local_result[0]}**~~"
+						count = 2
+					else:
+						value_disp = f"{value_disp} | ~~Roll #{roll_no + 1}: **{local_result[0]}**~~\n"
+						count = 1
+
+			roll_descriptions.append(f"__Rolls [{roll.create_name(short = True)}]__\n{value_disp}")
+			pack_descriptions.append("\n".join(roll_descriptions))
+
+		if has_death:
+			await com.sh.set_deathsave(pack.ctx, has_death, pack_result)
+		embed.add_field(name = f"Sum #{i + 1} - {num2word(pack_result)}", value = "\n".join(pack_descriptions), inline = inline)
+
+	embed.description = f"Combined Sum: {result}\nRoll Text: {roll_text}\nTimes: {len(packs)}"
+
+	if all_roll_notes:
+		footer = "".join(all_roll_notes)
+
+		embed.set_footer(text = footer)
+
+	if has_dynamic:
+		embed.set_author(name = person.active, icon_url = person.user.avatar.url)
+	else:
+		embed.set_author(name = person.user.display_name, icon_url = person.user.avatar.url)
+
+	asyncio.create_task(send_message(packs[0].ctx, embed, is_reply, True, packs[0].followups, False, secret, True))
 
 
 pass
