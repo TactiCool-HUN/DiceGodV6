@@ -19,12 +19,12 @@ import re
 
 
 async def activity_changer():
-	timer = 12 * 60 * 60  # 0.5 day in seconds
+	timer = 12 * 60 * 60  # 12 hours in seconds
 	activity = None
 	while True:
 		act_type = random.randint(0, 2)
 		match act_type:
-			case 0:  # playing "xyz"
+			case 0:  # playing
 				choices = [
 					"with people's nerves", 1,
 					"with the Deathnote", 1,
@@ -47,8 +47,8 @@ async def activity_changer():
 				choices = [
 					"PCs die", 1,
 					"from above", 1,
-					"Fanki rolling nat1s", 0.5,
-					"Popa rolling nat20s", 0.5,
+					"Fanki rolling nat1s", 0.4,
+					"Popa rolling nat20s", 0.4,
 					"as people derail the campaign", 1,
 				]
 				activity = discord.Activity(name = t.choice(choices), type = 3)
@@ -89,7 +89,7 @@ async def on_message(ctx):
 async def _thingy(ctx):
 	c.Person(ctx)
 
-	embed = discord.Embed(
+	"""embed = discord.Embed(
 		title = f"Multi-Roll",
 		description = "Combined Sum: 12\nRoll text: 2d12+1d6\nTimes: 2"
 	)
@@ -105,7 +105,7 @@ async def _thingy(ctx):
 	embed.add_field(name = f"Sum #2 - :one::zero:", value = "__Rolls [d12]__\nRoll #1: **8** | Roll #2: **2**\n__Rolls [d6]__\nRoll #1: **5**", inline = True)
 	embed.add_field(name = f"Sum #2 - :one::zero:", value = "__Rolls [d12]__\nRoll #1: **8** | Roll #2: **2**\n__Rolls [d6]__\nRoll #1: **5**", inline = True)
 
-	await ctx.send(embed = embed)
+	await ctx.send(embed = embed)"""
 
 
 @bot.command(name = "ping")

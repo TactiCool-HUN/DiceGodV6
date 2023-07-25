@@ -95,7 +95,7 @@ with DatabaseConnection("data.db") as connection:
 			'dm_id integer,'
 			'role_id integer,'
 			'guest_id integer,'
-			'message_id integer)'
+			'auto_guest_add integer)'
 		)
 	except sqlite3.OperationalError:
 		print(f"tables found")
