@@ -54,6 +54,7 @@ with DatabaseConnection("data.db") as connection:
 			'owner_id integer,'
 			'character text,'
 			'sheet text,'
+			'char_image text,'
 			'last_warning timestamp)'
 		)
 	except sqlite3.OperationalError:

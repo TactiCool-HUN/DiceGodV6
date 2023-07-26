@@ -216,7 +216,7 @@ async def coin_slash(interaction: discord.Interaction):
 
 @bot.command(name = "pc", aliases = ["char", "character"])
 async def pc_old(ctx, command, char_name = None, sheet_name = None, person = None):
-	await com.pc_command(ctx, command, char_name, sheet_name, person)
+	await com.pc_command(ctx, command, char_name, sheet_name, None, person)
 
 
 @bot.tree.command(name = "pc", description = "Connect your Google Sheet(tm) to Dice God. You can also: set, clear, update, or delete characters.")
@@ -224,16 +224,18 @@ async def pc_old(ctx, command, char_name = None, sheet_name = None, person = Non
 @app_commands.choices(command=[
 	app_commands.Choice(name = "create - Create a new character, requires: char_name, sheet_name", value = "create"),
 	app_commands.Choice(name = "update - Update a character to a new sheet, requires: char_name, sheet_name", value = "update"),
+	app_commands.Choice(name = "set image - Add a !portrait! image to your character. requires: char_name, image_url.", value = "image"),
 	app_commands.Choice(name = "access - Grant or revoke access to the character from someone, requires: char_name, person", value = "access"),
 	app_commands.Choice(name = "set - Set an existing character as your active, requires: char_name.", value = "set"),
 	app_commands.Choice(name = "clear - Clear your active character, requires: [nothing]", value = "clear"),
 	app_commands.Choice(name = "delete - Delete a character connection, requires: char_name, balls", value = "delete")])
 @discord.app_commands.describe(char_name = "Name the character you want to make or use.")
 @discord.app_commands.describe(sheet_name = "Provide the exact name of the Google Sheet you want to interact with.")
+@discord.app_commands.describe(image_url = "Provide an openly accessible !portrait! image's url.")
 @discord.app_commands.describe(person = "Ping a person. Only needed for the Access command.")
-async def pc_slash(interaction: discord.Interaction, command: Choice[str], char_name: str = None, sheet_name: str = None, person: discord.Member = None):
+async def pc_slash(interaction: discord.Interaction, command: Choice[str], char_name: str = None, sheet_name: str = None, image_url: str = None, person: discord.Member = None):
 	ctx = await bot.get_context(interaction)
-	await com.pc_command(ctx, command.value, char_name, sheet_name, person, interaction)
+	await com.pc_command(ctx, command.value, char_name, sheet_name, image_url, person, interaction)
 
 
 """@bot.tree.command(name = "die", description = "Create custom named dice, any complex roll. You can also: update, or delete already existing ones.")
@@ -1069,7 +1071,7 @@ async def table_admin(interaction: discord.Interaction, command: Choice[str], ta
 			with t.DatabaseConnection("data.db") as connection:
 				cursor = connection.cursor()
 				cursor.execute(
-					f"INSERT INTO tables(table_name, dm_id, role_id, guest_id) VALUES (?, ?, ?, ?)",
+					f"INSERT INTO tables(table_name, dm_id, role_id, guest_id, auto_guest_add) VALUES (?, ?, ?, ?, 0)",
 					(table_name, gm.id, player_role.id, guest_role.id)
 				)
 			await interaction.response.send_message(f"Table with name ``{table_name}`` created.", ephemeral = True)
@@ -1123,21 +1125,13 @@ async def table_slash(interaction: discord.Interaction):
 		placeholder = "Select what you want to do.",
 		min_values = 1,
 		options = [
-			discord.SelectOption(label = "Change to Player"),
-			discord.SelectOption(label = "Change to Guest"),
-			discord.SelectOption(label = "Remove from Table")
+			discord.SelectOption(label = "Edit Permissions"),
+			discord.SelectOption(label = "[out of order] Change Table Settings")
 		])
-	people = c.TableUserSelect(
-		table,
-		placeholder = "Select the target user(s).",
-		min_values = 1,
-		max_values = 5
-	)
 
 	view = discord.ui.View()
 	view.add_item(select_table)
 	view.add_item(select_option)
-	view.add_item(people)
 	view.add_item(c.TableButton(table))
 
 	await interaction.response.send_message("", view = view, ephemeral = True)

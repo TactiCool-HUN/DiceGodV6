@@ -99,6 +99,7 @@ class Sheet:
 		self.character = character
 		self.sheet = sheet
 		self.google_sheet = None
+		self.char_image = None
 		self.last_warning = datetime.datetime.now() - datetime.timedelta(days = 2)
 
 		if new:
@@ -134,15 +135,18 @@ class Sheet:
 			self.owner = Person(discord_id = raw[1])
 			self.user = self.owner
 			self.sheet = raw[3]
-			self.last_warning = datetime.datetime.strptime(raw[4], "%Y-%m-%d %H:%M:%S.%f")
+			self.char_image = raw[4]
+			self.last_warning = datetime.datetime.strptime(raw[5], "%Y-%m-%d %H:%M:%S.%f")
 		elif t.is_rented(self, ctx.author):  # check if rented
 			self.owner = Person(discord_id = raw[1])
 			self.sheet = raw[3]
-			self.last_warning = datetime.datetime.strptime(raw[4], "%Y-%m-%d %H:%M:%S.%f")
+			self.char_image = raw[4]
+			self.last_warning = datetime.datetime.strptime(raw[5], "%Y-%m-%d %H:%M:%S.%f")
 		elif ctx.author.id in s.ADMINS:
 			self.owner = Person(discord_id = raw[1])
 			self.sheet = raw[3]
-			self.last_warning = datetime.datetime.strptime(raw[4], "%Y-%m-%d %H:%M:%S.%f")
+			self.char_image = raw[4]
+			self.last_warning = datetime.datetime.strptime(raw[5], "%Y-%m-%d %H:%M:%S.%f")
 
 	def update(self):
 		with t.DatabaseConnection("data.db") as connection:
@@ -156,6 +160,15 @@ class Sheet:
 		with t.DatabaseConnection("data.db") as connection:
 			cursor = connection.cursor()
 			cursor.execute("DELETE FROM sheets WHERE character = ?", (self.character,))
+
+	def set_picture(self, url):
+		with t.DatabaseConnection("data.db") as connection:
+			cursor = connection.cursor()
+			cursor.execute(
+				'UPDATE sheets SET char_image = ?, last_warning = ? WHERE character = ?',
+				(url, self.last_warning, self.character)
+			)
+		self.char_image = url
 
 	def get_sheet(self, sa):
 		self.google_sheet = sa.open(self.sheet)
@@ -886,7 +899,7 @@ class TableUserSelect(discord.ui.UserSelect):
 		await interaction.response.defer()
 
 
-class TableButton(discord.ui.Button):
+class TableRoleButton(discord.ui.Button):
 	def __init__(self, table: TableCommand, emoji = "✅", style = discord.ButtonStyle.green, label = "submit"):
 		super().__init__(emoji = emoji, style = style, label = label)
 		self.table = table
@@ -935,6 +948,70 @@ class TableButton(discord.ui.Button):
 						break
 
 		await interaction.response.edit_message(content = "Role(s) successfully updated!", view = None)
+
+
+class TableSettingsSelect(discord.ui.Button):
+	def __init__(self, table: TableCommand, emoji = "✅", style = discord.ButtonStyle.green, label = "submit"):
+		super().__init__(emoji = emoji, style = style, label = label)
+		self.table = table
+
+	async def callback(self, interaction: discord.Interaction):
+		pass
+
+
+class TableButton(discord.ui.Button):
+	def __init__(self, table: TableCommand, emoji = "✅", style = discord.ButtonStyle.green, label = "submit"):
+		super().__init__(emoji = emoji, style = style, label = label)
+		self.table = table
+
+	async def callback(self, interaction: discord.Interaction):
+		if self.table.command == "" or self.table.table_name == "":
+			await interaction.response.send_message("Missing Arguments, please fill out all fields", ephemeral = True)
+			return
+
+		with t.DatabaseConnection("data.db") as connection:
+			cursor = connection.cursor()
+			cursor.execute("SELECT * FROM tables WHERE table_name = ?", (self.table.table_name,))
+			table_raw = cursor.fetchall()[0]
+
+		table_full = Table(table_raw)
+		ctx = await bot.get_context(self.table.interaction)
+
+		if self.table.command == "Edit Permissions":
+			select_option = TableCommandSelect(
+				self.table,
+				placeholder = "Select what you want to do.",
+				min_values = 1,
+				options = [
+					discord.SelectOption(label = "Change to Player"),
+					discord.SelectOption(label = "Change to Guest"),
+					discord.SelectOption(label = "Remove from Table")
+				])
+			people = TableUserSelect(
+				self.table,
+				placeholder = "Select the target user(s).",
+				min_values = 1,
+				max_values = 5
+			)
+
+			view = discord.ui.View()
+			view.add_item(select_option)
+			view.add_item(people)
+			view.add_item(TableRoleButton(self.table))
+			await interaction.response.edit_message(content = "", view = view)
+		else:  # Change Auto-Guest for Threads
+			auto_thread = TableCommandSelect(
+				self.table,
+				placeholder = "Set whether you want guests to be automatically managed for threads.",
+				options = [
+					discord.SelectOption(label = "Auto add/remove guests from Threads"),
+					discord.SelectOption(label = "Do not automatically manage Threads")
+				])
+
+			view = discord.ui.View()
+			view.add_item(auto_thread)
+			view.add_item(TableSettingsSelect(self.table))
+			await interaction.response.edit_message(content = "", view = view)
 
 
 class DieCreateModal(discord.ui.Modal, title = "Create Die"):

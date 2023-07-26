@@ -652,7 +652,12 @@ async def send_pack(pack, is_reply = True, secret = False):
 	)
 
 	if has_dynamic:
-		embed.set_author(name = person.active, icon_url = person.user.avatar.url)
+		sheet = c.Sheet(ctx = pack.ctx)
+		if sheet.char_image:
+			url = sheet.char_image
+		else:
+			url = person.user.avatar.url
+		embed.set_author(name = person.active, icon_url = url)
 	else:
 		embed.set_author(name = person.user.display_name, icon_url = person.user.avatar.url)
 
@@ -766,7 +771,12 @@ async def send_multipack(packs, roll_text, is_reply = True, secret = False) -> N
 		embed.set_footer(text = footer)
 
 	if has_dynamic:
-		embed.set_author(name = person.active, icon_url = person.user.avatar.url)
+		sheet = c.Sheet(ctx = packs[0].ctx)
+		if sheet.char_image:
+			url = sheet.char_image
+		else:
+			url = person.user.avatar.url
+		embed.set_author(name = person.active, icon_url = url)
 	else:
 		embed.set_author(name = person.user.display_name, icon_url = person.user.avatar.url)
 

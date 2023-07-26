@@ -51,7 +51,7 @@ async def roll_command(ctx, text, crit = False):
 			raise e
 
 
-async def pc_command(ctx, command: str, char_name: str, sheet_name: str, person_inc: discord.Member, interaction: discord.Interaction = None):
+async def pc_command(ctx, command: str, char_name: str, sheet_name: str, image_url: str, person_inc: discord.Member, interaction: discord.Interaction = None):
 	person = c.Person(ctx)
 	await ctx.defer(ephemeral = False)
 
@@ -120,6 +120,26 @@ async def pc_command(ctx, command: str, char_name: str, sheet_name: str, person_
 				sheet.sheet = sheet_name
 				sheet.update()
 				txt = f"{sheet.character}'s sheet is changed from ``{old_sheet}`` to ``{sheet.sheet}``."
+				if sheet.user != sheet.owner and ctx.author.id in s.ADMINS:
+					await t.send_dm(ctx, f"Admin privileges were used to edit the sheet of {sheet.character}", False, discord_id = sheet.owner.user.id)
+		case "image":
+			txt = "An error has occurred!"
+			error = False
+
+			if char_name is None or image_url is None:
+				txt += "\nYou need to give both a character name and an image url!"
+				error = True
+			elif not t.exists(char_name, "char"):
+				txt += f"\nThere is no sheet under the character name {char_name}. Use ``-pc create`` to make a new PC."
+				error = True
+
+			sheet = c.Sheet(ctx, char_name)
+
+			if sheet.user != sheet.owner and ctx.author.id not in s.ADMINS:
+				txt += f"\nThe character is {sheet.owner.user.mention}'s property, you cannot edit it!"
+			if not error:
+				sheet.set_picture(image_url)
+				txt = f"Character image set, try it out with a roll!"
 				if sheet.user != sheet.owner and ctx.author.id in s.ADMINS:
 					await t.send_dm(ctx, f"Admin privileges were used to edit the sheet of {sheet.character}", False, discord_id = sheet.owner.user.id)
 		case "set":
