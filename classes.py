@@ -30,7 +30,7 @@ class Person:
 			self.create()
 
 	def create(self):
-		with t.DatabaseConnection("data.db") as connection:
+		with t.DatabaseConnection("data_holder/data.db") as connection:
 			cursor = connection.cursor()
 			cursor.execute(
 				"INSERT INTO people(discord_id, name, active, tag, color, change_name, auto_tag, chat_ignore)"
@@ -41,7 +41,7 @@ class Person:
 		self.load()
 
 	def load(self):
-		with t.DatabaseConnection("data.db") as connection:
+		with t.DatabaseConnection("data_holder/data.db") as connection:
 			cursor = connection.cursor()
 			cursor.execute("SELECT * FROM people WHERE discord_id = ?", (self.user.id,))
 			raw = cursor.fetchall()[0]
@@ -54,7 +54,7 @@ class Person:
 		self.chat_ignore = bool(raw[7])
 
 	def update(self):
-		with t.DatabaseConnection("data.db") as connection:
+		with t.DatabaseConnection("data_holder/data.db") as connection:
 			cursor = connection.cursor()
 			cursor.execute(
 				"UPDATE people SET name = ?, active = ?, tag = ?, color = ?, change_name = ?, auto_tag = ?, chat_ignore = ?"
@@ -63,7 +63,7 @@ class Person:
 			)
 
 	def add_roll(self, outcome, size, used, roll_text):
-		with t.DatabaseConnection("data.db") as connection:
+		with t.DatabaseConnection("data_holder/data.db") as connection:
 			cursor = connection.cursor()
 			cursor.execute(
 				"INSERT INTO statistics(owner_id, outcome, size, used, roll_text, tag, date) VALUES (?, ?, ?, ?, ?, ?, ?)",
@@ -71,7 +71,7 @@ class Person:
 			)
 
 	def get_rolls(self):
-		with t.DatabaseConnection("data.db") as connection:
+		with t.DatabaseConnection("data_holder/data.db") as connection:
 			cursor = connection.cursor()
 			cursor.execute("SELECT * FROM statistics WHERE owner_id = ?", (self.user.id,))
 			raw = cursor.fetchall()
@@ -107,7 +107,7 @@ class Sheet:
 			self.load(ctx)
 
 	def create(self, ctx):
-		with t.DatabaseConnection("data.db") as connection:
+		with t.DatabaseConnection("data_holder/data.db") as connection:
 			cursor = connection.cursor()
 			cursor.execute(
 				"INSERT INTO sheets(owner_id, character, sheet, last_warning)"
@@ -118,7 +118,7 @@ class Sheet:
 		self.load(ctx)
 
 	def load(self, ctx):
-		with t.DatabaseConnection("data.db") as connection:
+		with t.DatabaseConnection("data_holder/data.db") as connection:
 			cursor = connection.cursor()
 			cursor.execute("SELECT * FROM sheets WHERE character = ?", (self.character,))
 			raw = cursor.fetchall()
@@ -146,7 +146,7 @@ class Sheet:
 			self.last_warning = datetime.datetime.strptime(raw[5], "%Y-%m-%d %H:%M:%S.%f")
 
 	def update(self):
-		with t.DatabaseConnection("data.db") as connection:
+		with t.DatabaseConnection("data_holder/data.db") as connection:
 			cursor = connection.cursor()
 			cursor.execute(
 				'UPDATE sheets SET sheet = ?, last_warning = ? WHERE character = ?',
@@ -154,12 +154,12 @@ class Sheet:
 			)
 
 	def delete(self):
-		with t.DatabaseConnection("data.db") as connection:
+		with t.DatabaseConnection("data_holder/data.db") as connection:
 			cursor = connection.cursor()
 			cursor.execute("DELETE FROM sheets WHERE character = ?", (self.character,))
 
 	def set_picture(self, url):
-		with t.DatabaseConnection("data.db") as connection:
+		with t.DatabaseConnection("data_holder/data.db") as connection:
 			cursor = connection.cursor()
 			cursor.execute(
 				'UPDATE sheets SET char_image = ?, last_warning = ? WHERE character = ?',
@@ -191,13 +191,13 @@ class Die:
 			self.load()
 
 	def create(self, owner_id):
-		with t.DatabaseConnection("data.db") as connection:
+		with t.DatabaseConnection("data_holder/data.db") as connection:
 			cursor = connection.cursor()
 			cursor.execute("INSERT INTO dice(name, owner_id, roll) VALUES (?, ?, ?)", (self.name, owner_id, self.roll))
 		self.load()
 
 	def load(self):
-		with t.DatabaseConnection("data.db") as connection:
+		with t.DatabaseConnection("data_holder/data.db") as connection:
 			cursor = connection.cursor()
 			cursor.execute("SELECT * FROM dice WHERE name = ?", (self.name,))
 			raw = cursor.fetchall()[0]
@@ -206,7 +206,7 @@ class Die:
 		self.roll = raw[3]
 
 	def update(self):
-		with t.DatabaseConnection("data.db") as connection:
+		with t.DatabaseConnection("data_holder/data.db") as connection:
 			cursor = connection.cursor()
 			cursor.execute(
 				"UPDATE dice SET name = ?, owner_id = ?, roll = ? WHERE die_id = ?",
@@ -214,7 +214,7 @@ class Die:
 			)
 
 	def delete(self):
-		with t.DatabaseConnection("data.db") as connection:
+		with t.DatabaseConnection("data_holder/data.db") as connection:
 			cursor = connection.cursor()
 			cursor.execute("DELETE FROM dice WHERE die_id = ?", (self.die_id,))
 
@@ -906,7 +906,7 @@ class TableRoleButton(discord.ui.Button):
 			await interaction.response.send_message("Missing Arguments, please fill out all fields", ephemeral = True)
 			return
 
-		with t.DatabaseConnection("data.db") as connection:
+		with t.DatabaseConnection("data_holder/data.db") as connection:
 			cursor = connection.cursor()
 			cursor.execute("SELECT * FROM tables WHERE table_name = ?", (self.table.table_name,))
 			table_raw = cursor.fetchall()[0]
@@ -966,7 +966,7 @@ class TableButton(discord.ui.Button):
 			await interaction.response.send_message("Missing Arguments, please fill out all fields", ephemeral = True)
 			return
 
-		with t.DatabaseConnection("data.db") as connection:
+		with t.DatabaseConnection("data_holder/data.db") as connection:
 			cursor = connection.cursor()
 			cursor.execute("SELECT * FROM tables WHERE table_name = ?", (self.table.table_name,))
 			table_raw = cursor.fetchall()[0]
@@ -1096,7 +1096,7 @@ class DieCommandSelect(discord.ui.Select):
 		if self.values[0] == "Create New Die":
 			await interaction.response.send_modal(DieCreateModal())
 		elif self.values[0] == "Edit Existing Die":
-			with t.DatabaseConnection("data.db") as connection:
+			with t.DatabaseConnection("data_holder/data.db") as connection:
 				cursor = connection.cursor()
 				cursor.execute("SELECT * FROM dice WHERE owner_id = ?", (self.person.user.id,))
 				raw = cursor.fetchall()
@@ -1113,7 +1113,7 @@ class DieCommandSelect(discord.ui.Select):
 			view.add_item(dice)
 			await interaction.response.edit_message(content = "", view = view)
 		elif self.values[0] == "Delete Die":
-			with t.DatabaseConnection("data.db") as connection:
+			with t.DatabaseConnection("data_holder/data.db") as connection:
 				cursor = connection.cursor()
 				cursor.execute("SELECT * FROM dice WHERE owner_id = ?", (self.person.user.id,))
 				raw = cursor.fetchall()

@@ -15,7 +15,7 @@ class DatabaseConnection:
 		self.connection.close()
 
 
-with DatabaseConnection("emoji_role.db") as connection:
+with DatabaseConnection("data_holder/emoji_role.db") as connection:
 	cursor = connection.cursor()
 
 	# - - - emojis - - -
@@ -34,7 +34,7 @@ with DatabaseConnection("emoji_role.db") as connection:
 
 print("--------")
 
-with DatabaseConnection("data.db") as connection:
+with DatabaseConnection("data_holder/data.db") as connection:
 	cursor = connection.cursor()
 
 	# - - - people - - -

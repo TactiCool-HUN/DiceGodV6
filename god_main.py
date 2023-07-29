@@ -360,7 +360,7 @@ async def die_stuff(interaction: discord.Interaction):
 	ctx = await bot.get_context(interaction)
 	person = c.Person(ctx)
 
-	with t.DatabaseConnection("data.db") as connection:
+	with t.DatabaseConnection("data_holder/data.db") as connection:
 		cursor = connection.cursor()
 		cursor.execute("SELECT * FROM dice WHERE owner_id = ?", (person.user.id,))
 		raw = cursor.fetchall()
@@ -667,7 +667,7 @@ async def listing(interaction: discord.Interaction, what_to_list: Choice[str], b
 	match what_to_list:
 		case "characters":
 			display = f"{person.user.display_name}'s characters:"
-			with t.DatabaseConnection("data.db") as connection:
+			with t.DatabaseConnection("data_holder/data.db") as connection:
 				cursor = connection.cursor()
 				cursor.execute("SELECT * FROM sheets WHERE owner_id = ?", (person.user.id,))
 				raw_pack = cursor.fetchall()
@@ -698,7 +698,7 @@ async def listing(interaction: discord.Interaction, what_to_list: Choice[str], b
 				display = "No active character found."
 		case "dice":
 			display = f"{person.user.display_name}'s dice:"
-			with t.DatabaseConnection("data.db") as connection:
+			with t.DatabaseConnection("data_holder/data.db") as connection:
 				cursor = connection.cursor()
 				cursor.execute("SELECT * FROM dice WHERE owner_id = ?", (person.user.id,))
 				raw_pack = cursor.fetchall()
@@ -785,7 +785,7 @@ async def statistics(interaction: discord.Interaction, person: discord.Member = 
 	await ctx.defer(ephemeral = ephemeral)
 
 	if get_all_rolls:
-		with t.DatabaseConnection("data.db") as connection:
+		with t.DatabaseConnection("data_holder/data.db") as connection:
 			cursor = connection.cursor()
 			cursor.execute("SELECT * FROM statistics")
 			rolls = cursor.fetchall()
@@ -1067,7 +1067,7 @@ async def table_admin(interaction: discord.Interaction, command: Choice[str], ta
 		if command == "create":
 			if not gm or not player_role or not guest_role:
 				await interaction.response.send_message("Missing Argument", ephemeral = True)
-			with t.DatabaseConnection("data.db") as connection:
+			with t.DatabaseConnection("data_holder/data.db") as connection:
 				cursor = connection.cursor()
 				cursor.execute(
 					f"INSERT INTO tables(table_name, dm_id, role_id, guest_id, auto_guest_add) VALUES (?, ?, ?, ?, 0)",
@@ -1076,13 +1076,13 @@ async def table_admin(interaction: discord.Interaction, command: Choice[str], ta
 			await interaction.response.send_message(f"Table with name ``{table_name}`` created.", ephemeral = True)
 			await t.send_dm(ctx, f"You are the DM of the following table: ``{table_name}``.\nYou can add a player with the /table command.\nAll changes will notify the person in question!", discord_id = gm.id)
 		else:
-			with t.DatabaseConnection("data.db") as connection:
+			with t.DatabaseConnection("data_holder/data.db") as connection:
 				cursor = connection.cursor()
 				cursor.execute(f"SELECT * FROM tables WHERE table_name = ?", (table_name,))
 				raw = cursor.fetchall()
 
 			if raw is not []:
-				with t.DatabaseConnection("data.db") as connection:
+				with t.DatabaseConnection("data_holder/data.db") as connection:
 					cursor = connection.cursor()
 					cursor.execute(f"DELETE FROM tables WHERE table_name = ?", (table_name,))
 
@@ -1097,12 +1097,12 @@ async def table_slash(interaction: discord.Interaction):
 	ctx = await bot.get_context(interaction)
 	person = c.Person(ctx)
 	if person.user.id in s.ADMINS:
-		with t.DatabaseConnection("data.db") as connection:
+		with t.DatabaseConnection("data_holder/data.db") as connection:
 			cursor = connection.cursor()
 			cursor.execute("SELECT * FROM tables")
 			raw = cursor.fetchall()
 	else:
-		with t.DatabaseConnection("data.db") as connection:
+		with t.DatabaseConnection("data_holder/data.db") as connection:
 			cursor = connection.cursor()
 			cursor.execute("SELECT * FROM tables WHERE dm_id = ?", (person.user.id, ))
 			raw = cursor.fetchall()
