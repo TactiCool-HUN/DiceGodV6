@@ -1,12 +1,9 @@
-from discord.ui import Button
 from ast import literal_eval
-from bot_setup import bot
-import settings as s
-import tools as t
+from utils.bot_setup import bot
+from utils import settings as s, tools as t
 import textwrap
 import datetime
 import discord
-import asyncio
 import re
 
 

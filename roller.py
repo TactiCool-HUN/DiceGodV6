@@ -1,12 +1,12 @@
 import sheet_handler as sh
 import classes as c
-import tools as t
+from utils import tools as t
 import datetime
 import gspread
 import random
 import re
 
-sa = gspread.service_account(filename = "service_account.json")
+sa = gspread.service_account(filename = "data_holder/service_account.json")
 
 
 async def text_to_pack(ctx, roll_txt, crit = False):

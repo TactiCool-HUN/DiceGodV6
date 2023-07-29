@@ -2,15 +2,14 @@ from discord import app_commands
 from discord.app_commands import Choice
 from ast import literal_eval
 # import sheet_handler as sh
-from bot_setup import bot
-import help_descirption
+from utils.bot_setup import bot
+from data_holder import help_descirption
 import commands as com
-import settings as s
+from utils import settings as s, tools as t
 import classes as c
 import roller as r
-import tools as t
 import textwrap
-import chatbot
+from secondary_functions import chatbot
 import discord
 import asyncio
 import random
@@ -216,7 +215,7 @@ async def coin_slash(interaction: discord.Interaction):
 
 @bot.command(name = "pc", aliases = ["char", "character"])
 async def pc_old(ctx, command, char_name = None, sheet_name = None, person = None):
-	await com.pc_command(ctx, command, char_name, sheet_name, None, person)
+	await com.pc_command(ctx, command, char_name, sheet_name, '', person)
 
 
 @bot.tree.command(name = "pc", description = "Connect your Google Sheet(tm) to Dice God. You can also: set, clear, update, or delete characters.")
@@ -1213,7 +1212,7 @@ async def cast_old(ctx, *, text_dump_):
 	await ctx.message.delete()
 
 
-with open("token.txt", "r") as f:
+with open("data_holder/token.txt", "r") as f:
 	_lines_ = f.readlines()
 
 TOKEN = _lines_[0].strip()

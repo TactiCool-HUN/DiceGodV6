@@ -1,9 +1,8 @@
 import discord.channel
 
-from tools import choice
+from utils.tools import choice
 import classes as c
-import bot_setup
-import settings
+from utils import settings, bot_setup
 import random
 import re
 

@@ -1,10 +1,9 @@
-from bot_setup import prefix
+from utils.bot_setup import prefix
 import sheet_handler as sh
-import settings as s
+from utils import settings as s, tools as t
 import classes as c
 import discord.ext
 import roller as r
-import tools as t
 import asyncio
 import random
 import re

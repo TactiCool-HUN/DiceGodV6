@@ -3,7 +3,7 @@ from datetime import datetime
 from ast import literal_eval
 from bot_setup import bot
 import commands as com
-import settings as s
+from utils import settings as s
 import classes as c
 import discord
 import asyncio

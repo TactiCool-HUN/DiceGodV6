@@ -1,7 +1,6 @@
 from datetime import datetime
-import settings as s
+from utils import settings as s, tools as t
 import classes as c
-import tools as t
 import roller as r
 import gspread
 import asyncio
@@ -9,7 +8,7 @@ import random
 import math
 import re
 
-sa = gspread.service_account(filename = "service_account.json")
+sa = gspread.service_account(filename = "data_holder/service_account.json")
 
 
 def ping_sheet(sheet_name):

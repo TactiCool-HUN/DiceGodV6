@@ -15,6 +15,25 @@ class DatabaseConnection:
 		self.connection.close()
 
 
+with DatabaseConnection("emoji_role.db") as connection:
+	cursor = connection.cursor()
+
+	# - - - emojis - - -
+	try:
+		cursor.execute(
+			'CREATE TABLE emoji_role'
+			'emoji_role_id integer primary key'
+			'guild_id integer'
+			'channel_id integer'
+			'message_id integer'
+			'emoji text'
+			'role_id integer'
+		)
+	except sqlite3.OperationalError:
+		print(f"emoji_roles found")
+
+print("--------")
+
 with DatabaseConnection("data.db") as connection:
 	cursor = connection.cursor()
 
