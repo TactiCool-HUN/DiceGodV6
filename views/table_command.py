@@ -3,6 +3,7 @@ import discord
 from utils.bot_setup import bot
 from classes import Person
 import utils.settings as s
+import asyncio
 
 
 async def table_command(interaction: discord.Interaction):
@@ -171,6 +172,26 @@ class SelectAutoGuestSetting(discord.ui.Select):
 
 	async def callback(self, interaction: discord.Interaction):
 		selection: bool = self.values[0] == "Auto add/remove guests from Threads"
+		if selection:
+			with t.DatabaseConnection("data.db") as connection:
+				cursor = connection.cursor()
+				cursor.execute(
+					"SELECT main_channel_id, guest_id FROM tables WHERE table_name = ?",
+					(self.table.table_name, )
+				)
+				raw = cursor.fetchall()[0]
+			main_channel: discord.TextChannel = interaction.guild.get_channel(raw[0])
+			threads: list[discord.Thread] = main_channel.threads
+			guest_role: discord.Role = interaction.guild.get_role(raw[1])
+
+			count = 0
+			for thread in threads:
+				await thread.send(guest_role.mention)
+				if count < 5:
+					count += 1
+				else:
+					count = 0
+					await asyncio.sleep(5)
 
 		with t.DatabaseConnection("data.db") as connection:
 			cursor = connection.cursor()
