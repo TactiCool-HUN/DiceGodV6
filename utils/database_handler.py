@@ -4,7 +4,7 @@ import sqlite3
 class DatabaseConnection:
 	def __init__(self, host):
 		self.connection = None
-		self.host = host
+		self.host = f"data_holder/{host}"
 
 	def __enter__(self):
 		self.connection = sqlite3.connect(self.host)
@@ -15,26 +15,26 @@ class DatabaseConnection:
 		self.connection.close()
 
 
-with DatabaseConnection("data_holder/emoji_role.db") as connection:
+with DatabaseConnection("emoji_role.db") as connection:
 	cursor = connection.cursor()
 
-	# - - - emojis - - -
+	# - - - emoji_role - - -
 	try:
 		cursor.execute(
-			'CREATE TABLE emoji_role'
-			'emoji_role_id integer primary key'
-			'guild_id integer'
-			'channel_id integer'
-			'message_id integer'
-			'emoji text'
-			'role_id integer'
+			'CREATE TABLE emoji_role('
+			'emoji_role_id integer primary key,'  # 0
+			'guild_id integer,'  # 1
+			'channel_id integer,'  # 2
+			'message_id integer,'  # 3
+			'emoji text,'  # 4
+			'role_id integer)'  # 5
 		)
 	except sqlite3.OperationalError:
 		print(f"emoji_roles found")
 
 print("--------")
 
-with DatabaseConnection("data_holder/data.db") as connection:
+with DatabaseConnection("data.db") as connection:
 	cursor = connection.cursor()
 
 	# - - - people - - -

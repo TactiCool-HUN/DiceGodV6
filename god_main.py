@@ -9,7 +9,7 @@ from utils import settings as s, tools as t
 import classes as c
 import roller as r
 import textwrap
-from secondary_functions import chatbot
+from secondary_functions import chatbot, emoji_role
 import discord
 import asyncio
 import random
@@ -82,6 +82,12 @@ async def on_message(ctx):
 	if ctx.author != bot.user:
 		asyncio.create_task(chatbot.bot_responses(ctx))
 		asyncio.create_task(bot.process_commands(ctx))
+
+
+@bot.event
+async def on_raw_reaction_add(reaction):
+	if reaction.member != bot.user:
+		await emoji_role.emoji_role_command(reaction)
 
 
 @bot.command(name = 'thing')
@@ -360,7 +366,7 @@ async def die_stuff(interaction: discord.Interaction):
 	ctx = await bot.get_context(interaction)
 	person = c.Person(ctx)
 
-	with t.DatabaseConnection("data_holder/data.db") as connection:
+	with t.DatabaseConnection("data.db") as connection:
 		cursor = connection.cursor()
 		cursor.execute("SELECT * FROM dice WHERE owner_id = ?", (person.user.id,))
 		raw = cursor.fetchall()
@@ -667,7 +673,7 @@ async def listing(interaction: discord.Interaction, what_to_list: Choice[str], b
 	match what_to_list:
 		case "characters":
 			display = f"{person.user.display_name}'s characters:"
-			with t.DatabaseConnection("data_holder/data.db") as connection:
+			with t.DatabaseConnection("data.db") as connection:
 				cursor = connection.cursor()
 				cursor.execute("SELECT * FROM sheets WHERE owner_id = ?", (person.user.id,))
 				raw_pack = cursor.fetchall()
@@ -698,7 +704,7 @@ async def listing(interaction: discord.Interaction, what_to_list: Choice[str], b
 				display = "No active character found."
 		case "dice":
 			display = f"{person.user.display_name}'s dice:"
-			with t.DatabaseConnection("data_holder/data.db") as connection:
+			with t.DatabaseConnection("data.db") as connection:
 				cursor = connection.cursor()
 				cursor.execute("SELECT * FROM dice WHERE owner_id = ?", (person.user.id,))
 				raw_pack = cursor.fetchall()
@@ -785,7 +791,7 @@ async def statistics(interaction: discord.Interaction, person: discord.Member = 
 	await ctx.defer(ephemeral = ephemeral)
 
 	if get_all_rolls:
-		with t.DatabaseConnection("data_holder/data.db") as connection:
+		with t.DatabaseConnection("data.db") as connection:
 			cursor = connection.cursor()
 			cursor.execute("SELECT * FROM statistics")
 			rolls = cursor.fetchall()
@@ -1067,7 +1073,7 @@ async def table_admin(interaction: discord.Interaction, command: Choice[str], ta
 		if command == "create":
 			if not gm or not player_role or not guest_role:
 				await interaction.response.send_message("Missing Argument", ephemeral = True)
-			with t.DatabaseConnection("data_holder/data.db") as connection:
+			with t.DatabaseConnection("data.db") as connection:
 				cursor = connection.cursor()
 				cursor.execute(
 					f"INSERT INTO tables(table_name, dm_id, role_id, guest_id, auto_guest_add) VALUES (?, ?, ?, ?, 0)",
@@ -1076,13 +1082,13 @@ async def table_admin(interaction: discord.Interaction, command: Choice[str], ta
 			await interaction.response.send_message(f"Table with name ``{table_name}`` created.", ephemeral = True)
 			await t.send_dm(ctx, f"You are the DM of the following table: ``{table_name}``.\nYou can add a player with the /table command.\nAll changes will notify the person in question!", discord_id = gm.id)
 		else:
-			with t.DatabaseConnection("data_holder/data.db") as connection:
+			with t.DatabaseConnection("data.db") as connection:
 				cursor = connection.cursor()
 				cursor.execute(f"SELECT * FROM tables WHERE table_name = ?", (table_name,))
 				raw = cursor.fetchall()
 
 			if raw is not []:
-				with t.DatabaseConnection("data_holder/data.db") as connection:
+				with t.DatabaseConnection("data.db") as connection:
 					cursor = connection.cursor()
 					cursor.execute(f"DELETE FROM tables WHERE table_name = ?", (table_name,))
 
@@ -1092,17 +1098,40 @@ async def table_admin(interaction: discord.Interaction, command: Choice[str], ta
 				await interaction.response.send_message(f"Table ``{table_name}`` not found.", ephemeral = True)
 
 
+@bot.tree.command(name = "x_emoji_role", description = "Admin command to set up emoji roles")
+@app_commands.describe(channel_id = "id of channel")
+@app_commands.describe(message_id = "id of message")
+@app_commands.describe(emoji = "emoji")
+@app_commands.describe(role = "role")
+async def emoji_role_setup(interaction: discord.Interaction, channel_id: str, message_id: str, emoji: str, role: discord.Role):
+	ctx = await bot.get_context(interaction)
+	person = c.Person(ctx)
+	if person.user.id in s.ADMINS:
+		with t.DatabaseConnection("emoji_role.db") as connection:
+			cursor = connection.cursor()
+			cursor.execute(
+				"INSERT INTO emoji_role(guild_id, channel_id, message_id, emoji, role_id) VALUES (?, ?, ?, ?, ?)",
+				(interaction.guild_id, channel_id, message_id, emoji, role.id)
+			)
+
+		message: discord.Message = await ctx.fetch_message(message_id)
+		await message.add_reaction(emoji)
+		await interaction.response.send_message(f"Emoji_role successfully set up", ephemeral = True)
+	else:
+		await interaction.response.send_message(f"You are not an admin.", ephemeral = True)
+
+
 @bot.tree.command(name = "table", description = "Manage your own tables! (send it in empty)")
 async def table_slash(interaction: discord.Interaction):
 	ctx = await bot.get_context(interaction)
 	person = c.Person(ctx)
 	if person.user.id in s.ADMINS:
-		with t.DatabaseConnection("data_holder/data.db") as connection:
+		with t.DatabaseConnection("data.db") as connection:
 			cursor = connection.cursor()
 			cursor.execute("SELECT * FROM tables")
 			raw = cursor.fetchall()
 	else:
-		with t.DatabaseConnection("data_holder/data.db") as connection:
+		with t.DatabaseConnection("data.db") as connection:
 			cursor = connection.cursor()
 			cursor.execute("SELECT * FROM tables WHERE dm_id = ?", (person.user.id, ))
 			raw = cursor.fetchall()

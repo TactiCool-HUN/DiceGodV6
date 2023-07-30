@@ -247,7 +247,7 @@ async def pc_command(ctx, command: str, char_name: str, sheet_name: str, image_u
 
 			if not error:
 				if t.is_rented(sheet, person_inc):
-					with t.DatabaseConnection("data_holder/data.db") as connection:
+					with t.DatabaseConnection("data.db") as connection:
 						cursor = connection.cursor()
 						cursor.execute("DELETE FROM sheet_rents WHERE character = ? AND user_id = ?", (sheet.character, person_inc.id))
 					person_inc = c.Person(discord_id = person_inc.id)
@@ -263,7 +263,7 @@ async def pc_command(ctx, command: str, char_name: str, sheet_name: str, image_u
 					await t.send_dm(ctx, f"{sheet.character} is no longer rented to you.", False, discord_id = person_inc.user.id)
 					txt = f"{sheet.character} is no longer rented to {person_inc.user.display_name}."
 				else:
-					with t.DatabaseConnection("data_holder/data.db") as connection:
+					with t.DatabaseConnection("data.db") as connection:
 						cursor = connection.cursor()
 						cursor.execute("INSERT INTO sheet_rents(owner_id, user_id, character) VALUES (?, ?, ?)", (person.user.id, person_inc.id, sheet.character))
 					await t.send_dm(ctx, f"{sheet.character} is now rented to you. You can set and clear the character through Dice God but have no other permissions for it.\nSheet Owner: {sheet.owner.user.display_name}\nAccess Granted by: {ctx.author.name}", False, discord_id = person_inc.id)

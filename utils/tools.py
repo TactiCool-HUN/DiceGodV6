@@ -14,28 +14,28 @@ import math
 def exists(identifier, data_type):
 	match data_type:
 		case "person":
-			with DatabaseConnection("data_holder/data.db") as connection:
+			with DatabaseConnection("data.db") as connection:
 				cursor = connection.cursor()
 				cursor.execute("SELECT * FROM people WHERE discord_id = ?", (identifier,))
 				person = cursor.fetchall()
 			if person:
 				return True
 		case "char":
-			with DatabaseConnection("data_holder/data.db") as connection:
+			with DatabaseConnection("data.db") as connection:
 				cursor = connection.cursor()
 				cursor.execute("SELECT * FROM sheets WHERE character = ?", (identifier,))
 				char = cursor.fetchall()
 			if char:
 				return True
 		case "sheet_name":
-			with DatabaseConnection("data_holder/data.db") as connection:
+			with DatabaseConnection("data.db") as connection:
 				cursor = connection.cursor()
 				cursor.execute("SELECT * FROM sheets WHERE sheet = ?", (identifier,))
 				sheet = cursor.fetchall()
 			if sheet:
 				return True
 		case "die":
-			with DatabaseConnection("data_holder/data.db") as connection:
+			with DatabaseConnection("data.db") as connection:
 				cursor = connection.cursor()
 				cursor.execute("SELECT * FROM dice WHERE name = ?", (identifier,))
 				die = cursor.fetchall()
@@ -46,7 +46,7 @@ def exists(identifier, data_type):
 
 
 def is_rented(sheet, user):
-	with DatabaseConnection("data_holder/data.db") as connection:
+	with DatabaseConnection("data.db") as connection:
 		cursor = connection.cursor()
 		cursor.execute("SELECT * FROM sheet_rents WHERE user_id = ?", (user.id,))
 		raw = cursor.fetchall()
@@ -188,7 +188,7 @@ def is_sheet_based(split):
 
 
 def is_die(split):
-	with DatabaseConnection("data_holder/data.db") as connection:
+	with DatabaseConnection("data.db") as connection:
 		cursor = connection.cursor()
 		cursor.execute("SELECT * FROM dice")
 		raw = cursor.fetchall()
