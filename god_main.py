@@ -9,6 +9,9 @@ from utils import settings as s, tools as t
 import classes as c
 import roller as r
 import textwrap
+from views.vote_command import vote_command
+from views.die_command import die_command
+from views.table_command import table_command
 from secondary_functions import chatbot, emoji_role
 import discord
 import asyncio
@@ -90,27 +93,81 @@ async def on_raw_reaction_add(reaction):
 		await emoji_role.emoji_role_command(reaction)
 
 
+@bot.event
+async def on_member_update(before: discord.Member, after: discord.Member):
+	if before.roles == after.roles:
+		return
+
+	with t.DatabaseConnection("data.db") as connection:
+		cursor = connection.cursor()
+		cursor.execute(
+			"SELECT * FROM tables WHERE auto_guest_add = 1"
+		)
+		raw = cursor.fetchall()
+
+	guest_roles = []
+	for table in raw:
+		guest_roles.append(table[3])
+
+	roles_removed: list[discord.Role] = []
+	roles_added: list[discord.Role] = []
+
+	for role in before.roles:
+		if role not in after.roles:
+			roles_removed.append(role)
+
+	for role in after.roles:
+		if role not in before.roles:
+			roles_added.append(role)
+
+	if roles_added:
+		for role in roles_added:
+			if role.id in guest_roles:  # someone got a guest role
+				with t.DatabaseConnection("data.db") as connection:
+					cursor = connection.cursor()
+					cursor.execute(
+						"SELECT * FROM tables WHERE guest_id = ?",
+						(role.id, )
+					)
+					raw = cursor.fetchall()[0]
+				main_channel: discord.TextChannel = role.guild.get_channel(raw[5])
+				threads: list[discord.Thread] = main_channel.threads
+
+				count = 0
+				for thread in threads:
+					await thread.add_user(after)
+					if count < 5:
+						count += 1
+					else:
+						count = 0
+						await asyncio.sleep(5)
+
+	if roles_removed:
+		for role in roles_removed:
+			if role.id in guest_roles:  # someone lost a guest role
+				with t.DatabaseConnection("data.db") as connection:
+					cursor = connection.cursor()
+					cursor.execute(
+						"SELECT * FROM tables WHERE guest_id = ?",
+						(role.id,)
+					)
+					raw = cursor.fetchall()[0]
+				main_channel: discord.TextChannel = role.guild.get_channel(raw[5])
+				threads: list[discord.Thread] = main_channel.threads
+
+				count = 0
+				for thread in threads:
+					await thread.remove_user(after)
+					if count < 5:
+						count += 1
+					else:
+						count = 0
+						await asyncio.sleep(5)
+
+
 @bot.command(name = 'thing')
 async def _thingy(ctx):
 	c.Person(ctx)
-
-	"""embed = discord.Embed(
-		title = f"Multi-Roll",
-		description = "Combined Sum: 12\nRoll text: 2d12+1d6\nTimes: 2"
-	)
-
-	embed.add_field(name = f"Sum #1 - :two:", value = "__Rolls [d12]__\nRoll #1: **1** | Roll #2: **1**\n__Rolls [d6]__\nRoll #1: **5**", inline = True)
-	embed.add_field(name = f"Sum #2 - :one::zero:", value = "__Rolls [d12]__\nRoll #1: **8** | Roll #2: **2**\n__Rolls [d6]__\nRoll #1: **5**", inline = True)
-	embed.add_field(name = f"Sum #2 - :one::zero:", value = "__Rolls [d12]__\nRoll #1: **8** | Roll #2: **2**\n__Rolls [d6]__\nRoll #1: **5**", inline = True)
-	embed.add_field(name = f"Sum #2 - :one::zero:", value = "__Rolls [d12]__\nRoll #1: **8** | Roll #2: **2**\n__Rolls [d6]__\nRoll #1: **5**", inline = True)
-	embed.add_field(name = f"Sum #2 - :one::zero:", value = "__Rolls [d12]__\nRoll #1: **8** | Roll #2: **2**\n__Rolls [d6]__\nRoll #1: **5**", inline = True)
-	embed.add_field(name = f"Sum #2 - :one::zero:", value = "__Rolls [d12]__\nRoll #1: **8** | Roll #2: **2**\n__Rolls [d6]__\nRoll #1: **5**", inline = True)
-	embed.add_field(name = f"Sum #2 - :one::zero:", value = "__Rolls [d12]__\nRoll #1: **8** | Roll #2: **2**\n__Rolls [d6]__\nRoll #1: **5**", inline = True)
-	embed.add_field(name = f"Sum #2 - :one::zero:", value = "__Rolls [d12]__\nRoll #1: **8** | Roll #2: **2**\n__Rolls [d6]__\nRoll #1: **5**", inline = True)
-	embed.add_field(name = f"Sum #2 - :one::zero:", value = "__Rolls [d12]__\nRoll #1: **8** | Roll #2: **2**\n__Rolls [d6]__\nRoll #1: **5**", inline = True)
-	embed.add_field(name = f"Sum #2 - :one::zero:", value = "__Rolls [d12]__\nRoll #1: **8** | Roll #2: **2**\n__Rolls [d6]__\nRoll #1: **5**", inline = True)
-
-	await ctx.send(embed = embed)"""
 
 
 @bot.command(name = "ping")
@@ -362,30 +419,8 @@ async def die_stuff(interaction: discord.Interaction, command: Choice[str], new_
 
 
 @bot.tree.command(name = "die", description = "Create custom named dice, any complex roll. You can also: update, or delete already existing ones.")
-async def die_stuff(interaction: discord.Interaction):
-	ctx = await bot.get_context(interaction)
-	person = c.Person(ctx)
-
-	with t.DatabaseConnection("data.db") as connection:
-		cursor = connection.cursor()
-		cursor.execute("SELECT * FROM dice WHERE owner_id = ?", (person.user.id,))
-		raw = cursor.fetchall()
-
-	if len(raw) > 0:
-		select_options = c.DieCommandSelect(
-			person,
-			placeholder = "Select what you want to do.",
-			options = [
-				discord.SelectOption(label = "Create New Die"),
-				discord.SelectOption(label = "Edit Existing Die"),
-				discord.SelectOption(label = "Delete Die")
-			]
-		)
-		view = discord.ui.View()
-		view.add_item(select_options)
-		await interaction.response.send_message("", view = view, ephemeral = True)
-	else:
-		await interaction.response.send_modal(c.DieCreateModal())
+async def die_slash(interaction: discord.Interaction):
+	await die_command(interaction)
 
 
 @bot.tree.command(name = "settings", description = "Change your global settings for DiceGod, like name changing, roll tags, or chat ignore.")
@@ -876,7 +911,7 @@ async def statistics(interaction: discord.Interaction, person: discord.Member = 
 	await ctx.reply(embed = embed)
 
 
-@bot.tree.command(name = "x_clear", description = "Admin only.")
+@bot.tree.command(name = "x_admin_clear", description = "Admin only.")
 @app_commands.describe(sheet = "Sheet name.")
 @app_commands.describe(player = "@player")
 @app_commands.describe(dm = "@dm (optional)")
@@ -1060,7 +1095,8 @@ async def help_slash(interaction: discord.Interaction, help_type: Choice[str], e
 @app_commands.describe(gm = "@ the GM")
 @app_commands.describe(player_role = "player role")
 @app_commands.describe(guest_role = "guest role")
-async def table_admin(interaction: discord.Interaction, command: Choice[str], table_name: str, gm: discord.Member = None, player_role: discord.Role = None, guest_role: discord.Role = None):
+@app_commands.describe(main_channel = "channel")
+async def table_admin(interaction: discord.Interaction, command: Choice[str], table_name: str, gm: discord.Member = None, player_role: discord.Role = None, guest_role: discord.Role = None, main_channel: discord.TextChannel = None):
 	ctx = await bot.get_context(interaction)
 	person = c.Person(ctx)
 	if person.user.id not in s.ADMINS:
@@ -1076,8 +1112,8 @@ async def table_admin(interaction: discord.Interaction, command: Choice[str], ta
 			with t.DatabaseConnection("data.db") as connection:
 				cursor = connection.cursor()
 				cursor.execute(
-					f"INSERT INTO tables(table_name, dm_id, role_id, guest_id, auto_guest_add) VALUES (?, ?, ?, ?, 0)",
-					(table_name, gm.id, player_role.id, guest_role.id)
+					f"INSERT INTO tables(table_name, dm_id, role_id, guest_id, auto_guest_add, main_channel_id) VALUES (?, ?, ?, ?, 0, ?)",
+					(table_name, gm.id, player_role.id, guest_role.id, main_channel.id)
 				)
 			await interaction.response.send_message(f"Table with name ``{table_name}`` created.", ephemeral = True)
 			await t.send_dm(ctx, f"You are the DM of the following table: ``{table_name}``.\nYou can add a player with the /table command.\nAll changes will notify the person in question!", discord_id = gm.id)
@@ -1123,122 +1159,12 @@ async def emoji_role_setup(interaction: discord.Interaction, channel_id: str, me
 
 @bot.tree.command(name = "table", description = "Manage your own tables! (send it in empty)")
 async def table_slash(interaction: discord.Interaction):
-	ctx = await bot.get_context(interaction)
-	person = c.Person(ctx)
-	if person.user.id in s.ADMINS:
-		with t.DatabaseConnection("data.db") as connection:
-			cursor = connection.cursor()
-			cursor.execute("SELECT * FROM tables")
-			raw = cursor.fetchall()
-	else:
-		with t.DatabaseConnection("data.db") as connection:
-			cursor = connection.cursor()
-			cursor.execute("SELECT * FROM tables WHERE dm_id = ?", (person.user.id, ))
-			raw = cursor.fetchall()
-
-	tables = []
-	for line in raw:
-		tables.append(discord.SelectOption(label = line[0]))
-
-	table = c.TableCommand(interaction)
-
-	select_table = c.TableOptionSelect(
-		table,
-		placeholder = "Select which table you want to edit.",
-		min_values = 1,
-		options = tables
-	)
-	select_option = c.TableCommandSelect(
-		table,
-		placeholder = "Select what you want to do.",
-		min_values = 1,
-		options = [
-			discord.SelectOption(label = "Edit Permissions"),
-			discord.SelectOption(label = "[out of order] Change Table Settings")
-		])
-
-	view = discord.ui.View()
-	view.add_item(select_table)
-	view.add_item(select_option)
-	view.add_item(c.TableButton(table))
-
-	await interaction.response.send_message("", view = view, ephemeral = True)
+	await table_command(interaction)
 
 
 @bot.command(name = "vote", aliases = ["v"])
-async def cast_old(ctx, *, text_dump_):
-	text_dump = text_dump_.split("\n")
-	index_1 = None
-	index_2 = None
-
-	for i, line in enumerate(text_dump):
-		if line == "---" and index_1 is None:
-			index_1 = i
-		elif line == "---":
-			index_2 = i
-			break
-
-	voting_options = text_dump[:index_1]
-	vote_text = text_dump[index_1 + 1:index_2]
-
-	vote = c.Vote(ctx.author, vote_text = "\n".join(vote_text))
-
-	match len(voting_options):
-		case 1:
-			if "type: " in voting_options[0]:
-				vote_type = re.findall("[0-9]+", voting_options[0])
-				if vote_type:
-					vote.vote_amount = int(vote_type[0])
-			else:
-				temp = voting_options[0].replace(" ", "")
-				temp = re.split("><@", temp[9:-1])
-				for element in temp:
-					if element[0] == "&":
-						roles = ctx.guild.roles
-						members = []
-						for role in roles:
-							if role.id == int(element[1:]):
-								members = role.members
-								break
-						for member in members:
-							vote.voters.append(member.id)
-					else:
-						vote.voters.append(int(element))
-		case 2:
-			temp = voting_options[0].replace(" ", "")
-			temp = re.split("><@", temp[9:-1])
-			for element in temp:
-				if element[0] == "&":
-					roles = ctx.guild.roles
-					members = []
-					for role in roles:
-						if role.id == int(element[1:]):
-							members = role.members
-							break
-					for member in members:
-						vote.voters.append(member.id)
-				else:
-					vote.voters.append(int(element))
-
-			vote_type = re.findall("[0-9]+", voting_options[1])
-			if vote_type:
-				vote.vote_amount = int(vote_type[0])
-
-	poll_options = text_dump[index_2 + 1:]
-	for i, line in enumerate(poll_options):
-		option = c.PollOption()
-		temp = line.find("-")
-		option.emoji = line[:temp].replace(" ", "")
-		line_text = line[temp + 1:]
-		if line_text[0] == " ":
-			line_text = line_text[1:]
-		option.option_text = line_text
-		vote.poll_options.append(option)
-
-	embed = vote.create_embed()
-
-	await ctx.send(embed = embed, view = c.VoteView(vote))
-	await ctx.message.delete()
+async def vote_slash(ctx, *, text_dump_):
+	await vote_command(ctx, text_dump_)
 
 
 with open("data_holder/token.txt", "r") as f:

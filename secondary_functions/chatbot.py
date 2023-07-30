@@ -1,5 +1,4 @@
 import discord.channel
-
 from utils.tools import choice
 import classes as c
 from utils import settings, bot_setup

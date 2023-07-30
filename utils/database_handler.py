@@ -111,11 +111,12 @@ with DatabaseConnection("data.db") as connection:
 	try:
 		cursor.execute(
 			'CREATE TABLE tables('
-			'table_name text primary key,'
-			'dm_id integer,'
-			'role_id integer,'
-			'guest_id integer,'
-			'auto_guest_add integer)'
+			'table_name text primary key,'  # 0
+			'dm_id integer,'  # 1
+			'role_id integer,'  # 2
+			'guest_id integer,'  # 3
+			'auto_guest_add integer,'  # 4
+			'main_channel_id integer)'  # 5
 		)
 	except sqlite3.OperationalError:
 		print(f"tables found")
