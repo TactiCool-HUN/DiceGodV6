@@ -165,6 +165,35 @@ async def on_member_update(before: discord.Member, after: discord.Member):
 						await asyncio.sleep(5)
 
 
+@bot.event
+async def on_thread_create(thread: discord.Thread):
+	with t.DatabaseConnection("data.db") as connection:
+		cursor = connection.cursor()
+		cursor.execute(
+			"SELECT main_channel_id FROM tables WHERE auto_guest_add = ?",
+			(1, )
+		)
+		raw = cursor.fetchall()
+
+	temp = []
+	for i in raw:
+		temp.append(i[0])
+	raw = temp
+
+	if thread.parent.id in raw:
+		with t.DatabaseConnection("data.db") as connection:
+			cursor = connection.cursor()
+			cursor.execute(
+				"SELECT guest_id FROM tables WHERE main_channel_id = ?",
+				(thread.parent.id,)
+			)
+			raw = cursor.fetchall()
+
+		guest_role = t.bot.get_guild(562373378967732226).get_role(raw[0][0])
+
+		await thread.send(guest_role.mention)
+
+
 @bot.command(name = 'thing')
 async def _thingy(ctx):
 	c.Person(ctx)
