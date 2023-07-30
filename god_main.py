@@ -94,6 +94,23 @@ async def on_raw_reaction_add(reaction):
 
 
 @bot.event
+async def on_raw_thread_update(thread_update_event: discord.RawThreadUpdateEvent):
+	thread = bot.get_guild(thread_update_event.guild_id).get_thread(thread_update_event.thread_id)
+	with t.DatabaseConnection("data.db") as connection:
+		cursor = connection.cursor()
+		cursor.execute(
+			"SELECT main_channel_id, guest_id FROM tables WHERE auto_guest_add = 1"
+		)
+		raw = cursor.fetchall()
+
+	for table_raw in raw:
+		if table_raw[0] == thread.parent.id:
+			guest_role: discord.Role = thread.guild.get_role(table_raw[1])
+			await thread.send(f"({guest_role.mention})")
+			break
+
+
+@bot.event
 async def on_member_update(before: discord.Member, after: discord.Member):
 	if before.roles == after.roles:
 		return
