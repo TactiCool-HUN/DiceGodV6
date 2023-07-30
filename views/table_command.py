@@ -172,6 +172,16 @@ class SelectAutoGuestSetting(discord.ui.Select):
 
 	async def callback(self, interaction: discord.Interaction):
 		selection: bool = self.values[0] == "Auto add/remove guests from Threads"
+
+		with t.DatabaseConnection("data.db") as connection:
+			cursor = connection.cursor()
+			cursor.execute(
+				'UPDATE tables SET auto_guest_add = ? WHERE table_name = ?',
+				(selection, self.table.table_name)
+			)
+
+		await interaction.response.send_message("Table Updated!", ephemeral = True)
+
 		if selection:
 			with t.DatabaseConnection("data.db") as connection:
 				cursor = connection.cursor()
@@ -186,21 +196,12 @@ class SelectAutoGuestSetting(discord.ui.Select):
 
 			count = 0
 			for thread in threads:
-				await thread.send(guest_role.mention)
+				await thread.send(f"({guest_role.mention})")
 				if count < 5:
 					count += 1
 				else:
 					count = 0
 					await asyncio.sleep(5)
-
-		with t.DatabaseConnection("data.db") as connection:
-			cursor = connection.cursor()
-			cursor.execute(
-				'UPDATE tables SET auto_guest_add = ? WHERE table_name = ?',
-				(selection, self.table.table_name)
-			)
-
-		await interaction.response.send_message("Table Updated!", ephemeral = True)
 
 
 class SelectSubCommand(discord.ui.Select):

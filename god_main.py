@@ -191,7 +191,7 @@ async def on_thread_create(thread: discord.Thread):
 
 		guest_role = t.bot.get_guild(562373378967732226).get_role(raw[0][0])
 
-		await thread.send(guest_role.mention)
+		await thread.send(f"({guest_role.mention})")
 
 
 @bot.command(name = 'thing')
