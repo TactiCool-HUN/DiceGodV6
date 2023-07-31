@@ -30,7 +30,7 @@ async def emoji_role_command(reaction: RawReactionActionEvent):
 		raw = cursor.fetchall()
 
 	if not raw:
-		return
+		return "empty"
 	else:
 		for temp in raw:
 			temp = EmojiRole(temp)
@@ -40,7 +40,7 @@ async def emoji_role_command(reaction: RawReactionActionEvent):
 				elif temp.emoji_id == reaction.emoji.id:
 					break
 		else:
-			return
+			return "empty"
 
 		role: Role = bot.get_guild(temp.guild_id).get_role(temp.role_id)
 		user = reaction.member

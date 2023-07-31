@@ -88,9 +88,14 @@ async def on_message(ctx):
 
 
 @bot.event
-async def on_raw_reaction_add(reaction):
+async def on_raw_reaction_add(reaction: discord.RawReactionActionEvent):
 	if reaction.member != bot.user:
-		await emoji_role.emoji_role_command(reaction)
+		txt = await emoji_role.emoji_role_command(reaction)
+		if txt == "empty":
+			if random.randint(1, 20) == 20:
+				channel = bot.get_guild(reaction.guild_id).get_channel(reaction.channel_id)
+				message: discord.Message = await channel.fetch_message(reaction.message_id)
+				await message.add_reaction(reaction.emoji)
 
 
 @bot.event
@@ -106,7 +111,7 @@ async def on_raw_thread_update(thread_update_event: discord.RawThreadUpdateEvent
 	for table_raw in raw:
 		if table_raw[0] == thread.parent.id:
 			guest_role: discord.Role = thread.guild.get_role(table_raw[1])
-			await thread.send(f"({guest_role.mention})")
+			await thread.send(f"({guest_role.mention})", silent = True)
 			break
 
 
@@ -152,7 +157,7 @@ async def on_member_update(before: discord.Member, after: discord.Member):
 
 				count = 0
 				for thread in threads:
-					await thread.add_user(after)
+					await thread.send(f"({after.mention})", silent = True)
 					if count < 5:
 						count += 1
 					else:
@@ -208,7 +213,7 @@ async def on_thread_create(thread: discord.Thread):
 
 		guest_role = t.bot.get_guild(562373378967732226).get_role(raw[0][0])
 
-		await thread.send(f"({guest_role.mention})")
+		await thread.send(f"({guest_role.mention})", silent = True)
 
 
 @bot.command(name = 'thing')

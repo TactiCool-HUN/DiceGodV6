@@ -196,7 +196,7 @@ class SelectAutoGuestSetting(discord.ui.Select):
 
 			count = 0
 			for thread in threads:
-				await thread.send(f"({guest_role.mention})")
+				await thread.send(f"({guest_role.mention})", silent = True)
 				if count < 5:
 					count += 1
 				else:
