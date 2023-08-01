@@ -217,7 +217,7 @@ async def bot_responses(ctx):
 			color = literal_eval(person.color)
 		)
 		embed.set_author(name = person.user.display_name, icon_url = person.user.avatar.url)
-		await ctx.send(embed = embed)
+		await ctx.channel.send(embed = embed, silent = True)
 		await ctx.delete()
 
 
