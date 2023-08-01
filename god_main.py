@@ -484,9 +484,12 @@ async def die_slash(interaction: discord.Interaction):
 @app_commands.choices(chat_ignore=[
 	app_commands.Choice(name = "on", value = 1),
 	app_commands.Choice(name = "off", value = 0)])
+@app_commands.choices(uwuify_messages=[
+	app_commands.Choice(name = "on", value = 1),
+	app_commands.Choice(name = "off", value = 0)])
 @discord.app_commands.describe(color = "Set your color!")
 @discord.app_commands.describe(tag = 'Set which tag your rolls will be saved! (use "clear" to empty it)')
-async def settings(interaction: discord.Interaction, change_name: Choice[int] = None, auto_roll_tagging: Choice[int] = None, chat_ignore: Choice[int] = None, color: str = None, tag: str = None):
+async def settings(interaction: discord.Interaction, change_name: Choice[int] = None, auto_roll_tagging: Choice[int] = None, chat_ignore: Choice[int] = None, uwuify_messages: Choice[int] = None, color: str = None, tag: str = None):
 	ctx = await bot.get_context(interaction)
 	person = c.Person(ctx)
 	ephemeral = True
@@ -540,6 +543,13 @@ async def settings(interaction: discord.Interaction, change_name: Choice[int] = 
 			response += f"\nDice God will no longer respond to you outside of commands."
 		else:
 			response += f"\nDice God will once again respond to you outside of commands."
+	if uwuify_messages is not None:
+		person.uwuify = uwuify_messages.value
+		person.update()
+		if person.uwuify:
+			response += f"\nDice God will no longer uwuify your messages."
+		else:
+			response += f"\nDice God will once again uwuify your messages (note: requires chat_ignore to be off)."
 	if tag is not None:
 		tag = tag.lower()
 		if tag == "clear":

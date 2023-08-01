@@ -5,6 +5,7 @@ from utils import settings, bot_setup
 import random
 import re
 from secondary_functions.uwuifier import uwuify
+from ast import literal_eval
 
 
 async def bot_responses(ctx):
@@ -210,8 +211,13 @@ async def bot_responses(ctx):
 			else:
 				await ctx.channel.send(response)
 
-	if author.id == 875753704685436938:
-		await ctx.send(f"{person.user.mention} said:\n{uwuify(ctx.clean_content)}")
+	if person.uwuify:
+		embed = discord.Embed(
+			description = uwuify(ctx.clean_content),
+			color = literal_eval(person.color)
+		)
+		embed.set_author(name = person.user.display_name, icon_url = person.user.avatar.url)
+		await ctx.send(embed = embed)
 		await ctx.delete()
 
 

@@ -48,7 +48,8 @@ with DatabaseConnection("data.db") as connection:
 			'color text,'
 			'change_name integer,'
 			'auto_tag integer,'
-			'chat_ignore integer)'
+			'chat_ignore integer,'
+			'uwuify integer)'
 		)
 	except sqlite3.OperationalError:
 		print(f"people found")

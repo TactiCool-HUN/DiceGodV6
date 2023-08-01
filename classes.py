@@ -23,6 +23,7 @@ class Person:
 		self.change_name = 1
 		self.auto_tag = 1
 		self.chat_ignore = 0
+		self.uwuify = 0
 
 		if t.exists(self.user.id, "person"):
 			self.load()
@@ -33,9 +34,9 @@ class Person:
 		with t.DatabaseConnection("data.db") as connection:
 			cursor = connection.cursor()
 			cursor.execute(
-				"INSERT INTO people(discord_id, name, active, tag, color, change_name, auto_tag, chat_ignore)"
-				"VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
-				(self.user.id, self.user.display_name, self.active, self.tag, self.color, self.change_name, self.auto_tag, self.chat_ignore)
+				"INSERT INTO people(discord_id, name, active, tag, color, change_name, auto_tag, chat_ignore, uwuify)"
+				"VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
+				(self.user.id, self.user.display_name, self.active, self.tag, self.color, self.change_name, self.auto_tag, self.chat_ignore, self.uwuify)
 			)
 
 		self.load()
@@ -52,14 +53,15 @@ class Person:
 		self.change_name = bool(raw[5])
 		self.auto_tag = bool(raw[6])
 		self.chat_ignore = bool(raw[7])
+		self.uwuify = bool(raw[8])
 
 	def update(self):
 		with t.DatabaseConnection("data.db") as connection:
 			cursor = connection.cursor()
 			cursor.execute(
-				"UPDATE people SET name = ?, active = ?, tag = ?, color = ?, change_name = ?, auto_tag = ?, chat_ignore = ?"
+				"UPDATE people SET name = ?, active = ?, tag = ?, color = ?, change_name = ?, auto_tag = ?, chat_ignore = ?, uwuify = ?"
 				"WHERE discord_id = ?",
-				(self.user.display_name, self.active, self.tag, self.color, self.change_name, self.auto_tag, self.chat_ignore, self.user.id)
+				(self.user.display_name, self.active, self.tag, self.color, self.change_name, self.auto_tag, self.chat_ignore, self.uwuify, self.user.id)
 			)
 
 	def add_roll(self, outcome, size, used, roll_text):
