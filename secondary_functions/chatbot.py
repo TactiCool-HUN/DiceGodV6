@@ -4,6 +4,7 @@ import classes as c
 from utils import settings, bot_setup
 import random
 import re
+from secondary_functions.uwuifier import uwuify
 
 
 async def bot_responses(ctx):
@@ -208,6 +209,10 @@ async def bot_responses(ctx):
 				await ctx.channel.send(f"({response})")
 			else:
 				await ctx.channel.send(response)
+
+	if author.id == 875753704685436938:
+		await ctx.send(f"{person.user.mention} said:\n{uwuify(ctx.clean_content)}")
+		await ctx.delete()
 
 
 pass
