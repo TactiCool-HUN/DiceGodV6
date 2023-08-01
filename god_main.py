@@ -546,7 +546,7 @@ async def settings(interaction: discord.Interaction, change_name: Choice[int] = 
 	if uwuify_messages is not None:
 		person.uwuify = uwuify_messages.value
 		person.update()
-		if person.uwuify:
+		if not person.uwuify:
 			response += f"\nDice God will no longer uwuify your messages."
 		else:
 			response += f"\nDice God will once again uwuify your messages (note: requires chat_ignore to be off)."
