@@ -6,9 +6,10 @@ import random
 import re
 from secondary_functions.uwuifier import uwuify
 from ast import literal_eval
+import utils.settings as s
 
 
-async def bot_responses(ctx):
+async def bot_responses(ctx: discord.Message):
 	if bot_setup.prefix == "--" and ctx.guild.id != 953258116496097340:
 		return
 	if isinstance(ctx.channel, discord.channel.DMChannel):
@@ -113,6 +114,7 @@ async def bot_responses(ctx):
 			"No.", 1,
 			"Maybe?", 1,
 			"<:Kyrihihihi:1058348961523576872>", 1,
+			"<:AnnaSticker:960105630188863498>", 0.5,
 			"Be careful when you speak my name, mortal.", 1,
 			"X gon' give it to you", 1,
 			"Stop arguing, you know I'm right.", 1,
@@ -125,6 +127,7 @@ async def bot_responses(ctx):
 			"No.", 1,
 			"Maybe?", 1,
 			"<:Kyrihihihi:1058348961523576872>", 1,
+			"<:AgiSticker:960105630465675294>", 0.5,
 			"Be careful when you speak my name, mortal.", 1,
 			"Who hurt you?", 1,
 			"🧂", 0.75,
@@ -136,11 +139,13 @@ async def bot_responses(ctx):
 			"No.", 2,
 			"Maybe?", 2,
 			"<:Kyrihihihi:1058348961523576872>", 2,
+			"<:NikaSticker:960105630989955173>", 0.5,
 			"Be careful when you speak my name, mortal.", 2,
 			"Who hurt you?", 2,
 			"The one who wages a war with Lady Luck herself. Your efforts are cute, but futile.", 0.3,
 			"I can feel you are slowly giving in. You see? Peace is an option.\n**Now kneel before me!**", 0.2,
 		]
+		# noinspection SpellCheckingInspection
 		mark = [
 			"Yes", 1,
 			"No.", 1,
@@ -149,7 +154,24 @@ async def bot_responses(ctx):
 			"Be careful when you speak my name, mortal.", 1,
 			"🐸", 1,
 		]
-		pack = None
+		# noinspection SpellCheckingInspection
+		kevin = [
+			"Yes", 1,
+			"No.", 1,
+			"Maybe?", 1,
+			"<:Kyrihihihi:1058348961523576872>", 1,
+			"<:KevinSticker:960105629987536948>", 0.5,
+			"Be careful when you speak my name, mortal.", 1,
+		]
+		# noinspection SpellCheckingInspection
+		rego = [
+			"Yes", 1,
+			"No.", 1,
+			"Maybe?", 1,
+			"<:Kyrihihihi:1058348961523576872>", 1,
+			"<:RegoSticker:960106779998580757>", 0.5,
+			"Be careful when you speak my name, mortal.", 1,
+		]
 		match author.id:
 			case 145980699961196544:
 				pack = kriszta
@@ -167,16 +189,20 @@ async def bot_responses(ctx):
 				pack = nika
 			case 377469395007438849:
 				pack = mark
-		if not pack:
-			if is_admin:
-				pack = admin_base
-			else:
-				for role in author.roles:
-					if role.id == 992398146942550116:
-						pack = cultist_base
-						break
+			case 161207648497172480:
+				pack = kevin
+			case 618475228695232532:
+				pack = rego
+			case _:
+				if is_admin:
+					pack = admin_base
 				else:
-					pack = comonner_base
+					for role in author.roles:
+						if role.id == 992398146942550116:
+							pack = cultist_base
+							break
+					else:
+						pack = comonner_base
 		responses.append(choice(pack))
 
 	if "say what?" in content:
@@ -219,6 +245,11 @@ async def bot_responses(ctx):
 		embed.set_author(name = person.user.display_name, icon_url = person.user.avatar.url)
 		await ctx.channel.send(embed = embed, silent = True)
 		await ctx.delete()
+	else:
+		if random.randint(1, 100) == 100:
+			emoji = random.choice(s.EMOJIS)
+			await ctx.add_reaction(emoji)
+
 
 
 pass
