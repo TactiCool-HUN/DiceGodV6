@@ -20,7 +20,7 @@ async def vote_command(ctx, text_dump_):
 	voting_options = text_dump[:index_1]
 	vote_text = text_dump[index_1 + 1:index_2]
 
-	vote = c.Vote(ctx.author, vote_text = "\n".join(vote_text))
+	vote = Vote(ctx.author, vote_text = "\n".join(vote_text))
 
 	match len(voting_options):
 		case 1:
@@ -65,7 +65,7 @@ async def vote_command(ctx, text_dump_):
 
 	poll_options = text_dump[index_2 + 1:]
 	for i, line in enumerate(poll_options):
-		option = c.PollOption()
+		option = PollOption()
 		temp = line.find("-")
 		option.emoji = line[:temp].replace(" ", "")
 		line_text = line[temp + 1:]
@@ -76,7 +76,7 @@ async def vote_command(ctx, text_dump_):
 
 	embed = vote.create_embed()
 
-	await ctx.send(embed = embed, view = c.VoteView(vote))
+	await ctx.send(embed = embed, view = VoteView(vote))
 	await ctx.message.delete()
 
 
@@ -179,3 +179,5 @@ class VoteView(discord.ui.View):
 			button = VoteButton(vote, emoji = option.emoji, style = discord.ButtonStyle.blurple)
 
 			self.add_item(button)
+
+pass
