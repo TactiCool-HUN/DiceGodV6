@@ -637,7 +637,7 @@ class Spell:
 					emoji = s.ALT_REACTION_NUMBERS[i]
 				self.followups.append(FollowupButton(emoji, f"{dmg}{self.get_damage_disp()}", "roll"))
 		if self.followups:
-			self.followups = [FollowupButton("💥", None, "crit", label="off", style=discord.ButtonStyle.red)] + self.followups
+			self.followups = [FollowupButton("💥", None, "crit", label="off", style=discord.ButtonStyle.grey)] + self.followups
 
 	def get_damage_disp(self):
 		disp = ""

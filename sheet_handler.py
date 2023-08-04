@@ -149,7 +149,7 @@ async def set_deathsave(ctx, natural, result) -> None:
 			f"It's a miracle! {sheet.character}'s wounds close, do care though, death is still watching.",
 			"Remember son, dying is gay.\n(flashback to childhood memories before suddenly pulled back to life)"
 		])
-		await t.send_message(ctx, txt, True)
+		await t.send_message_old(ctx, txt, True)
 		return
 	else:
 		if natural == 1:
@@ -232,7 +232,7 @@ async def set_deathsave(ctx, natural, result) -> None:
 
 			main.update(area_txt, setter)
 
-		await t.send_message(ctx, txt, True)
+		await t.send_message_old(ctx, txt, True)
 
 
 def get_ability_mod(sheet_inc, ability_score: str):
@@ -338,7 +338,7 @@ def get_attack(sheet_inc, attack_inc: str):
 	feats = wks.get("A50:B200")
 	class_area = wks.get("A2:D5")
 
-	followups = [c.FollowupButton("💥", None, "crit", label="off", style=discord.ButtonStyle.red), c.FollowupButton("🇶", None, "queue", label="off", style=discord.ButtonStyle.grey)]
+	followups = [c.FollowupButton("💥", None, "crit", label="off", style=discord.ButtonStyle.grey), c.FollowupButton("🇶", None, "queue", label="off", style=discord.ButtonStyle.grey)]
 
 	if len(attack_inc) == 3:
 		slot = 1

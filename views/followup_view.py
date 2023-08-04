@@ -30,7 +30,10 @@ class FollowupButton(discord.ui.Button):
 		self.incremental = incremental
 
 	async def callback(self, interaction: discord.Interaction):
-		if self.core.person.user.id != interaction.user.id or self.core.person.user.id not in s.ADMINS:
+		if self.view.myself is None:
+			self.view.myself = interaction.message
+
+		if self.core.person.user.id != interaction.user.id and self.core.person.user.id not in s.ADMINS:
 			# noinspection SpellCheckingInspection
 			await interaction.response.send_message("Sush!", ephemeral = True)
 			return
@@ -84,10 +87,12 @@ class FollowupButton(discord.ui.Button):
 				await interaction.response.defer()
 				if self.core.crit:
 					self.label = "on"
+					self.style = discord.ButtonStyle.red
 					await interaction.message.edit(view = self.view)
 					# await interaction.response.send_message(f"Emoji rolls are critical for this roll!", ephemeral = True)
 				else:
 					self.label = "off"
+					self.style = discord.ButtonStyle.grey
 					await interaction.message.edit(view = self.view)
 					# await interaction.response.send_message(f"Emoji rolls are __not__ critical for this roll!", ephemeral = True)
 			case "heal_hurt":
@@ -101,7 +106,7 @@ class FollowupButton(discord.ui.Button):
 				await interaction.message.delete()
 			case "spell":
 				await interaction.response.defer()
-				asyncio.create_task(t.send_message(self.core.user_message, self.data.create_embed(), embed = True, reply = True, followups = self.data.followups))
+				asyncio.create_task(t.send_message_old(self.core.user_message, self.data.create_embed(), reply = True, embed = True, followups = self.data.followups))
 				await interaction.message.delete()
 			case "cast":
 				await interaction.response.defer()
@@ -111,7 +116,7 @@ class FollowupButton(discord.ui.Button):
 			case "disable":
 				await interaction.response.defer()
 				if self.data:
-					await t.send_message(self.core.user_message, self.data)
+					await t.send_message_old(self.core.user_message, self.data)
 				for button in self.view.children:
 					button.disabled = True
 				await interaction.message.edit(view = self.view)
@@ -126,7 +131,7 @@ class FollowupButton(discord.ui.Button):
 			case "add_inspiration":
 				await interaction.response.defer()
 				text = com.sh.change_inspiration(self.core.user_message, "add", 1)
-				await t.send_message(self.core.user_message, text)
+				await t.send_message_old(self.core.user_message, text)
 				self.disabled = True
 				await interaction.message.edit(view = self.view)
 			case "conditions":
@@ -137,7 +142,7 @@ class FollowupButton(discord.ui.Button):
 				for condition in self.data:
 					reply = await com.sh.set_condition(self.core.user_message, condition[0], condition[1], None)
 					if reply:
-						await t.send_message(self.core.user_message, reply, reply = True)
+						await t.send_message_old(self.core.user_message, reply, reply = True)
 			case "coin":
 				await interaction.response.defer()
 				response_list = [
@@ -145,9 +150,9 @@ class FollowupButton(discord.ui.Button):
 					f"{self.core.person.user.display_name} flipped a coin and it landed on **heads**!", 49,
 					f"{self.core.person.user.display_name} flipped a coin and it landed on **tails**!", 51
 				]
-				await t.send_message(self.core.user_message, t.choice(response_list))
+				await t.send_message_old(self.core.user_message, t.choice(response_list))
 				if self.data:
-					await t.send_message(self.core.user_message, self.data)
+					await t.send_message_old(self.core.user_message, self.data)
 				for button in self.view.children:
 					button.disabled = True
 				await interaction.message.edit(view = self.view)
@@ -157,17 +162,23 @@ class FollowupButton(discord.ui.Button):
 					button.disabled = True
 				await interaction.message.edit(view = self.view)
 				txt, _ = await com.sh.set_temp(self.core.user_message, self.data[0], True, self.data[1])
-				await t.send_message(self.core.user_message, txt, reply = True)
+				await t.send_message_old(self.core.user_message, txt, reply = True)
 
 
 class FollowupView(discord.ui.View):
 	def __init__(self, message: discord.Message):
-		super().__init__(timeout = 1000)
+		super().__init__(timeout = 2 * 24 * 60 * 60)  # 2 days timeout
 		self.message_core = MessageCore(message = message)
+		self.myself = None
 
 	def add_item(self, item: FollowupButton):
 		item.core = self.message_core
 		super().add_item(item)
+
+	async def on_timeout(self) -> None:
+		for button in self.children:
+			button.disabled = True
+		await self.myself.edit(view = self)
 
 
 pass

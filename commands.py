@@ -11,13 +11,15 @@ import re
 
 async def roll_command(ctx, text, crit = False):
 	if text[:4] == "hurt":
-		await t.send_message(ctx, f"Did you want to use ``{prefix}{text}``?", reply = True, followups = [c.FollowupButton("✅", [text[4:], False, False], "heal_hurt"), c.FollowupButton("❎", None, "disable")])
+		await t.send_message_old(ctx, f"Did you want to use ``{prefix}{text}``?", reply = True,
+								 followups = [c.FollowupButton("✅", [text[4:], False, False], "heal_hurt"), c.FollowupButton("❎", None, "disable")])
 	elif text[:4] == "heal":
-		await t.send_message(ctx, f"Did you want to use ``{prefix}{text}``?", reply = True, followups = [c.FollowupButton("✅", [text[4:], True, False], "heal_hurt"), c.FollowupButton("❎", None, "disable")])
+		await t.send_message_old(ctx, f"Did you want to use ``{prefix}{text}``?", reply = True,
+								 followups = [c.FollowupButton("✅", [text[4:], True, False], "heal_hurt"), c.FollowupButton("❎", None, "disable")])
 	elif text[:4] == "rest":
-		await t.send_message(ctx, f"Did you want to use ``{prefix}rest long``?", reply = True, followups = [c.FollowupButton("✅", None, "rest"), c.FollowupButton("❎", None, "disable")])
+		await t.send_message_old(ctx, f"Did you want to use ``{prefix}rest long``?", reply = True, followups = [c.FollowupButton("✅", None, "rest"), c.FollowupButton("❎", None, "disable")])
 	elif text[:4] == "coin":
-		await t.send_message(ctx, f"Did you want to use ``{prefix}coin``?", reply = True, followups = [c.FollowupButton("✅", None, "coin"), c.FollowupButton("❎", None, "disable")])
+		await t.send_message_old(ctx, f"Did you want to use ``{prefix}coin``?", reply = True, followups = [c.FollowupButton("✅", None, "coin"), c.FollowupButton("❎", None, "disable")])
 	else:
 		loader = await t.load(ctx, f"-roll {text}")
 		try:
@@ -272,7 +274,7 @@ async def pc_command(ctx, command: str, char_name: str, sheet_name: str, image_u
 	if interaction:
 		await interaction.followup.send(txt, ephemeral = True)
 	else:
-		await t.send_message(ctx, txt, reply = True, silent = silent, followups = followups)
+		await t.send_message_old(ctx, txt, reply = True, followups = followups, silent = silent)
 
 
 async def condition_command(interaction, ctx, condition, on_or_off, exhaustion_level):
@@ -294,12 +296,12 @@ async def hp_command(ctx, amount, is_heal = None, is_companion = False):
 	person = c.Person(ctx)
 	if person.active is None:
 		await sent.delete()
-		await t.send_message(ctx, "No active character found.", reply = True)
+		await t.send_message_old(ctx, "No active character found.", reply = True)
 		return
 
 	reply, followups = await sh.heal_hurt(ctx, is_heal, amount, is_companion)
 	await sent.delete()
-	await t.send_message(ctx, reply, reply = True, followups = followups)
+	await t.send_message_old(ctx, reply, reply = True, followups = followups)
 
 
 async def rest_command(ctx, length = "long", hit_dice = None, sent = None):
@@ -314,7 +316,7 @@ async def rest_command(ctx, length = "long", hit_dice = None, sent = None):
 	message = await sh.rest(ctx, length, hit_dice)
 	if sent:
 		await sent.delete()
-	await t.send_message(ctx, message, reply = True)
+	await t.send_message_old(ctx, message, reply = True)
 
 
 async def spell_command(ctx, spell_name, sent = None, interaction = None):
@@ -332,7 +334,7 @@ async def spell_command(ctx, spell_name, sent = None, interaction = None):
 				view = None
 			await interaction.followup.send(embed = spell_out.create_embed(), reply = True, view = view)
 		else:
-			asyncio.create_task(t.send_message(ctx, spell_out.create_embed(), embed = True, reply = True, followups = spell_out.followups))
+			asyncio.create_task(t.send_message_old(ctx, spell_out.create_embed(), reply = True, embed = True, followups = spell_out.followups))
 	elif found == "multiple":
 		followups = []
 		reply = f"The following spells include ``{spell_name}``:\n"
@@ -358,17 +360,17 @@ async def spell_command(ctx, spell_name, sent = None, interaction = None):
 				view = None
 			await interaction.followup.send(reply, reply = True, view = view)
 		else:
-			asyncio.create_task(t.send_message(ctx, reply, reply = True, followups = followups))
+			asyncio.create_task(t.send_message_old(ctx, reply, reply = True, followups = followups))
 	else:
 		if interaction:
 			await interaction.followup.send(f"No spell matching ``{spell_name}`` found.", reply = True)
 		else:
-			asyncio.create_task(t.send_message(ctx, f"No spell matching ``{spell_name}`` found.", reply = True))
+			asyncio.create_task(t.send_message_old(ctx, f"No spell matching ``{spell_name}`` found.", reply = True))
 
 
 async def cast_command(ctx, spell_name, sent = None, interaction = None, spell_level = None, from_followup = False):
 	if not c.Person(ctx).active:
-		asyncio.create_task(t.send_message(ctx, "You don't have a character set.", reply = True))
+		asyncio.create_task(t.send_message_old(ctx, "You don't have a character set.", reply = True))
 		return
 	if not from_followup:
 		spell_out, found, _ = await sh.get_spell(ctx, spell_inc = spell_name)
@@ -398,11 +400,11 @@ async def cast_command(ctx, spell_name, sent = None, interaction = None, spell_l
 		else:
 			reply = sh.cast_slot(ctx, spell_level)
 			if reply[:6] == "Error!":
-				await t.send_message(ctx, reply, reply = True, silent = True)
+				await t.send_message_old(ctx, reply, reply = True, silent = True)
 				return
 			else:
 				await t.send_dm(ctx, reply, silent = True)
-			asyncio.create_task(t.send_message(ctx, spell_out.create_embed(), embed = True, reply = True, followups = spell_out.followups, silent = True))
+			asyncio.create_task(t.send_message_old(ctx, spell_out.create_embed(), reply = True, embed = True, followups = spell_out.followups, silent = True))
 			await roll_command(ctx, spell_out.followups[spell_level - int(spell_out.level[0]) + 1].data, False)
 	elif found == "multiple":
 		followups = []
@@ -429,12 +431,12 @@ async def cast_command(ctx, spell_name, sent = None, interaction = None, spell_l
 				view = None
 			await interaction.followup.send(reply, view = view)
 		else:
-			asyncio.create_task(t.send_message(ctx, reply, reply = True, followups = followups, silent = True))
+			asyncio.create_task(t.send_message_old(ctx, reply, reply = True, followups = followups, silent = True))
 	else:
 		if interaction:
 			await interaction.followup.send(f"No spell matching ``{spell_name}`` found.", reply = True)
 		else:
-			asyncio.create_task(t.send_message(ctx, f"No spell matching ``{spell_name}`` found.", reply = True, silent = True))
+			asyncio.create_task(t.send_message_old(ctx, f"No spell matching ``{spell_name}`` found.", reply = True, silent = True))
 
 
 pass

@@ -230,11 +230,11 @@ async def ping_command(ctx):
 	]
 	result = t.choice(response_list)
 	if result == "ping":
-		await t.send_message(ctx, result, reply = True)
+		await t.send_message_old(ctx, result, reply = True)
 		await asyncio.sleep(2)
-		await t.send_message(ctx, "oh, wait no\npong!", reply = True)
+		await t.send_message_old(ctx, "oh, wait no\npong!", reply = True)
 	else:
-		await t.send_message(ctx, result, reply = True)
+		await t.send_message_old(ctx, result, reply = True)
 
 
 @bot.command(name = "pong")
@@ -244,7 +244,7 @@ async def pong_command(ctx):
 		"You wrote \"pong\" instead of \"ping\" and now you feel special don't you?", 1
 	]
 	result = t.choice(response_list)
-	await t.send_message(ctx, result, reply = True)
+	await t.send_message_old(ctx, result, reply = True)
 
 
 @bot.command(name = 'emoji')
@@ -270,7 +270,7 @@ async def kill_command(ctx, *, other = None):
 		]
 		result = t.choice(response_list)
 	if result[0] == "-":
-		sent = await t.send_message(ctx, result, reply = True, is_return = True)
+		sent = await t.send_message_old(ctx, result, reply = True, is_return = True)
 		sent = await sent.reply("Contacting Pinkertons, please do not leave your current area. (○)")
 		for i in range(20):
 			if i % 2 == 0:
@@ -284,7 +284,7 @@ async def kill_command(ctx, *, other = None):
 		await asyncio.sleep(6)
 		await sent.edit(content = "Pinkertons connection established: Agent granted.\nStandby for annihilation.")
 	else:
-		await t.send_message(ctx, result, reply = True)
+		await t.send_message_old(ctx, result, reply = True)
 
 
 @bot.command(name = "roll", aliases = ["r", "e"])
@@ -296,12 +296,12 @@ async def _roll_command_(ctx, *, text):
 async def _yeet_command_(ctx, *, text):
 	if random.randint(1, 50) == 1:
 		text = "I saw that it went off the table but I can't find it anywhere, you gotta roll a new one, we'll find it after session."
-		await t.send_message(ctx, text, reply = True)
+		await t.send_message_old(ctx, text, reply = True)
 	elif random.randint(1, 12) == 1:
 		followups = [c.FollowupButton("✅", text, "roll"), c.FollowupButton("❎", None, "disable")]
 		# noinspection SpellCheckingInspection
 		message = "You yeeted the die of the table, does it still count?"
-		await t.send_message(ctx, message, reply = True, followups = followups)
+		await t.send_message_old(ctx, message, reply = True, followups = followups)
 	else:
 		await com.roll_command(ctx, text)
 
@@ -313,7 +313,7 @@ async def coin_old(ctx):
 		f"{c.Person(ctx).user.display_name} flipped a coin and it landed on **heads**!", 49,
 		f"{c.Person(ctx).user.display_name} flipped a coin and it landed on **tails**!", 51
 	]
-	await t.send_message(ctx, t.choice(response_list))
+	await t.send_message_old(ctx, t.choice(response_list))
 
 
 @bot.tree.command(name = "coinflip", description = "Flip a coin! (such complexity, but hey if you read it here is a tip: -coin has 1% more tails)")
@@ -324,7 +324,7 @@ async def coin_slash(interaction: discord.Interaction):
 		f"{c.Person(ctx).user.display_name} flipped a coin and it landed on **heads**!", 51,
 		f"{c.Person(ctx).user.display_name} flipped a coin and it landed on **tails**!", 49
 	]
-	await t.send_message(ctx, t.choice(response_list))
+	await t.send_message_old(ctx, t.choice(response_list))
 
 
 @bot.command(name = "pc", aliases = ["char", "character"])
@@ -683,7 +683,7 @@ async def spell_points(interaction: discord.Interaction, command: Choice[str], a
 		spell_level = int(spell_level.value)
 	public, private = r.sh.spell_point(ctx, command.value, amount, spell_level)
 	await interaction.followup.send(private, ephemeral = True)
-	asyncio.create_task(t.send_message(ctx, public))
+	asyncio.create_task(t.send_message_old(ctx, public))
 
 
 # noinspection SpellCheckingInspection
@@ -702,12 +702,12 @@ async def companion_hp_stuff(ctx, *, amount):
 async def temp_command(ctx, *, amount):
 	person = c.Person(ctx)
 	if person.active is None:
-		await t.send_message(ctx, "No active character found.", reply = True)
+		await t.send_message_old(ctx, "No active character found.", reply = True)
 	else:
 		sent = await t.load(ctx)
 		temp = await asyncio.to_thread(com.sh.set_temp, ctx, amount, False, False)
 		txt, followups = await temp
-		asyncio.create_task(t.send_message(ctx, txt, reply = True, followups = followups))
+		asyncio.create_task(t.send_message_old(ctx, txt, reply = True, followups = followups))
 		await sent.delete()
 
 
@@ -716,11 +716,11 @@ async def temp_command(ctx, *, amount):
 async def companion_temp_command(ctx, *, amount):
 	person = c.Person(ctx)
 	if person.active is None:
-		await t.send_message(ctx, "No active character found.", reply = True)
+		await t.send_message_old(ctx, "No active character found.", reply = True)
 	else:
 		sent = await t.load(ctx)
 		txt, followups = await asyncio.to_thread(com.sh.set_temp, ctx, amount, False, True)
-		asyncio.create_task(t.send_message(ctx, txt, reply = True, followups = followups))
+		asyncio.create_task(t.send_message_old(ctx, txt, reply = True, followups = followups))
 		await sent.delete()
 
 
