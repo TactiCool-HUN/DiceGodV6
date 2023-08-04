@@ -6,8 +6,7 @@ from utils.bot_setup import bot
 
 
 async def die_command(interaction: discord.Interaction):
-	ctx = await bot.get_context(interaction)
-	person = Person(ctx)
+	person = Person(interaction)
 
 	with t.DatabaseConnection("data.db") as connection:
 		cursor = connection.cursor()
@@ -51,17 +50,17 @@ class DieCreateModal(discord.ui.Modal, title = "Create Die"):
 		self.die_name = self.die_name.value
 		self.die_roll = self.die_roll.value
 		if self.die_name in s.SHEET_ROLLS:
-			await interaction.response.send_message(f"The name ``{self.die_name}`` is already used by a built in function.", ephemeral = True)
+			await t.send_message(interaction, text = "The name ``{self.die_name}`` is already used by a built in function.", ephemeral = True)
 		elif self.die_name.isnumeric():
-			await interaction.response.send_message("The die name cannot start with a number.", ephemeral = True)
+			await t.send_message(interaction, text = "The die name cannot start with a number.", ephemeral = True)
 		elif t.exists(self.die_name, "die"):
-			await interaction.response.send_message(f"The name ``{self.die_name}`` is already used by another die.", ephemeral = True)
+			await t.send_message(interaction, text = f"The name ``{self.die_name}`` is already used by another die.", ephemeral = True)
 		else:
 			Die(self.die_name, person.user.id, self.die_roll, True)
 			if t.exists(self.die_name, "die"):
-				await interaction.response.send_message(f"Die name ``{self.die_name}`` with the roll of ``{self.die_roll}`` successfully created!", ephemeral = True)
+				await t.send_message(interaction, text = f"Die name ``{self.die_name}`` with the roll of ``{self.die_roll}`` successfully created!", ephemeral = True)
 			else:
-				await interaction.response.send_message("There was an error in the die creation process, I recommend notifying Tacti about this error", ephemeral = True)
+				await t.send_message(interaction, text = "There was an error in the die creation process, I recommend notifying Tacti about this error", ephemeral = True)
 
 
 class DieEditModal(discord.ui.Modal, title = "Edit Die"):
@@ -87,11 +86,11 @@ class DieEditModal(discord.ui.Modal, title = "Edit Die"):
 		self.die_name = self.die_name.value
 		self.die_roll = self.die_roll.value
 		if self.die_name in s.SHEET_ROLLS:
-			await interaction.response.send_message(f"The name ``{self.die_name}`` is already used by a built in function.", ephemeral = True)
+			await t.send_message(interaction, text = f"The name ``{self.die_name}`` is already used by a built in function.", ephemeral = True)
 		elif self.die_name[0].isnumeric():
-			await interaction.response.send_message("The die name cannot start with a number.", ephemeral = True)
+			await t.send_message(interaction, text = "The die name cannot start with a number.", ephemeral = True)
 		elif t.exists(self.die_name, "die"):
-			await interaction.response.send_message(f"The name ``{self.die_name}`` is already used by another die.", ephemeral = True)
+			await t.send_message(interaction, text = f"The name ``{self.die_name}`` is already used by another die.", ephemeral = True)
 		else:
 			die = Die(self.die_selected)
 			message = []
@@ -104,7 +103,7 @@ class DieEditModal(discord.ui.Modal, title = "Edit Die"):
 
 			die.update()
 
-			await interaction.response.send_message("\n".join(message), ephemeral = True)
+			await t.send_message(interaction, text = "\n".join(message), ephemeral = True)
 
 
 class DieCommandSelect(discord.ui.Select):

@@ -7,8 +7,7 @@ import asyncio
 
 
 async def table_command(interaction: discord.Interaction):
-	ctx = await bot.get_context(interaction)
-	person = Person(ctx)
+	person = Person(interaction)
 	if person.user.id in s.ADMINS:
 		with t.DatabaseConnection("data.db") as connection:
 			cursor = connection.cursor()
@@ -180,7 +179,7 @@ class SelectAutoGuestSetting(discord.ui.Select):
 				(selection, self.table.table_name)
 			)
 
-		await interaction.response.send_message("Table Updated!", ephemeral = True)
+		await t.send_message(interaction, text = "Table Updated!", ephemeral = True)
 
 		if selection:
 			with t.DatabaseConnection("data.db") as connection:
@@ -234,7 +233,7 @@ class ConfirmPermissions(discord.ui.Button):
 
 	async def callback(self, interaction: discord.Interaction):
 		if self.table.command == "" or self.table.table_name == "" or self.table.people == []:
-			await interaction.response.send_message("Missing Arguments, please fill out all fields", ephemeral = True)
+			await t.send_message(interaction, text = "Missing Arguments, please fill out all fields", ephemeral = True)
 			return
 
 		with t.DatabaseConnection("data.db") as connection:
@@ -243,17 +242,17 @@ class ConfirmPermissions(discord.ui.Button):
 			table_raw = cursor.fetchall()[0]
 
 		table_full = Table(table_raw)
-		ctx = await bot.get_context(self.table.interaction_og)
 
 		if self.table.command == "Change to Player":
 			for person in self.table.people:
+				person: discord.Member
 				for role in person.roles:
 					if table_full.guest_role == role:
 						await person.remove_roles(table_full.guest_role)
 						break
 
 				await person.add_roles(table_full.player_role)
-				await t.send_dm(ctx, f"Your access to table ``{self.table.table_name}`` has been set to Player by the DM.", discord_id = person.id)
+				await t.send_message(person, text = f"Your access to table ``{self.table.table_name}`` has been set to Player by the DM.")
 		elif self.table.command == "Change to Guest":
 			for person in self.table.people:
 				for role in person.roles:
@@ -262,17 +261,17 @@ class ConfirmPermissions(discord.ui.Button):
 						break
 
 				await person.add_roles(table_full.guest_role)
-				await t.send_dm(ctx, f"Your access to table ``{self.table.table_name}`` has been set to Guest by the DM.", discord_id = person.id)
+				await t.send_message(person, text = f"Your access to table ``{self.table.table_name}`` has been set to Guest by the DM.")
 		else:  # remove
 			for person in self.table.people:
 				for role in person.roles:
 					if table_full.guest_role == role:
 						await person.remove_roles(table_full.guest_role)
-						await t.send_dm(ctx, f"Your access to table ``{self.table.table_name}`` has been removed by the DM.", discord_id = person.id)
+						await t.send_message(person, text = f"Your access to table ``{self.table.table_name}`` has been removed by the DM.")
 						break
 					elif table_full.player_role == role:
 						await person.remove_roles(table_full.player_role)
-						await t.send_dm(ctx, f"Your access to table ``{self.table.table_name}`` has been removed by the DM.", discord_id = person.id)
+						await t.send_message(person, text = f"Your access to table ``{self.table.table_name}`` has been removed by the DM.")
 						break
 
 		await interaction.response.edit_message(content = "Role(s) successfully updated!", view = None)

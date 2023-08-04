@@ -1,11 +1,11 @@
 import utils.tools as t
 import classes as c
-import discord
+import discord.ext
 import re
 from ast import literal_eval
 
 
-async def vote_command(ctx, text_dump_):
+async def vote_command(identifier: discord.Interaction | discord.ext.commands.Context, text_dump_):
 	text_dump = text_dump_.split("\n")
 	index_1 = None
 	index_2 = None
@@ -20,7 +20,7 @@ async def vote_command(ctx, text_dump_):
 	voting_options = text_dump[:index_1]
 	vote_text = text_dump[index_1 + 1:index_2]
 
-	vote = Vote(ctx.author, vote_text = "\n".join(vote_text))
+	vote = Vote(t.identifier_to_member(identifier), vote_text = "\n".join(vote_text))
 
 	match len(voting_options):
 		case 1:
@@ -33,7 +33,7 @@ async def vote_command(ctx, text_dump_):
 				temp = re.split("><@", temp[9:-1])
 				for element in temp:
 					if element[0] == "&":
-						roles = ctx.guild.roles
+						roles = identifier.guild.roles
 						members = []
 						for role in roles:
 							if role.id == int(element[1:]):
@@ -48,7 +48,7 @@ async def vote_command(ctx, text_dump_):
 			temp = re.split("><@", temp[9:-1])
 			for element in temp:
 				if element[0] == "&":
-					roles = ctx.guild.roles
+					roles = identifier.guild.roles
 					members = []
 					for role in roles:
 						if role.id == int(element[1:]):
@@ -76,8 +76,11 @@ async def vote_command(ctx, text_dump_):
 
 	embed = vote.create_embed()
 
-	await ctx.send(embed = embed, view = VoteView(vote))
-	await ctx.message.delete()
+	if isinstance(identifier, discord.Interaction):
+		await identifier.followup.send_message(embed = embed, view = VoteView(vote))
+	else:
+		await identifier.send(embed = embed, view = VoteView(vote))
+	await identifier.message.delete()
 
 
 class PollOption:
@@ -157,19 +160,19 @@ class VoteButton(discord.ui.Button):
 		if interaction.user.id in self.vote.voters or self.vote.voters == []:
 			if interaction.user.id in self.vote.poll_options[self.poll_index].voters:
 				self.vote.poll_options[self.poll_index].voters.remove(interaction.user.id)
-				await interaction.response.edit_message(embed = self.vote.create_embed())
+				await t.send_message(interaction, embed = self.vote.create_embed())
 			else:
 				if self.vote.vote_amount > 0:
 					if self.vote.get_vote_amount(interaction.user.id) >= self.vote.vote_amount:
-						await interaction.response.send_message("You have too many votes here.", ephemeral = True)
+						await t.send_message(interaction, text = "You have too many votes here.", ephemeral = True)
 					else:
 						self.vote.poll_options[self.poll_index].voters.append(interaction.user.id)
-						await interaction.response.edit_message(embed = self.vote.create_embed())
+						await t.send_message(interaction, embed = self.vote.create_embed())
 				else:
 					self.vote.poll_options[self.poll_index].voters.append(interaction.user.id)
-					await interaction.response.edit_message(embed = self.vote.create_embed())
+					await t.send_message(interaction, embed = self.vote.create_embed())
 		else:
-			await interaction.response.send_message("You cannot vote here.", ephemeral = True)
+			await t.send_message(interaction, text = "You cannot vote here.", ephemeral = True)
 
 
 class VoteView(discord.ui.View):

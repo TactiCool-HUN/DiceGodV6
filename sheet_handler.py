@@ -1,8 +1,8 @@
 from datetime import datetime
-
-import discord
-
-from utils import settings as s, tools as t
+from utils.bot_setup import bot
+import discord.ext
+import utils.settings as s
+import utils.tools as t
 import classes as c
 import roller as r
 import gspread
@@ -108,8 +108,8 @@ def sort_inventory(sheet_inc: c.Sheet, based_on: str, spaces: bool, reverse: boo
 	return None
 
 
-async def init_resources(ctx):
-	sheet = c.Sheet(ctx)
+async def init_resources(identifier: discord.Interaction | discord.ext.commands.Context):
+	sheet = c.Sheet(identifier)
 	sh = sheet.get_sheet(sa)
 	wks = sh.worksheet("BotRead")
 	class_area = wks.get("A2:D6")
@@ -134,8 +134,8 @@ async def init_resources(ctx):
 				wks.update(place, 4)
 
 
-async def set_deathsave(ctx, natural, result) -> None:
-	sheet = c.Sheet(ctx)
+async def set_deathsave(identifier: discord.Interaction | discord.ext.commands.Context, natural, result) -> None:
+	sheet = c.Sheet(identifier)
 	sh = sheet.get_sheet(sa)
 	main = sh.worksheet("Main")
 
@@ -149,7 +149,7 @@ async def set_deathsave(ctx, natural, result) -> None:
 			f"It's a miracle! {sheet.character}'s wounds close, do care though, death is still watching.",
 			"Remember son, dying is gay.\n(flashback to childhood memories before suddenly pulled back to life)"
 		])
-		await t.send_message_old(ctx, txt, True)
+		await t.send_message(identifier, text = txt, reply = True)
 		return
 	else:
 		if natural == 1:
@@ -232,7 +232,7 @@ async def set_deathsave(ctx, natural, result) -> None:
 
 			main.update(area_txt, setter)
 
-		await t.send_message_old(ctx, txt, True)
+		await t.send_message(identifier, text = txt, reply = True)
 
 
 def get_ability_mod(sheet_inc, ability_score: str):
@@ -502,15 +502,15 @@ def get_attack(sheet_inc, attack_inc: str):
 		followups.append(c.FollowupButton("🩸", "1d4", "roll", label="rite"))
 
 	if eldritch_level > 8:
-		followups.append(c.FollowupButton(1071167194165170207, "6d8[force]", "roll", "eldritch"))
+		followups.append(c.FollowupButton(bot.get_emoji(1071167194165170207), "6d8[force]", "roll", "eldritch"))
 	elif eldritch_level > 6:
-		followups.append(c.FollowupButton(1071167194165170207, "5d8[force]", "roll", "eldritch"))
+		followups.append(c.FollowupButton(bot.get_emoji(1071167194165170207), "5d8[force]", "roll", "eldritch"))
 	elif eldritch_level > 4:
-		followups.append(c.FollowupButton(1071167194165170207, "4d8[force]", "roll", "eldritch"))
+		followups.append(c.FollowupButton(bot.get_emoji(1071167194165170207), "4d8[force]", "roll", "eldritch"))
 	elif eldritch_level > 2:
-		followups.append(c.FollowupButton(1071167194165170207, "3d8[force]", "roll", "eldritch"))
+		followups.append(c.FollowupButton(bot.get_emoji(1071167194165170207), "3d8[force]", "roll", "eldritch"))
 	elif eldritch_level > 0:
-		followups.append(c.FollowupButton(1071167194165170207, "2d8[force]", "roll", "eldritch"))
+		followups.append(c.FollowupButton(bot.get_emoji(1071167194165170207), "2d8[force]", "roll", "eldritch"))
 
 	if heavy:
 		add = add - get_prof(sheet_inc)
@@ -624,9 +624,9 @@ def get_c_attack(sheet_inc, attack_inc: str):
 		slot = int(attack_inc[3]) + 6
 
 	# noinspection SpellCheckingInspection
-	followups.append(c.FollowupButton("👋", f"cdmg{slot - 6}", "roll", label = "1h"))
+	followups.append(c.FollowupButton("👋", f"cdmg{slot - 6}", "roll", label="1h"))
 	# noinspection SpellCheckingInspection
-	followups.append(c.FollowupButton("\U0001F450", f"cdmg{slot - 6}_2h", "roll", label = "2h"))
+	followups.append(c.FollowupButton("\U0001F450", f"cdmg{slot - 6}_2h", "roll", label="2h"))
 
 	add = 0
 	adv = None
@@ -764,8 +764,8 @@ def get_spell_mod(sheet_inc, spell_mod_inc: str):
 	return int(add)
 
 
-async def set_condition(ctx, condition, on_or_off, exhaustion_level):
-	sheet = c.Sheet(ctx).sheet
+async def set_condition(identifier: discord.Interaction | discord.ext.commands.Context, condition, on_or_off, exhaustion_level):
+	sheet = c.Sheet(identifier).sheet
 	sh = sa.open(sheet)
 	main = sh.worksheet("Main")
 	if condition == "clear":
@@ -841,8 +841,8 @@ async def set_condition(ctx, condition, on_or_off, exhaustion_level):
 			return txt
 
 
-def money(ctx, name, income_loss, platinum, gold, electrum, silver, copper, multiplier):
-	sheet_name = c.Sheet(ctx).sheet
+def money(identifier: discord.Interaction | discord.ext.commands.Context, name, income_loss, platinum, gold, electrum, silver, copper, multiplier):
+	sheet_name = c.Sheet(identifier).sheet
 	sh = sa.open(sheet_name)
 	active = sh.worksheet("MoneyTracker")
 	area = active.get("A4:H201")
@@ -850,8 +850,8 @@ def money(ctx, name, income_loss, platinum, gold, electrum, silver, copper, mult
 	active.update(f"A{len(area) + 4}:H{len(area) + 4}", [transaction])
 
 
-def spell_point(ctx, command, amount, spell_level):
-	sheet = c.Sheet(ctx)
+def spell_point(identifier: discord.Interaction | discord.ext.commands.Context, command, amount, spell_level):
+	sheet = c.Sheet(identifier)
 	sh = sa.open(sheet.sheet)
 	wks = sh.worksheet("Spells")
 	area = wks.get("B2:S11")
@@ -888,11 +888,11 @@ def spell_point(ctx, command, amount, spell_level):
 		return "You do not have spell points set on your sheet", "Error."
 
 
-async def heal_hurt(ctx, is_heal: bool, amount: str, is_companion: bool = False):
+async def heal_hurt(identifier: discord.Interaction | discord.ext.commands.Context, is_heal: bool, amount: str, is_companion: bool = False):
 	if amount == "0":
 		return "Why?", None
 
-	sheet = c.Sheet(ctx).sheet
+	sheet = c.Sheet(identifier).sheet
 	sh = sa.open(sheet)
 	if is_companion:
 		wks = sh.worksheet("Companion")
@@ -915,7 +915,7 @@ async def heal_hurt(ctx, is_heal: bool, amount: str, is_companion: bool = False)
 		wks = sh.worksheet("Main")
 		area = wks.get("AM14:AV19")
 
-		character = c.Person(ctx).active
+		character = c.Person(identifier).active
 
 		current = int(area[0][3])
 		max_hp = int(area[0][7])
@@ -936,7 +936,7 @@ async def heal_hurt(ctx, is_heal: bool, amount: str, is_companion: bool = False)
 	splits_raw = re.findall("[+-][^+-]+", amount)
 	amount = 0
 	for split in splits_raw:
-		pack_maker = await asyncio.to_thread(r.text_to_pack, ctx, split, False)
+		pack_maker = await asyncio.to_thread(r.text_to_pack, identifier, split, False)
 		pack = await pack_maker
 
 		if pack.single_rolls:  # - - - - - - - - do the thing - - - - - - - -
@@ -1272,11 +1272,11 @@ async def heal_hurt(ctx, is_heal: bool, amount: str, is_companion: bool = False)
 	return response, followups
 
 
-async def set_temp(ctx, amount, force = False, is_companion = False):
+async def set_temp(identifier: discord.Interaction | discord.ext.commands.Context, amount, force = False, is_companion = False):
 	if amount == "0":
 		return "Why?", None
 
-	pack_maker = await asyncio.to_thread(r.text_to_pack, ctx, amount, False)
+	pack_maker = await asyncio.to_thread(r.text_to_pack, identifier, amount, False)
 	pack = await pack_maker
 
 	if pack.single_rolls:  # - - - - - - - - do the thing - - - - - - - -
@@ -1292,7 +1292,7 @@ async def set_temp(ctx, amount, force = False, is_companion = False):
 	if amount < 1:
 		return "Amount came out as 0 or negative.", None
 
-	sheet = c.Sheet(ctx).sheet
+	sheet = c.Sheet(identifier).sheet
 	sh = sa.open(sheet)
 	if is_companion:
 		wks = sh.worksheet("Companion")
@@ -1300,7 +1300,7 @@ async def set_temp(ctx, amount, force = False, is_companion = False):
 		place = "AJ14"
 	else:
 		wks = sh.worksheet("Main")
-		character = c.Person(ctx).active
+		character = c.Person(identifier).active
 		place = "AM14"
 
 	if force:
@@ -1322,8 +1322,8 @@ async def set_temp(ctx, amount, force = False, is_companion = False):
 			return txt, followups
 
 
-def change_inspiration(ctx, to_do, amount):
-	sheet = c.Sheet(ctx)
+def change_inspiration(identifier: discord.Interaction | discord.ext.commands.Context, to_do, amount):
+	sheet = c.Sheet(identifier)
 	sh = sa.open(sheet.sheet)
 	wks = sh.worksheet("Main")
 
@@ -1345,8 +1345,8 @@ def change_inspiration(ctx, to_do, amount):
 		return f"Inspiration point set to {sheet.character}!\nCurrent inspiration: {set_to}/{maximum}"
 
 
-async def rest(ctx, length: str, hit_dice: str):
-	sheet = c.Sheet(ctx)
+async def rest(identifier: discord.Interaction | discord.ext.commands.Context, length: str, hit_dice: str):
+	sheet = c.Sheet(identifier)
 	sh = sa.open(sheet.sheet)
 	main = sh.worksheet("Main")
 	limited = sh.worksheet("LimitedUse")
@@ -1483,7 +1483,7 @@ async def rest(ctx, length: str, hit_dice: str):
 				# - - - - - - - - - - hit dice healing - - - - - - - - - -
 				if hit_dice:
 					con = int(main.acell("N6").value)
-					pack_maker = await asyncio.to_thread(r.text_to_pack, ctx, hit_dice, False)
+					pack_maker = await asyncio.to_thread(r.text_to_pack, identifier, hit_dice, False)
 					pack = await pack_maker
 
 					amount = 0
@@ -1538,7 +1538,7 @@ async def rest(ctx, length: str, hit_dice: str):
 	return "\n".join(responses)
 
 
-async def get_spell(ctx, spell_inc, sheet = None, exact_search = False):  # gets text, returns spell class
+async def get_spell(identifier: discord.Interaction | discord.ext.commands.Context, spell_inc, sheet = None, exact_search = False):  # gets text, returns spell class
 	to_find = spell_inc.replace("_", "").replace(" ", "").lower()
 
 	check_player = True
@@ -1546,7 +1546,7 @@ async def get_spell(ctx, spell_inc, sheet = None, exact_search = False):  # gets
 	if not sheet:
 		try:
 			try:
-				sheet = c.Sheet(ctx)
+				sheet = c.Sheet(identifier)
 				sh = sa.open(sheet.sheet)
 			except IndexError:
 				sh = sa.open("MainV5")
@@ -1637,8 +1637,8 @@ def get_spell_class(all_spells, exact_spell, pc_level):
 	return c.Spell(spell, prepared, pc_level)
 
 
-def cast_slot(ctx, spell_level):
-	sheet = c.Sheet(ctx).sheet
+def cast_slot(identifier: discord.Interaction | discord.ext.commands.Context, spell_level):
+	sheet = c.Sheet(identifier).sheet
 	sh = sa.open(sheet)
 	wks = sh.worksheet("Spells")
 	area = wks.get("B2:S11")
@@ -1667,7 +1667,21 @@ def cast_slot(ctx, spell_level):
 			if line[4] != "0":
 				if int(line[2]) == spell_level:
 					number_of_slots -= 1
-				reply.append(f"Level {line[2]}: {number_of_slots}/{line[4]}")
+				max_slots = int(line[4])
+				appendee = []
+				for j in range(max_slots):
+					if j < number_of_slots:
+						appendee.append("●")
+					else:
+						appendee.append("○")
+				if int(line[2]) == 1:
+					reply.append(f"``1st level: {' '.join(appendee)}``")
+				elif int(line[2]) == 2:
+					reply.append(f"``2nd level: {' '.join(appendee)}``")
+				elif int(line[2]) == 3:
+					reply.append(f"``3rd level: {' '.join(appendee)}``")
+				else:
+					reply.append(f"``{line[2]}th level: {' '.join(appendee)}``")
 		reply = "\n".join(reply)
 	else:
 		current = int(area[2][15])
@@ -1683,8 +1697,8 @@ def cast_slot(ctx, spell_level):
 	return reply
 
 
-def get_spell_list(ctx):
-	sheet = c.Sheet(ctx)
+def get_spell_list(identifier: discord.Interaction | discord.ext.commands.Context):
+	sheet = c.Sheet(identifier)
 	sh = sa.open(sheet.sheet)
 	wks = sh.worksheet("Spells")
 	area = wks.get("B15:D171")
@@ -1709,7 +1723,7 @@ def get_inventory(sheet, based_on):
 
 	reply = []
 	for line in area:
-		if len(line) < 1:
+		if line[0] == '':
 			continue
 
 		if based_on:
@@ -1725,7 +1739,7 @@ def get_inventory(sheet, based_on):
 	return "\n".join(reply)
 
 
-async def clear_sheet(interaction, ctx, sheet, player, dm):
+async def clear_sheet(interaction, sheet, player, dm):
 	timer = 10
 	sh = sa.open(sheet)
 	link = sh.url
@@ -1750,7 +1764,7 @@ async def clear_sheet(interaction, ctx, sheet, player, dm):
 	start_time = datetime.now()
 
 	sent = await t.clear_progress(player, sheet, progress, start_time)
-	await interaction.followup.send("Clearing started.")
+	await t.send_message(interaction, text = "Clearing started.")
 	# - - - - - - - - - - - - - - - - - - - - SETUP - - - - - - - - - - - - - - - - - - - -
 	current = "Setup"
 	print(sheet + ": " + current)
@@ -3217,11 +3231,11 @@ async def clear_sheet(interaction, ctx, sheet, player, dm):
 	asyncio.create_task(t.clear_progress(player, sheet, progress, start_time, current, 5, sent))
 
 	text = f"Your new sheet is ready adventurer, best of luck out there!\n{sheet}\n<{link}>"
-	await t.send_dm(ctx, text, False, player.id)
+	await t.send_message(c.Person(discord_id = player.id), text = text)
 	if dm:
 		text = f"One of your players got a new sheet, here is the access link:\n{sheet}\n<{link}>"
-		await t.send_dm(ctx, text, False, dm.id)
-	await interaction.followup.send("Done.")
+		await t.send_message(c.Person(discord_id = dm.id), text = text)
+	await t.send_message(interaction, text = "Done.")
 	print("- - - - - - - - done - - - - - - - -")
 
 

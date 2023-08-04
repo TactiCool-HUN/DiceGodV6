@@ -3,17 +3,17 @@ from utils import settings as s, tools as t
 from views.followup_view import FollowupButton
 import textwrap
 import datetime
-import discord
+import discord.ext
 import re
 
 
 class Person:
-	def __init__(self, ctx = None, discord_id = None):
-		if not ctx and not discord_id:
+	def __init__(self, identifier: discord.Interaction | discord.ext.commands.Context = None, discord_id = None):
+		if not identifier and not discord_id:
 			raise ValueError("Improper Person initiation.")
 
-		if ctx:
-			self.user = ctx.author
+		if identifier:
+			self.user = t.identifier_to_member(identifier)
 		else:
 			self.user = bot.get_user(discord_id)
 
@@ -92,9 +92,9 @@ class Person:
 
 
 class Sheet:
-	def __init__(self, ctx, character: str = None, sheet: str = None, new: bool = False):
-		self.user = Person(ctx)
-		self.owner = None
+	def __init__(self, identifier: discord.Interaction | discord.ext.commands.Context, character: str = None, sheet: str = None, new: bool = False):
+		self.user = Person(identifier)
+		self.owner: Person = None
 		self.character = character
 		self.sheet = sheet
 		self.google_sheet = None
@@ -102,24 +102,26 @@ class Sheet:
 		self.last_warning = datetime.datetime.now() - datetime.timedelta(days = 2)
 
 		if new:
-			self.create(ctx)
+			self.create(identifier)
 		else:
 			if not self.character:
 				self.character = self.user.active
-			self.load(ctx)
+			self.load(identifier)
 
-	def create(self, ctx):
+	def create(self, identifier: discord.Interaction | discord.ext.commands.Context) -> None:
+		member = t.identifier_to_member(identifier)
 		with t.DatabaseConnection("data.db") as connection:
 			cursor = connection.cursor()
 			cursor.execute(
 				"INSERT INTO sheets(owner_id, character, sheet, last_warning)"
 				"VALUES (?, ?, ?, ?)",
-				(ctx.author.id, self.character, self.sheet, self.last_warning)
+				(member.id, self.character, self.sheet, self.last_warning)
 			)
 
-		self.load(ctx)
+		self.load(identifier)
 
-	def load(self, ctx):
+	def load(self, identifier: discord.Interaction | discord.ext.commands.Context) -> None:
+		member = t.identifier_to_member(identifier)
 		with t.DatabaseConnection("data.db") as connection:
 			cursor = connection.cursor()
 			cursor.execute("SELECT * FROM sheets WHERE character = ?", (self.character,))
@@ -130,18 +132,18 @@ class Sheet:
 		else:
 			raw = raw[0]
 
-		if raw[1] == ctx.author.id:  # check if owner
+		if raw[1] == member.id:  # check if owner
 			self.owner = Person(discord_id = raw[1])
 			self.user = self.owner
 			self.sheet = raw[3]
 			self.char_image = raw[4]
 			self.last_warning = datetime.datetime.strptime(raw[5], "%Y-%m-%d %H:%M:%S.%f")
-		elif t.is_rented(self, ctx.author):  # check if rented
+		elif t.is_rented(self, member):  # check if rented
 			self.owner = Person(discord_id = raw[1])
 			self.sheet = raw[3]
 			self.char_image = raw[4]
 			self.last_warning = datetime.datetime.strptime(raw[5], "%Y-%m-%d %H:%M:%S.%f")
-		elif ctx.author.id in s.ADMINS:
+		elif member.id in s.ADMINS:
 			self.owner = Person(discord_id = raw[1])
 			self.sheet = raw[3]
 			self.char_image = raw[4]
@@ -222,8 +224,8 @@ class Die:
 
 
 class Pack:
-	def __init__(self, ctx, single_rolls, roll_raw):
-		self.ctx = ctx
+	def __init__(self, identifier: discord.Interaction | discord.ext.commands.Context, single_rolls, roll_raw):
+		self.identifier = identifier
 		self.single_rolls: list[SingleRoll] = []
 		self.single_rolls += single_rolls
 		self.followups = [FollowupButton("\U0001F504", roll_raw, "reroll")]

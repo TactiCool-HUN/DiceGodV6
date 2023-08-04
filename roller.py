@@ -5,26 +5,26 @@ import datetime
 import gspread
 import random
 import re
-import discord
+import discord.ext
 
 sa = gspread.service_account(filename = "data_holder/service_account.json")
 
 
-async def text_to_pack(ctx, roll_txt, crit = False):
+async def text_to_pack(identifier: discord.Interaction | discord.ext.commands.Context, roll_txt, crit = False):
 	if type(roll_txt) == str:
 		roll_txt = roll_txt.replace(" ", "").lower()
 	else:
 		roll_txt = str(roll_txt)
-	single_rolls = await text_to_singles(ctx, roll_txt)
+	single_rolls = await text_to_singles(identifier, roll_txt)
 	for i, roll in enumerate(single_rolls):
 		if crit:
 			roll.args.crit = True
-		single_rolls[i] = random_roller(ctx, roll)
+		single_rolls[i] = random_roller(identifier, roll)
 
-	return c.Pack(ctx, single_rolls, roll_txt)
+	return c.Pack(identifier, single_rolls, roll_txt)
 
 
-async def text_to_singles(ctx, roll_txt):
+async def text_to_singles(identifier: discord.Interaction | discord.ext.commands.Context, roll_txt):
 	single_rolls = []
 
 	if roll_txt[:9] == "flexible:":
@@ -54,7 +54,7 @@ async def text_to_singles(ctx, roll_txt):
 		elif t.is_sheet_based(split[1:]):  # - - - - - sheet based - - - - -
 			sheet_type, split_cut, args = t.is_sheet_based(split[1:])
 			if not sheet:
-				sheet = c.Sheet(ctx)
+				sheet = c.Sheet(identifier)
 				sheet.get_sheet(sa)
 
 			match sheet_type:
@@ -97,8 +97,7 @@ async def text_to_singles(ctx, roll_txt):
 					if current_single:
 						single_rolls.append(current_single)
 					temp = sh.get_damage(sheet, split_cut)
-					# noinspection PyUnresolvedReferences
-					damage_singles = await text_to_singles(ctx, temp)
+					damage_singles = await text_to_singles(identifier, temp)
 					for single in damage_singles:
 						single.args.merge_args(args)
 						single.dynamic = True
@@ -127,8 +126,7 @@ async def text_to_singles(ctx, roll_txt):
 					if current_single:
 						single_rolls.append(current_single)
 					temp = sh.get_c_damage(sheet, split_cut)
-					# noinspection PyUnresolvedReferences
-					damage_singles = await text_to_singles(ctx, temp)
+					damage_singles = await text_to_singles(identifier, temp)
 					for single in damage_singles:
 						single.args.merge_args(args)
 						single.dynamic = True
@@ -176,7 +174,7 @@ async def text_to_singles(ctx, roll_txt):
 			if current_single:
 				single_rolls.append(current_single)
 			die = c.Die(split_cut)
-			die_rolls = await text_to_singles(ctx, die.roll)
+			die_rolls = await text_to_singles(identifier, die.roll)
 			for roll in die_rolls:
 				if not t.exists(roll.name, "die"):
 					roll.name = die.name
@@ -188,18 +186,18 @@ async def text_to_singles(ctx, roll_txt):
 		else:  # - - - - - spells - - - - -
 			try:
 				if not sheet:
-					sheet = c.Sheet(ctx)
+					sheet = c.Sheet(identifier)
 					sheet.get_sheet(sa)
 			except IndexError:
 				pass
-			spell_out, found, remainder = await sh.get_spell(ctx, spell_inc = split[1:], sheet = sheet, exact_search = True)
+			spell_out, found, remainder = await sh.get_spell(identifier, spell_inc = split[1:], sheet = sheet, exact_search = True)
 			if found == "exact" and len(spell_out.followups) > 1:
 				args = c.RollArgs(remainder)
 				if args.spell_level:
 					level = args.spell_level - int(spell_out.level[0]) + 1
 				else:
 					level = 1
-				spell_rolls = await text_to_singles(ctx, spell_out.followups[level].data)
+				spell_rolls = await text_to_singles(identifier, spell_out.followups[level].data)
 				for roll in spell_rolls:
 					if not t.exists(roll.name, "die"):
 						roll.name = spell_out.name
@@ -215,7 +213,7 @@ async def text_to_singles(ctx, roll_txt):
 		single_rolls.append(current_single)
 
 	if extra_die:
-		single_rolls += await text_to_singles(ctx, extra_die)
+		single_rolls += await text_to_singles(identifier, extra_die)
 
 	if flexible_warning:
 		single_rolls[0].roll_note.append("Damage bonuses that solely apply to 1 or 2 handed attacks are NOT automatically added to Flexible damage rolls.")
@@ -223,8 +221,8 @@ async def text_to_singles(ctx, roll_txt):
 	return single_rolls
 
 
-def random_roller(ctx, roll: c.SingleRoll):
-	person = c.Person(ctx)
+def random_roller(identifier: discord.Interaction | discord.ext.commands.Context, roll: c.SingleRoll):
+	person = c.Person(identifier)
 	args: c.RollArgs = roll.args
 	pre_send = []
 
@@ -341,7 +339,7 @@ def random_roller(ctx, roll: c.SingleRoll):
 	if size == 20 and roll.dynamic:
 		for item in roll.results:
 			if (item[0] == 1 or item[0] == 20) and item[1]:
-				roll.followups.append(c.FollowupButton("🍀", None, "add_inspiration", style = discord.ButtonStyle.green))
+				roll.followups.append(c.FollowupButton("🍀", None, "add_inspiration", style=discord.ButtonStyle.green))
 
 	if my_date.month == 4 and my_date.day == 1:
 		pre_send = []

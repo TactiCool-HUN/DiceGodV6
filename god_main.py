@@ -13,7 +13,7 @@ from views.vote_command import vote_command
 from views.die_command import die_command
 from views.table_command import table_command
 from secondary_functions import chatbot, emoji_role
-import discord
+import discord.ext
 import asyncio
 import random
 import ast
@@ -81,10 +81,10 @@ async def on_ready():
 
 
 @bot.event
-async def on_message(ctx: discord.Message):
-	if ctx.author != bot.user:
-		asyncio.create_task(chatbot.bot_responses(ctx))
-		asyncio.create_task(bot.process_commands(ctx))
+async def on_message(message: discord.Message):
+	if message.author != bot.user:
+		asyncio.create_task(chatbot.bot_responses(message))
+		asyncio.create_task(bot.process_commands(message))
 
 
 @bot.event
@@ -222,7 +222,7 @@ async def _thingy(message: discord.Message):
 
 
 @bot.command(name = "ping")
-async def ping_command(ctx):
+async def ping_command(ctx: discord.ext.commands.Context):
 	response_list = [
 		"pong", 48,
 		"ping", 1,
@@ -230,21 +230,21 @@ async def ping_command(ctx):
 	]
 	result = t.choice(response_list)
 	if result == "ping":
-		await t.send_message_old(ctx, result, reply = True)
+		await t.send_message(ctx, text = result, reply = True)
 		await asyncio.sleep(2)
-		await t.send_message_old(ctx, "oh, wait no\npong!", reply = True)
+		await t.send_message(ctx, text = "oh, wait no\npong!", reply = True)
 	else:
-		await t.send_message_old(ctx, result, reply = True)
+		await t.send_message(ctx, text = result, reply = True)
 
 
 @bot.command(name = "pong")
-async def pong_command(ctx):
+async def pong_command(ctx: discord.ext.commands.Context):
 	response_list = [
 		"ping", 49,
 		"You wrote \"pong\" instead of \"ping\" and now you feel special don't you?", 1
 	]
 	result = t.choice(response_list)
-	await t.send_message_old(ctx, result, reply = True)
+	await t.send_message(ctx, text = result, reply = True)
 
 
 @bot.command(name = 'emoji')
@@ -253,7 +253,7 @@ async def emoji_command(emoji):
 
 
 @bot.command(name = "kill")
-async def kill_command(ctx, *, other = None):
+async def kill_command(ctx: discord.ext.commands.Context, *, other = None):
 	print(f'{ctx.author} said "{other}", how rude...')
 	# noinspection SpellCheckingInspection
 	await ctx.message.add_reaction("<:angycat:817122720227524628>")
@@ -270,7 +270,7 @@ async def kill_command(ctx, *, other = None):
 		]
 		result = t.choice(response_list)
 	if result[0] == "-":
-		sent = await t.send_message_old(ctx, result, reply = True, is_return = True)
+		sent = await t.send_message(ctx, text = result, reply = True, is_return = True)
 		sent = await sent.reply("Contacting Pinkertons, please do not leave your current area. (○)")
 		for i in range(20):
 			if i % 2 == 0:
@@ -284,51 +284,50 @@ async def kill_command(ctx, *, other = None):
 		await asyncio.sleep(6)
 		await sent.edit(content = "Pinkertons connection established: Agent granted.\nStandby for annihilation.")
 	else:
-		await t.send_message_old(ctx, result, reply = True)
+		await t.send_message(ctx, text = result, reply = True)
 
 
 @bot.command(name = "roll", aliases = ["r", "e"])
-async def _roll_command_(ctx, *, text):
+async def _roll_command_(ctx: discord.ext.commands.Context, *, text):
 	await com.roll_command(ctx, text)
 
 
 @bot.command(name = "yeet")
-async def _yeet_command_(ctx, *, text):
+async def _yeet_command_(ctx: discord.ext.commands.Context, *, text):
 	if random.randint(1, 50) == 1:
 		text = "I saw that it went off the table but I can't find it anywhere, you gotta roll a new one, we'll find it after session."
-		await t.send_message_old(ctx, text, reply = True)
+		await t.send_message(ctx, text = text, reply = True)
 	elif random.randint(1, 12) == 1:
 		followups = [c.FollowupButton("✅", text, "roll"), c.FollowupButton("❎", None, "disable")]
 		# noinspection SpellCheckingInspection
 		message = "You yeeted the die of the table, does it still count?"
-		await t.send_message_old(ctx, message, reply = True, followups = followups)
+		await t.send_message(ctx, text = message, reply = True, followups = followups)
 	else:
 		await com.roll_command(ctx, text)
 
 
 @bot.command(name = "coinflip", aliases = ["coin"])
-async def coin_old(ctx):
+async def coin_old(ctx: discord.ext.commands.Context):
 	response_list = [
 		f"{c.Person(ctx).user.display_name} flipped a coin and it landed on... it's side?", 1,
 		f"{c.Person(ctx).user.display_name} flipped a coin and it landed on **heads**!", 49,
 		f"{c.Person(ctx).user.display_name} flipped a coin and it landed on **tails**!", 51
 	]
-	await t.send_message_old(ctx, t.choice(response_list))
+	await t.send_message(ctx, text = t.choice(response_list))
 
 
 @bot.tree.command(name = "coinflip", description = "Flip a coin! (such complexity, but hey if you read it here is a tip: -coin has 1% more tails)")
 async def coin_slash(interaction: discord.Interaction):
-	ctx = await bot.get_context(interaction)
 	response_list = [
-		f"{c.Person(ctx).user.display_name} flipped a coin and it landed on... it's side?", 1,
-		f"{c.Person(ctx).user.display_name} flipped a coin and it landed on **heads**!", 51,
-		f"{c.Person(ctx).user.display_name} flipped a coin and it landed on **tails**!", 49
+		f"{c.Person(interaction).user.display_name} flipped a coin and it landed on... it's side?", 1,
+		f"{c.Person(interaction).user.display_name} flipped a coin and it landed on **heads**!", 51,
+		f"{c.Person(interaction).user.display_name} flipped a coin and it landed on **tails**!", 49
 	]
-	await t.send_message_old(ctx, t.choice(response_list))
+	await t.send_message(interaction, text = t.choice(response_list))
 
 
 @bot.command(name = "pc", aliases = ["char", "character"])
-async def pc_old(ctx, command, char_name = None, sheet_name = None, person = None):
+async def pc_old(ctx: discord.ext.commands.Context, command, char_name = None, sheet_name = None, person = None):
 	await com.pc_command(ctx, command, char_name, sheet_name, '', person)
 
 
@@ -347,8 +346,7 @@ async def pc_old(ctx, command, char_name = None, sheet_name = None, person = Non
 @discord.app_commands.describe(image_url = "Provide an openly accessible !portrait! image's url.")
 @discord.app_commands.describe(person = "Ping a person. Only needed for the Access command.")
 async def pc_slash(interaction: discord.Interaction, command: Choice[str], char_name: str = None, sheet_name: str = None, image_url: str = None, person: discord.Member = None):
-	ctx = await bot.get_context(interaction)
-	await com.pc_command(ctx, command.value, char_name, sheet_name, image_url, person, interaction)
+	await com.pc_command(interaction, command.value, char_name, sheet_name, image_url, person)
 
 
 """@bot.tree.command(name = "die", description = "Create custom named dice, any complex roll. You can also: update, or delete already existing ones.")
@@ -490,8 +488,7 @@ async def die_slash(interaction: discord.Interaction):
 @discord.app_commands.describe(color = "Set your color!")
 @discord.app_commands.describe(tag = 'Set which tag your rolls will be saved! (use "clear" to empty it)')
 async def settings(interaction: discord.Interaction, change_name: Choice[int] = None, auto_roll_tagging: Choice[int] = None, chat_ignore: Choice[int] = None, uwuify_messages: Choice[int] = None, color: str = None, tag: str = None):
-	ctx = await bot.get_context(interaction)
-	person = c.Person(ctx)
+	person = c.Person(interaction)
 	ephemeral = True
 	test_roll = False
 	response = "Settings changed!"
@@ -508,7 +505,7 @@ async def settings(interaction: discord.Interaction, change_name: Choice[int] = 
 		if change_name:
 			if person.active:
 				try:
-					await ctx.author.edit(nick = person.set_name())
+					await t.identifier_to_member(interaction).edit(nick = person.set_name())
 				except Exception as e:
 					print(e)
 			person.change_name = True
@@ -517,7 +514,7 @@ async def settings(interaction: discord.Interaction, change_name: Choice[int] = 
 		else:
 			person.change_name = False
 			try:
-				await ctx.author.edit(nick = person.clear_name())
+				await t.identifier_to_member(interaction).edit(nick = person.clear_name())
 			except Exception as e:
 				print(e)
 			response += "\nFrom now on your name will not be set by the bot (it is also reset)."
@@ -561,10 +558,9 @@ async def settings(interaction: discord.Interaction, change_name: Choice[int] = 
 		else:
 			response += f'\nYour rolls will be saved tag the "{tag}" name.'
 
-	# noinspection PyUnresolvedReferences
-	await interaction.response.send_message(response, ephemeral = ephemeral)
+	await t.send_message(interaction, text = response, ephemeral = ephemeral)
 	if test_roll:
-		await com.roll_command(ctx, "1")
+		await com.roll_command(interaction, "1")
 
 
 @bot.tree.command(name = "condition", description = "Set exhaustion or conditions on your active character.")
@@ -600,7 +596,6 @@ async def settings(interaction: discord.Interaction, change_name: Choice[int] = 
 	app_commands.Choice(name = "up", value = "up"),
 	app_commands.Choice(name = "down", value = "down"), ])
 async def condition(interaction: discord.Interaction, conditions: Choice[str], on_or_off: Choice[str] = None, exhaustion_level: Choice[str] = None):
-	ctx = await bot.get_context(interaction)
 	if conditions:
 		conditions = conditions.value
 	if on_or_off:
@@ -612,8 +607,8 @@ async def condition(interaction: discord.Interaction, conditions: Choice[str], o
 			on_or_off = False
 	if exhaustion_level:
 		exhaustion_level = exhaustion_level.value
-	await ctx.defer()
-	await com.condition_command(interaction, ctx, conditions, on_or_off, exhaustion_level)
+	await interaction.response.defer()
+	await com.condition_command(interaction, conditions, on_or_off, exhaustion_level)
 
 
 @bot.tree.command(name = "money_tracking", description = "Add income or loss statements to your active character's Money Tracker.")
@@ -628,13 +623,12 @@ async def condition(interaction: discord.Interaction, conditions: Choice[str], o
 @app_commands.describe(copper = "Amount of copper pieces")
 @app_commands.describe(multiplier = "Multiplier, default: 1")
 async def money_tracking(interaction: discord.Interaction, name: str, income_loss: Choice[str], platinum: int = 0, gold: int = 0, electrum: int = 0, silver: int = 0, copper: int = 0, multiplier: int = 1):
-	ctx = await bot.get_context(interaction)
-	person = c.Person(ctx)
+	person = c.Person(interaction)
 	if person.active:
-		await ctx.defer(ephemeral = True)
+		await interaction.response.defer(ephemeral = True)
 		income_loss = income_loss.value
 
-		await asyncio.to_thread(r.sh.money, ctx, name, income_loss, platinum, gold, electrum, silver, copper, multiplier)
+		await asyncio.to_thread(r.sh.money, interaction, name, income_loss, platinum, gold, electrum, silver, copper, multiplier)
 
 		if income_loss == "income":
 			txt = f"{person.active} gained under transaction name ``{name}``"
@@ -651,10 +645,9 @@ async def money_tracking(interaction: discord.Interaction, name: str, income_los
 		if copper:
 			txt = f"{txt} {copper * multiplier} CP"
 
-		await interaction.followup.send(f"{txt}!", ephemeral = True)
+		await t.send_message(interaction, text = f"{txt}!", ephemeral = True)
 	else:
-		# noinspection PyUnresolvedReferences
-		await interaction.response.send_message("No active character found.", ephemeral = True)
+		await t.send_message(interaction, text = "No active character found.", ephemeral = True)
 
 
 # noinspection SpellCheckingInspection
@@ -677,55 +670,54 @@ async def money_tracking(interaction: discord.Interaction, name: str, income_los
 	app_commands.Choice(name = "8th", value = 8),
 	app_commands.Choice(name = "9th", value = 9), ])
 async def spell_points(interaction: discord.Interaction, command: Choice[str], amount: int = 0, spell_level: Choice[int] = None):
-	ctx = await bot.get_context(interaction)
-	await ctx.defer(ephemeral = True)
+	await interaction.response.defer(ephemeral = True)
 	if spell_level:
 		spell_level = int(spell_level.value)
-	public, private = r.sh.spell_point(ctx, command.value, amount, spell_level)
-	await interaction.followup.send(private, ephemeral = True)
-	asyncio.create_task(t.send_message_old(ctx, public))
+	public, private = r.sh.spell_point(interaction, command.value, amount, spell_level)
+	await t.send_message(interaction, text = private, ephemeral = True)
+	await t.send_message(interaction, text = public)
 
 
 # noinspection SpellCheckingInspection
 @bot.command(name = "hurt", aliases = ["heal", "healing", "hert"])
-async def hp_stuff(ctx, *, amount):
+async def hp_stuff(ctx: discord.ext.commands.Context, *, amount):
 	await com.hp_command(ctx, amount)
 
 
 # noinspection SpellCheckingInspection
 @bot.command(name = "churt", aliases = ["cheal", "chealing"])
-async def companion_hp_stuff(ctx, *, amount):
+async def companion_hp_stuff(ctx: discord.ext.commands.Context, *, amount):
 	await com.hp_command(ctx, amount, is_companion = True)
 
 
 @bot.command(name = "temp", aliases = ["temporary"])
-async def temp_command(ctx, *, amount):
+async def temp_command(ctx: discord.ext.commands.Context, *, amount):
 	person = c.Person(ctx)
 	if person.active is None:
-		await t.send_message_old(ctx, "No active character found.", reply = True)
+		await t.send_message(ctx, text = "No active character found.", reply = True)
 	else:
 		sent = await t.load(ctx)
 		temp = await asyncio.to_thread(com.sh.set_temp, ctx, amount, False, False)
 		txt, followups = await temp
-		asyncio.create_task(t.send_message_old(ctx, txt, reply = True, followups = followups))
 		await sent.delete()
+		await t.send_message(ctx, text = txt, reply = True, followups = followups)
 
 
 # noinspection SpellCheckingInspection
 @bot.command(name = "ctemp", aliases = ["ctemporary"])
-async def companion_temp_command(ctx, *, amount):
+async def companion_temp_command(ctx: discord.ext.commands.Context, *, amount):
 	person = c.Person(ctx)
 	if person.active is None:
-		await t.send_message_old(ctx, "No active character found.", reply = True)
+		await t.send_message(ctx, text = "No active character found.", reply = True)
 	else:
 		sent = await t.load(ctx)
 		txt, followups = await asyncio.to_thread(com.sh.set_temp, ctx, amount, False, True)
-		asyncio.create_task(t.send_message_old(ctx, txt, reply = True, followups = followups))
 		await sent.delete()
+		await t.send_message(ctx, text = txt, reply = True, followups = followups)
 
 
 @bot.command(name = "rest")
-async def rest_old(ctx, length = "long", hit_dice = None):
+async def rest_old(ctx: discord.ext.commands.Context, length = "long", hit_dice = None):
 	sent = await t.load(ctx)
 	await com.rest_command(ctx, length, hit_dice, sent)
 
@@ -736,9 +728,8 @@ async def rest_old(ctx, length = "long", hit_dice = None):
 	app_commands.Choice(name = "long", value = "long"), ])
 @app_commands.describe(hit_dice = 'Write in how many and what hit dice you want to use, example: "2d8"')
 async def rest_slash(interaction: discord.Interaction, length: Choice[str], hit_dice: str = None):
-	ctx = await bot.get_context(interaction)
-	await ctx.defer()
-	await com.rest_command(ctx, length.value, hit_dice)
+	await interaction.response.defer()
+	await com.rest_command(interaction, length.value, hit_dice)
 
 
 @bot.tree.command(name='list', description = "List out your characters, inventory, spells, or dice")
@@ -758,13 +749,12 @@ async def listing(interaction: discord.Interaction, what_to_list: Choice[str], b
 		ephemeral = True
 	else:
 		ephemeral = bool(ephemeral.value)
-	ctx = await bot.get_context(interaction)
-	person = c.Person(ctx = ctx)
+	person = c.Person(interaction)
 	what_to_list = what_to_list.value
 	if based_on:
 		based_on = based_on.lower()
 	display = ""
-	await ctx.defer(ephemeral = ephemeral)
+	await interaction.response.defer(ephemeral = ephemeral)
 
 	match what_to_list:
 		case "characters":
@@ -785,7 +775,7 @@ async def listing(interaction: discord.Interaction, what_to_list: Choice[str], b
 						display = f"{display} !out of date sheet!"
 		case "inventory":
 			if person.active:
-				sheet = c.Sheet(ctx).sheet
+				sheet = c.Sheet(interaction).sheet
 				display = f"{person.active}'s inventory:"
 				data = com.sh.get_inventory(sheet, based_on)
 				display = f"{display}\n{data}"
@@ -794,7 +784,7 @@ async def listing(interaction: discord.Interaction, what_to_list: Choice[str], b
 		case "spells":
 			if person.active:
 				display = f"{person.active}'s spells:"
-				data = com.sh.get_spell_list(ctx)
+				data = com.sh.get_spell_list(interaction)
 				display = f"{display}\n{data}"
 			else:
 				display = "No active character found."
@@ -810,19 +800,18 @@ async def listing(interaction: discord.Interaction, what_to_list: Choice[str], b
 			else:
 				display = f"{person.user.display_name} has no dice."
 
-	await interaction.followup.send(display, ephemeral = ephemeral)
+	await t.send_message(interaction, text = display, ephemeral = ephemeral)
 
 
 @bot.tree.command(name = "spell", description = "Get the full description and properties of a spell.")
 @app_commands.describe(spell_name = "can be partial")
 async def spell_slash(interaction: discord.Interaction, spell_name: str):
-	ctx = await bot.get_context(interaction)
-	await ctx.defer()
-	await com.spell_command(ctx, spell_name, None, interaction)
+	await interaction.response.defer()
+	await com.spell_command(interaction, spell_name, None)
 
 
 @bot.command(name = "spell", aliases = ["s"])
-async def spell_old(ctx, *, spell_name):
+async def spell_old(ctx: discord.ext.commands.Context, *, spell_name):
 	sent = await t.load(ctx)
 	await com.spell_command(ctx, spell_name, sent)
 
@@ -840,22 +829,21 @@ async def spell_old(ctx, *, spell_name):
 	app_commands.Choice(name = "9th", value = 9),
 ])
 async def cast_slash(interaction: discord.Interaction, spell_name: str, spell_level: Choice[int]):
-	ctx = await bot.get_context(interaction)
-	await ctx.defer()
-	await com.cast_command(ctx, spell_name, None, interaction, spell_level.value)
+	await interaction.response.defer()
+	await com.cast_command(interaction, spell_name, None, spell_level.value)
 
 
 @bot.command(name = "cast", aliases = ["c"])
-async def cast_old(ctx, *, spell_name):
+async def cast_old(ctx: discord.ext.commands.Context, *, spell_name):
 	sent = await t.load(ctx)
 	splits = spell_name.split(" ")
 	level = splits[-1]
 	try:
 		level = int(re.findall("[1-9]", level)[0])
 		spell_name = "".join(splits[:-1])
-		await com.cast_command(ctx, spell_name, sent, None, level)
+		await com.cast_command(ctx, spell_name, sent, level)
 	except IndexError:
-		await ctx.reply(f"Please add spell level separately after the cast command: ``--c {spell_name} lvl1``")
+		await t.send_message(ctx, text = f"Please add spell level separately after the cast command: ``--c {spell_name} lvl1``")
 
 
 @bot.tree.command(name = "statistics", description = "Display your or others roll statistics.")
@@ -870,7 +858,6 @@ async def cast_old(ctx, *, spell_name):
 	app_commands.Choice(name = "public", value = 0),
 ])
 async def statistics(interaction: discord.Interaction, person: discord.Member = None, tag: str = None, get_all_rolls: Choice[int] = None, ephemeral: Choice[int] = None):
-	ctx = await bot.get_context(interaction)
 	if get_all_rolls is None:
 		get_all_rolls = False
 	else:
@@ -880,11 +867,11 @@ async def statistics(interaction: discord.Interaction, person: discord.Member = 
 	else:
 		ephemeral = int(ephemeral.value)
 	if person is None:
-		person = c.Person(ctx)
+		person = c.Person(interaction)
 	else:
 		person = c.Person(discord_id = person.id)
 
-	await ctx.defer(ephemeral = ephemeral)
+	await interaction.response.defer(ephemeral = ephemeral)
 
 	if get_all_rolls:
 		with t.DatabaseConnection("data.db") as connection:
@@ -955,7 +942,7 @@ async def statistics(interaction: discord.Interaction, person: discord.Member = 
 		title = "General Statistics",
 		description = general,
 		color = ast.literal_eval(person.color))
-	members = ctx.guild.members
+	members = interaction.guild.members
 	for member in members:
 		if member.id == person.user.id:
 			embed.set_author(name = person.user.display_name, icon_url = member.avatar.url)
@@ -969,7 +956,7 @@ async def statistics(interaction: discord.Interaction, person: discord.Member = 
 	embed.add_field(name = "Auto Tag", value = person.auto_tag, inline = False)
 	embed.add_field(name = "Current Tag", value = person.tag, inline = False)
 
-	await ctx.reply(embed = embed)
+	await t.send_message(interaction, embed = embed)
 
 
 @bot.tree.command(name = "x_admin_clear", description = "Admin only.")
@@ -977,13 +964,12 @@ async def statistics(interaction: discord.Interaction, person: discord.Member = 
 @app_commands.describe(player = "@player")
 @app_commands.describe(dm = "@dm (optional)")
 async def clear_command(interaction: discord.Interaction, sheet: str, player: discord.Member, dm: discord.Member = None):
-	ctx = await bot.get_context(interaction)
-	await ctx.defer(ephemeral = True)
-	admin = c.Person(ctx)
+	await interaction.response.defer(ephemeral = True)
+	admin = c.Person(interaction)
 	if admin.user.id not in s.ADMINS:
-		await interaction.followup.send("Unauthorised use.\nContacting Pinkertons please wait.")
+		await t.send_message(interaction, text = "Unauthorised use.\nContacting Pinkertons please wait.")
 		return
-	await com.sh.clear_sheet(interaction, ctx, sheet, player, dm)
+	await com.sh.clear_sheet(interaction, sheet, player, dm)
 
 
 @bot.tree.command(name = "transfer", description = "Transfers parts of your sheet to a new version so you don't have to copy pasta manually.")
@@ -994,14 +980,13 @@ async def clear_command(interaction: discord.Interaction, sheet: str, player: di
 @app_commands.describe(old_sheet = "Old sheet name")
 @app_commands.describe(new_sheet = "New sheet name")
 async def transfer_slash(interaction: discord.Interaction, what_to_transfer: Choice[str], old_sheet: str, new_sheet: str):
-	ctx = await bot.get_context(interaction)
-	await ctx.defer(ephemeral = True)
+	await interaction.response.defer(ephemeral = True)
 
 	if not com.sh.ping_sheet(old_sheet):
-		await interaction.followup.send(f"``{old_sheet}`` was not found.")
+		await t.send_message(interaction, text = "``{old_sheet}`` was not found.")
 		return
 	if not com.sh.ping_sheet(new_sheet):
-		await interaction.followup.send(f"``{new_sheet}`` was not found.")
+		await t.send_message(interaction, text = f"``{new_sheet}`` was not found.")
 		return
 
 	what_to_transfer = what_to_transfer.value
@@ -1009,10 +994,10 @@ async def transfer_slash(interaction: discord.Interaction, what_to_transfer: Cho
 	match what_to_transfer:
 		case "inventory":
 			com.sh.transfer_inventory(old_sheet, new_sheet)
-			await interaction.followup.send(f"Inventory successfully transferred!\n``{old_sheet}`` -> ``{new_sheet}``")
+			await t.send_message(interaction, text = f"Inventory successfully transferred!\n``{old_sheet}`` -> ``{new_sheet}``")
 		case "money_tracker":
 			com.sh.transfer_money(old_sheet, new_sheet)
-			await interaction.followup.send(f"Money Tracker successfully transferred!\n``{old_sheet}`` -> ``{new_sheet}``")
+			await t.send_message(interaction, text = f"Money Tracker successfully transferred!\n``{old_sheet}`` -> ``{new_sheet}``")
 
 
 @bot.tree.command(name = "sort_inventory", description = "Sorts the active character's Inventory.")
@@ -1035,11 +1020,10 @@ async def transfer_slash(interaction: discord.Interaction, what_to_transfer: Cho
 	app_commands.Choice(name = "No", value = 0)
 ])
 async def sort_inventory_slash(interaction: discord.Interaction, based_on: Choice[str], leave_spaces_between_types: Choice[int] = None, reverse_order: Choice[int] = None):
-	ctx = await bot.get_context(interaction)
-	await ctx.defer(ephemeral = True)
-	person = c.Person(ctx)
+	await interaction.response.defer(ephemeral = True)
+	person = c.Person(interaction)
 	if not person.active:
-		await interaction.followup.send(f"You do not have an active character")
+		await t.send_message(interaction, text = f"You do not have an active character")
 		return
 
 	if leave_spaces_between_types is None:
@@ -1051,13 +1035,13 @@ async def sort_inventory_slash(interaction: discord.Interaction, based_on: Choic
 	else:
 		reverse = int(reverse_order.value)
 	based_on = based_on.value
-	sheet = c.Sheet(ctx)
+	sheet = c.Sheet(interaction)
 
 	reply = com.sh.sort_inventory(sheet, based_on, spaces, reverse)
 	if reply is None:
-		await interaction.followup.send(f"{sheet.character}'s inventory successfully sorted!")
+		await t.send_message(interaction, text = f"{sheet.character}'s inventory successfully sorted!")
 	else:
-		await interaction.followup.send(reply)
+		await t.send_message(interaction, text = reply)
 
 
 help_list = help_descirption.help_list
@@ -1076,14 +1060,13 @@ for help_dict in help_list:
 	app_commands.Choice(name = "public", value = 0),
 ])
 async def help_slash(interaction: discord.Interaction, help_type: Choice[str], ephemeral: Choice[int] = None):
-	ctx = await bot.get_context(interaction)
-	person = c.Person(ctx)
+	person = c.Person(interaction)
 	help_type = help_type.value
 	if not ephemeral:
 		ephemeral = True
 	else:
 		ephemeral = bool(ephemeral.value)
-	await ctx.defer(ephemeral = ephemeral)
+	await interaction.response.defer(ephemeral = ephemeral)
 
 	if help_type == "command_list":
 		embed = discord.Embed(
@@ -1144,7 +1127,7 @@ async def help_slash(interaction: discord.Interaction, help_type: Choice[str], e
 			temp = "``, ``".join(inner_dict["example_uses"])
 			embed.add_field(name = "Example(s):", value = f"``{temp}``", inline = False)
 
-	await interaction.followup.send(embed = embed)
+	await t.send_message(interaction, embed = embed)
 
 
 @bot.tree.command(name = "x_admin_table", description = "Admin command used to create or destroy tables.")
@@ -1158,26 +1141,25 @@ async def help_slash(interaction: discord.Interaction, help_type: Choice[str], e
 @app_commands.describe(guest_role = "guest role")
 @app_commands.describe(main_channel = "channel")
 async def table_admin(interaction: discord.Interaction, command: Choice[str], table_name: str, gm: discord.Member = None, player_role: discord.Role = None, guest_role: discord.Role = None, main_channel: discord.TextChannel = None):
-	ctx = await bot.get_context(interaction)
-	person = c.Person(ctx)
+	person = c.Person(interaction)
 	if person.user.id not in s.ADMINS:
-		await interaction.response.send_message("This command is made for admins only. Please use /table to manage your tables.", ephemeral = True)
+		await t.send_message(interaction, text = "This command is made for admins only. Please use /table to manage your tables.", ephemeral = True)
 	else:
-		ctx.defer()
+		interaction.response.defer()
 		command = command.value
 		table_name = table_name.capitalize()
 
 		if command == "create":
 			if not gm or not player_role or not guest_role:
-				await interaction.response.send_message("Missing Argument", ephemeral = True)
+				await t.send_message(interaction, text = "Missing Argument", ephemeral = True)
 			with t.DatabaseConnection("data.db") as connection:
 				cursor = connection.cursor()
 				cursor.execute(
 					f"INSERT INTO tables(table_name, dm_id, role_id, guest_id, auto_guest_add, main_channel_id) VALUES (?, ?, ?, ?, 0, ?)",
 					(table_name, gm.id, player_role.id, guest_role.id, main_channel.id)
 				)
-			await interaction.response.send_message(f"Table with name ``{table_name}`` created.", ephemeral = True)
-			await t.send_dm(ctx, f"You are the DM of the following table: ``{table_name}``.\nYou can add a player with the /table command.\nAll changes will notify the person in question!", discord_id = gm.id)
+			await t.send_message(interaction, text = f"Table with name ``{table_name}`` created.", ephemeral = True)
+			await t.send_message(gm, f"You are the DM of the following table: ``{table_name}``.\nYou can add a player with the /table command.\nAll changes will notify the person in question!")
 		else:
 			with t.DatabaseConnection("data.db") as connection:
 				cursor = connection.cursor()
@@ -1189,10 +1171,10 @@ async def table_admin(interaction: discord.Interaction, command: Choice[str], ta
 					cursor = connection.cursor()
 					cursor.execute(f"DELETE FROM tables WHERE table_name = ?", (table_name,))
 
-				await interaction.response.send_message(f"Table ``{table_name}`` has been deleted.", ephemeral = True)
-				await t.send_dm(ctx, f"You are no longer the DM of the following table: ``{table_name}``.\nReason: table no longer exists.", discord_id = raw[0][1])
+				await t.send_message(interaction, text = f"Table ``{table_name}`` has been deleted.", ephemeral = True)
+				await t.send_message(c.Person(discord_id = raw[0][1]), text = f"You are no longer the DM of the following table: ``{table_name}``.\nReason: table no longer exists.")
 			else:
-				await interaction.response.send_message(f"Table ``{table_name}`` not found.", ephemeral = True)
+				await t.send_message(interaction, text = f"Table ``{table_name}`` not found.", ephemeral = True)
 
 
 @bot.tree.command(name = "x_emoji_role", description = "Admin command to set up emoji roles")
@@ -1201,8 +1183,7 @@ async def table_admin(interaction: discord.Interaction, command: Choice[str], ta
 @app_commands.describe(emoji = "emoji")
 @app_commands.describe(role = "role")
 async def emoji_role_setup(interaction: discord.Interaction, channel_id: str, message_id: str, emoji: str, role: discord.Role):
-	ctx = await bot.get_context(interaction)
-	person = c.Person(ctx)
+	person = c.Person(interaction)
 	if person.user.id in s.ADMINS:
 		with t.DatabaseConnection("emoji_role.db") as connection:
 			cursor = connection.cursor()
@@ -1211,11 +1192,11 @@ async def emoji_role_setup(interaction: discord.Interaction, channel_id: str, me
 				(interaction.guild_id, channel_id, message_id, emoji, role.id)
 			)
 
-		message: discord.Message = await ctx.fetch_message(message_id)
+		message: discord.Message = interaction.message
 		await message.add_reaction(emoji)
-		await interaction.response.send_message(f"Emoji_role successfully set up", ephemeral = True)
+		await t.send_message(interaction, text = f"Emoji_role successfully set up", ephemeral = True)
 	else:
-		await interaction.response.send_message(f"You are not an admin.", ephemeral = True)
+		await t.send_message(interaction, text = f"You are not an admin.", ephemeral = True)
 
 
 @bot.tree.command(name = "table", description = "Manage your own tables! (send it in empty)")

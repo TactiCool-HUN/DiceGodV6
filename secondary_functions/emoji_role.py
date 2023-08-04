@@ -2,6 +2,7 @@ from discord import RawReactionActionEvent, Role, Message
 from utils.bot_setup import bot
 from utils.database_handler import DatabaseConnection
 import re
+import utils.tools as t
 
 
 class EmojiRole:
@@ -43,15 +44,14 @@ async def emoji_role_command(reaction: RawReactionActionEvent):
 
 		role: Role = bot.get_guild(temp.guild_id).get_role(temp.role_id)
 		user = reaction.member
-		channel = await user.create_dm()
 		for role_ in user.roles:
 			if role_.id == temp.role_id:
 				await user.remove_roles(role)
-				await channel.send(f"You no longer have the ``{role.name}`` role.\nReason: you removed it yourself.")
+				await t.send_message(user, text = f"You no longer have the ``{role.name}`` role.\nReason: you removed it yourself.")
 				break
 		else:
 			await user.add_roles(role)
-			await channel.send(f"You now have the ``{role.name}`` role.\nReason: you added it yourself.")
+			await t.send_message(user, text = f"You now have the ``{role.name}`` role.\nReason: you added it yourself.")
 
 		channel = await user.guild.fetch_channel(temp.channel_id)
 		message: Message = await channel.fetch_message(temp.message_id)

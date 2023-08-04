@@ -5,11 +5,20 @@ from utils.bot_setup import bot
 import commands as com
 from utils import settings as s
 import classes as c
-import discord
+import discord.ext
 import asyncio
 import random
 import math
-from views.followup_view import FollowupView, FollowupButton, MessageCore
+from views.followup_view import FollowupView, FollowupButton
+
+
+def identifier_to_member(identifier: discord.Interaction | discord.ext.commands.Context) -> discord.Member:
+	if isinstance(identifier, discord.Interaction):
+		identifier: discord.Interaction
+		return identifier.user
+	else:
+		identifier: discord.ext.commands.Context
+		return identifier.author
 
 
 def exists(identifier, data_type):
@@ -118,19 +127,33 @@ def sign_merger(sign_list):
 		return "-"
 
 
-async def send_message(identifier, text: str = None, embed: discord.Embed = None, followups: list[FollowupButton] = None, **kwargs: bool):
+async def send_message(identifier: discord.Message | discord.Interaction | discord.ext.commands.Context | discord.Member | c.Person, text: str = None, embed: discord.Embed = None, followups: list[FollowupButton] = None, **kwargs: bool):
 	ephemeral = kwargs.get("ephemeral", False)
 	reply = kwargs.get("reply", False)
 	silent = kwargs.get("silent", True)
 	tts = kwargs.get("tts", False)
 
 	match type(identifier):
-		case discord.Message | discord.Interaction:  # send message
-			if isinstance(identifier, discord.Message):
-				message: discord.Message = identifier
+		case discord.Message | discord.Interaction | discord.ext.commands.Context:  # send message
+			if isinstance(identifier, discord.Interaction):
+				identifier: discord.Interaction = identifier
 
 				if followups:
-					view = FollowupView(message)
+					view = FollowupView(identifier)
+					for i in followups:
+						view.add_item(i)
+				else:
+					view = discord.ui.View()
+
+				sent = await identifier.followup.send(content = text, embed = embed, view = view, silent = silent, tts = tts, ephemeral = ephemeral)
+			elif isinstance(identifier, discord.Message) or isinstance(identifier, discord.ext.commands.Context):
+				if isinstance(identifier, discord.ext.commands.Context):
+					message: discord.Message = identifier.message
+				else:
+					message: discord.Message = identifier
+
+				if followups:
+					view = FollowupView(identifier)
 					for i in followups:
 						view.add_item(i)
 				else:
@@ -139,26 +162,16 @@ async def send_message(identifier, text: str = None, embed: discord.Embed = None
 				if reply:
 					sent = await message.reply(content = text, embed = embed, view = view, silent = silent, tts = tts)
 				else:
-					sent = await message.send(content = text, embed = embed, view = view, silent = silent, tts = tts)
-			else:  # interaction
-				message: discord.Message = identifier.message
-				interaction: discord.Interaction = identifier
-
-				if followups:
-					view = FollowupView(message)
-					for i in followups:
-						view.add_item(i)
-				else:
-					view = None
-
-				sent = await interaction.response.send_message(content = text, embed = embed, view = view, silent = silent, tts = tts, ephemeral = ephemeral)
+					sent = await message.channel.send(content = text, embed = embed, view = view, silent = silent, tts = tts)
+			else:
+				raise TypeError
 		case c.Person | discord.Member:  # send DM
 			if isinstance(identifier, c.Person):
 				member = identifier.user
 			else:
 				member = identifier
 
-			channel: discord.TextChannel = await member.create_dm()
+			channel: discord.DMChannel = await member.create_dm()
 			sent = await channel.send(content = text, embed = embed, silent = silent, tts = tts)
 		case _:
 			raise AttributeError
@@ -166,7 +179,7 @@ async def send_message(identifier, text: str = None, embed: discord.Embed = None
 	return sent
 
 
-async def send_message_old(ctx, message, reply: bool = False, embed: bool = False, followups: list[FollowupButton] = None, is_return: bool = False, ephemeral: bool = False, silent: bool = True, tts: bool = False):
+"""async def send_message_old(ctx, message, reply: bool = False, embed: bool = False, followups: list[FollowupButton] = None, is_return: bool = False, ephemeral: bool = False, silent: bool = True, tts: bool = False):
 	if followups:
 		view = FollowupView(ctx)
 		for i in followups:
@@ -197,7 +210,7 @@ async def send_dm(ctx, message, embed = False, discord_id = None, silent = False
 	if embed:
 		await channel.send(embed = message, silent = silent)
 	else:
-		await channel.send(message, silent = silent)
+		await channel.send(message, silent = silent)"""
 
 
 def is_sheet_based(split):
@@ -313,12 +326,12 @@ def get_inventory_spaces(version):
 	return data, area, empty_line
 
 
-async def load(ctx, load_message = None):
+async def load(ctx: discord.ext.commands.Context, load_message = None) -> discord.Message:
 	if load_message is None:
 		load_message = f'Command: "{ctx.message.clean_content.replace(bot.command_prefix, "")}"'
 	loader = choice(s.LOADERS)
 	load_txt = f"``{load_message}``\n{loader}"
-	sent = await ctx.send(load_txt, silent = True)
+	sent = await send_message(ctx, text = load_txt, silent = True)
 	# asyncio.create_task(await asyncio.to_thread(loading_loop, sent, load_message, loader))
 	return sent
 
@@ -401,9 +414,8 @@ async def clear_progress(player, sheet, progress, start_time, current_inc = None
 			add = ""
 		embed.add_field(name = element.title(), value = f"{percentage}% | {bar} | {current}/{maximum}{add}", inline = False)
 
-	channel = await player.user.create_dm()
 	if sent_inc is None:
-		return await channel.send(embed = embed)
+		return await send_message(player.user, embed = embed)
 	else:
 		await sent_inc.edit(embed = embed)
 
@@ -617,8 +629,8 @@ async def followup_instance(ctx, sent_inc, followups):
 			active = False"""
 
 
-async def send_pack(pack, is_reply = True, secret = False):
-	person = c.Person(pack.ctx)
+async def send_pack(pack: c.Pack, is_reply: bool = True, ephemeral: bool = False):
+	person = c.Person(pack.identifier)
 	result = 0
 	complex_roll = ""
 	has_dynamic = False
@@ -636,7 +648,7 @@ async def send_pack(pack, is_reply = True, secret = False):
 				else:
 					tts = False
 					reply = True
-				asyncio.create_task(send_message_old(pack.ctx, text, reply = reply, silent = False, tts = tts))
+				asyncio.create_task(send_message(pack.identifier, text = text, reply = reply, silent = False, tts = tts))
 
 		all_roll_notes += roll.roll_note
 
@@ -647,7 +659,7 @@ async def send_pack(pack, is_reply = True, secret = False):
 
 		match roll.speciality:
 			case "init":
-				asyncio.create_task(com.sh.init_resources(pack.ctx))
+				asyncio.create_task(com.sh.init_resources(pack.identifier))
 			case "deathsave":
 				has_death = roll.die_result
 
@@ -705,7 +717,7 @@ async def send_pack(pack, is_reply = True, secret = False):
 	)
 
 	if has_dynamic:
-		sheet = c.Sheet(ctx = pack.ctx)
+		sheet = c.Sheet(pack.identifier)
 		if sheet.char_image:
 			url = sheet.char_image
 		else:
@@ -723,13 +735,12 @@ async def send_pack(pack, is_reply = True, secret = False):
 		embed.set_footer(text = footer)
 
 	if has_death:
-		await com.sh.set_deathsave(pack.ctx, has_death, result)
-	asyncio.create_task(send_message_old(pack.ctx, embed, is_reply, True, pack.followups, False, secret, True))
+		await com.sh.set_deathsave(pack.identifier, has_death, result)
+	await send_message(pack.identifier, embed = embed, reply = is_reply, followups = pack.followups, ephemeral = ephemeral)
 
 
-async def send_multipack(packs, roll_text, is_reply = True, secret = False) -> None:
-	person = c.Person(packs[0].ctx)
-	packs: list[c.Pack]
+async def send_multipack(packs: list[c.Pack], roll_text: str, is_reply: bool = True, ephemeral: bool = False) -> None:
+	person = c.Person(packs[0].identifier)
 	all_roll_notes = []
 	all_damage_types = []
 
@@ -762,7 +773,7 @@ async def send_multipack(packs, roll_text, is_reply = True, secret = False) -> N
 					else:
 						tts = False
 						reply = True
-					asyncio.create_task(send_message_old(pack.ctx, text, reply = reply, silent = False, tts = tts))
+					asyncio.create_task(send_message(pack.identifier, text = text, reply = reply, silent = False, tts = tts))
 
 			all_roll_notes += roll.roll_note
 
@@ -773,7 +784,7 @@ async def send_multipack(packs, roll_text, is_reply = True, secret = False) -> N
 
 			match roll.speciality:
 				case "init":
-					asyncio.create_task(com.sh.init_resources(pack.ctx))
+					asyncio.create_task(com.sh.init_resources(pack.identifier))
 				case "deathsave":
 					has_death = roll.die_result
 
@@ -813,7 +824,7 @@ async def send_multipack(packs, roll_text, is_reply = True, secret = False) -> N
 			pack_descriptions.append("\n".join(roll_descriptions))
 
 		if has_death:
-			await com.sh.set_deathsave(pack.ctx, has_death, pack_result)
+			await com.sh.set_deathsave(pack.identifier, has_death, pack_result)
 		embed.add_field(name = f"Sum #{i + 1} - {num2word(pack_result)}", value = "\n".join(pack_descriptions), inline = inline)
 
 	embed.description = f"Combined Sum: {result}\nRoll Text: {roll_text}\nTimes: {len(packs)}"
@@ -824,7 +835,7 @@ async def send_multipack(packs, roll_text, is_reply = True, secret = False) -> N
 		embed.set_footer(text = footer)
 
 	if has_dynamic:
-		sheet = c.Sheet(ctx = packs[0].ctx)
+		sheet = c.Sheet(packs[0].identifier)
 		if sheet.char_image:
 			url = sheet.char_image
 		else:
@@ -833,7 +844,7 @@ async def send_multipack(packs, roll_text, is_reply = True, secret = False) -> N
 	else:
 		embed.set_author(name = person.user.display_name, icon_url = person.user.avatar.url)
 
-	asyncio.create_task(send_message_old(packs[0].ctx, embed, is_reply, True, packs[0].followups, False, secret, True))
+	asyncio.create_task(send_message(packs[0].identifier, embed = embed, reply = is_reply, followups = packs[0].followups, ephemeral = ephemeral))
 
 
 pass

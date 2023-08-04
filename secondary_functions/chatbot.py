@@ -1,5 +1,5 @@
 import discord.channel
-from utils.tools import choice
+from utils.tools import choice, send_message
 import classes as c
 from utils import settings, bot_setup
 import random
@@ -9,22 +9,22 @@ from ast import literal_eval
 import utils.settings as s
 
 
-async def bot_responses(ctx: discord.Message):
-	if bot_setup.prefix == "--" and ctx.guild.id != 953258116496097340:
+async def bot_responses(message: discord.Message):
+	if bot_setup.prefix == "--" and message.guild.id != 953258116496097340:
 		return
-	if isinstance(ctx.channel, discord.channel.DMChannel):
+	if isinstance(message.channel, discord.channel.DMChannel):
 		return
-	if ctx.channel.category_id == 996065301055688794:
+	if message.channel.category_id == 996065301055688794:
 		return
 
-	person = c.Person(ctx)
+	person = c.Person(message)
 	if person.chat_ignore:
 		return
 
-	content = ctx.clean_content.lower()
+	content = message.clean_content.lower()
 	content_splits = re.split(" ", content)
 	is_admin = person.user.id in settings.ADMINS
-	author = ctx.author
+	author = message.author
 	responses = []
 
 	for split in content_splits:  # - - - - - funny number - - - - -
@@ -36,7 +36,7 @@ async def bot_responses(ctx: discord.Message):
 			]
 			responses.append(choice(response_list))
 
-	if bot_setup.bot.user.mentioned_in(ctx) or "dice god" in content or "dicegod" in content:
+	if bot_setup.bot.user.mentioned_in(message) or "dice god" in content or "dicegod" in content:
 		# noinspection SpellCheckingInspection
 		admin_base = [
 			"Yes", 2,
@@ -226,29 +226,29 @@ async def bot_responses(ctx: discord.Message):
 		responses.append("The DNA of the soul.")
 	try:
 		if content[0] == "<" and content[-1] == ">" and author.id in settings.POLICE_CREW and "police" in content and "line" in content:
-			await ctx.add_reaction("👮")
+			await message.add_reaction("👮")
 	except IndexError:
 		pass
 
 	for response in responses:
 		if response is not None:
 			if content[0] == "(" and content[-1] == ")" and response[0] != ">":
-				await ctx.channel.send(f"({response})")
+				await send_message(message, text = f"({response})")
 			else:
-				await ctx.channel.send(response)
+				await send_message(message, text = response)
 
 	if person.uwuify:
 		embed = discord.Embed(
-			description = uwuify(ctx.clean_content),
+			description = uwuify(message.clean_content),
 			color = literal_eval(person.color)
 		)
 		embed.set_author(name = person.user.display_name, icon_url = person.user.avatar.url)
-		await ctx.channel.send(embed = embed, silent = True)
-		await ctx.delete()
+		await send_message(message, embed = embed, silent = True)
+		await message.delete()
 	else:
 		if random.randint(1, 100) == 100:
 			emoji = random.choice(s.EMOJIS)
-			await ctx.add_reaction(emoji)
+			await message.add_reaction(emoji)
 
 
 pass
