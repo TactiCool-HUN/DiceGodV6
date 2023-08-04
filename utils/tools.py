@@ -415,7 +415,7 @@ async def clear_progress(player, sheet, progress, start_time, current_inc = None
 		embed.add_field(name = element.title(), value = f"{percentage}% | {bar} | {current}/{maximum}{add}", inline = False)
 
 	if sent_inc is None:
-		return await send_message(player.user, embed = embed)
+		return await send_message(player, embed = embed)
 	else:
 		await sent_inc.edit(embed = embed)
 
