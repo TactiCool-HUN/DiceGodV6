@@ -1364,15 +1364,19 @@ async def rest(identifier: discord.Interaction | discord.ext.commands.Context, l
 		# - - - - - - - - - - temporary - - - - - - - - - -
 		main.update("AM14", 0)
 		main.update("AM19", 0)
-		# - - - - - - - - - - extra hp - - - - - - - - - -
-		if main.acell("AP17").value in ["Arcane Ward"]:
-			extra_max = main.acell("AT19").value
-			main.update("AP17", extra_max)
 		# - - - - - - - - - - companion hp - - - - - - - - - -
 		wks = sh.worksheet("Companion")
 		max_hp = wks.acell("AS14").value
 		wks.update("AM14", max_hp)
 		wks.update("AJ14", 0)
+		name = wks.acell("F2").value
+		if not name:
+			name = None
+		# - - - - - - - - - - extra hp - - - - - - - - - -
+		extra_hp = main.acell("AP17").value
+		if extra_hp in ["Arcane Ward", name]:
+			extra_max = main.acell("AT19").value
+			main.update("AP17", extra_max)
 		# - - - - - - - - - - hit dice - - - - - - - - - -
 		area = main.get("AS24:AU27")
 		for i, line in enumerate(area):

@@ -127,6 +127,58 @@ def sign_merger(sign_list):
 		return "-"
 
 
+def get_followup_view(followups: list[FollowupButton], identifier: discord.Message | discord.Interaction | discord.ext.commands.Context) -> FollowupView:
+	is_crit = False
+	is_reroll = False
+	ordered = False
+	for button in followups:
+		button: FollowupButton
+		if button.emoji.name == "\U0001F504":
+			is_reroll = True
+		elif button.emoji.name == "💥":
+			is_crit = True
+		if is_reroll and is_crit:
+			ordered = True
+			break
+
+	negatives = []
+	if ordered and len(followups) < 13:
+		row_1 = 0
+		for button in followups:
+			button: FollowupButton
+			if button.emoji.name == "\U0001F504":
+				button.row = 0
+			elif button.emoji.name == "💥":
+				button.row = 0
+			elif button.emoji.name == "🇶":
+				button.row = 0
+			elif row_1 < 5:
+				button.row = 1
+				"""temp = FollowupButton(button.emoji, button.data, f"roll_negative")
+				temp.row = 2
+				temp.disabled = True
+				temp.style = discord.ButtonStyle.grey
+				temp.label = f"-{button.label}"
+				negatives.append(temp)"""
+				row_1 += 1
+			else:
+				button.row = 3
+				"""temp = FollowupButton(button.emoji, button.data, f"roll_negative")
+				temp.row = 4
+				temp.disabled = True
+				temp.style = discord.ButtonStyle.grey
+				temp.label = f"-{button.label}"
+				negatives.append(temp)"""
+
+	view = FollowupView(identifier)
+	for i in followups:
+		view.add_item(i)
+	for i in negatives:
+		view.add_item(i)
+
+	return view
+
+
 async def send_message(identifier: discord.Message | discord.Interaction | discord.ext.commands.Context | discord.Member | c.Person, text: str = None, embed: discord.Embed = None, followups: list[FollowupButton] = None, **kwargs: bool):
 	ephemeral = kwargs.get("ephemeral", False)
 	reply = kwargs.get("reply", False)
@@ -139,9 +191,7 @@ async def send_message(identifier: discord.Message | discord.Interaction | disco
 				identifier: discord.Interaction = identifier
 
 				if followups:
-					view = FollowupView(identifier)
-					for i in followups:
-						view.add_item(i)
+					view = get_followup_view(followups, identifier)
 				else:
 					view = discord.ui.View()
 
@@ -153,9 +203,7 @@ async def send_message(identifier: discord.Message | discord.Interaction | disco
 					message: discord.Message = identifier
 
 				if followups:
-					view = FollowupView(identifier)
-					for i in followups:
-						view.add_item(i)
+					view = get_followup_view(followups, identifier)
 				else:
 					view = None
 
@@ -415,7 +463,7 @@ async def clear_progress(player, sheet, progress, start_time, current_inc = None
 		embed.add_field(name = element.title(), value = f"{percentage}% | {bar} | {current}/{maximum}{add}", inline = False)
 
 	if sent_inc is None:
-		return await send_message(player.user, embed = embed)
+		return await send_message(player, embed = embed)
 	else:
 		await sent_inc.edit(embed = embed)
 

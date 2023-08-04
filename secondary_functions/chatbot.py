@@ -246,7 +246,7 @@ async def bot_responses(message: discord.Message):
 		await send_message(message, embed = embed, silent = True)
 		await message.delete()
 	else:
-		if random.randint(1, 100) == 100:
+		if random.randint(1, 250) == 169:
 			emoji = random.choice(s.EMOJIS)
 			await message.add_reaction(emoji)
 
