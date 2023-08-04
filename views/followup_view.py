@@ -30,7 +30,7 @@ class FollowupButton(discord.ui.Button):
 		self.incremental = incremental
 
 	async def callback(self, interaction: discord.Interaction):
-		if self.core.person.user != interaction.user or self.core.person.user.id not in s.ADMINS:
+		if self.core.person.user.id != interaction.user.id or self.core.person.user.id not in s.ADMINS:
 			# noinspection SpellCheckingInspection
 			await interaction.response.send_message("Sush!", ephemeral = True)
 			return
