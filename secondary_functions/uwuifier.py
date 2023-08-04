@@ -1,4 +1,3 @@
-import subprocess
 from random import randint as rand
 
 # noinspection SpellCheckingInspection

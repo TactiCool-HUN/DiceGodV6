@@ -81,7 +81,7 @@ async def on_ready():
 
 
 @bot.event
-async def on_message(ctx):
+async def on_message(ctx: discord.Message):
 	if ctx.author != bot.user:
 		asyncio.create_task(chatbot.bot_responses(ctx))
 		asyncio.create_task(bot.process_commands(ctx))
@@ -217,8 +217,8 @@ async def on_thread_create(thread: discord.Thread):
 
 
 @bot.command(name = 'thing')
-async def _thingy(ctx):
-	c.Person(ctx)
+async def _thingy(message: discord.Message):
+	c.Person(message)
 
 
 @bot.command(name = "ping")
@@ -249,7 +249,7 @@ async def pong_command(ctx):
 
 @bot.command(name = 'emoji')
 async def emoji_command(emoji):
-	print(emoji.message.content)
+	print(emoji.user_message.content)
 
 
 @bot.command(name = "kill")
@@ -298,7 +298,7 @@ async def _yeet_command_(ctx, *, text):
 		text = "I saw that it went off the table but I can't find it anywhere, you gotta roll a new one, we'll find it after session."
 		await t.send_message(ctx, text, reply = True)
 	elif random.randint(1, 12) == 1:
-		followups = [c.Followup("✅", text, "roll"), c.Followup("❎", None, "disable")]
+		followups = [c.FollowupButton("✅", text, "roll"), c.FollowupButton("❎", None, "disable")]
 		# noinspection SpellCheckingInspection
 		message = "You yeeted the die of the table, does it still count?"
 		await t.send_message(ctx, message, reply = True, followups = followups)

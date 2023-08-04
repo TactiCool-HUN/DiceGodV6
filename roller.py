@@ -1,10 +1,11 @@
 import sheet_handler as sh
 import classes as c
-from utils import tools as t
+import utils.tools as t
 import datetime
 import gspread
 import random
 import re
+import discord
 
 sa = gspread.service_account(filename = "data_holder/service_account.json")
 
@@ -340,7 +341,7 @@ def random_roller(ctx, roll: c.SingleRoll):
 	if size == 20 and roll.dynamic:
 		for item in roll.results:
 			if (item[0] == 1 or item[0] == 20) and item[1]:
-				roll.followups.append(c.Followup("🍀", None, "add_inspiration"))
+				roll.followups.append(c.FollowupButton("🍀", None, "add_inspiration", style = discord.ButtonStyle.green))
 
 	if my_date.month == 4 and my_date.day == 1:
 		pre_send = []

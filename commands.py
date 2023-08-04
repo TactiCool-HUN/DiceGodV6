@@ -11,13 +11,13 @@ import re
 
 async def roll_command(ctx, text, crit = False):
 	if text[:4] == "hurt":
-		await t.send_message(ctx, f"Did you want to use ``{prefix}{text}``?", reply = True, followups = [c.Followup("✅", [text[4:], False, False], "heal_hurt"), c.Followup("❎", None, "disable_followup")])
+		await t.send_message(ctx, f"Did you want to use ``{prefix}{text}``?", reply = True, followups = [c.FollowupButton("✅", [text[4:], False, False], "heal_hurt"), c.FollowupButton("❎", None, "disable")])
 	elif text[:4] == "heal":
-		await t.send_message(ctx, f"Did you want to use ``{prefix}{text}``?", reply = True, followups = [c.Followup("✅", [text[4:], True, False], "heal_hurt"), c.Followup("❎", None, "disable_followup")])
+		await t.send_message(ctx, f"Did you want to use ``{prefix}{text}``?", reply = True, followups = [c.FollowupButton("✅", [text[4:], True, False], "heal_hurt"), c.FollowupButton("❎", None, "disable")])
 	elif text[:4] == "rest":
-		await t.send_message(ctx, f"Did you want to use ``{prefix}rest long``?", reply = True, followups = [c.Followup("✅", None, "rest"), c.Followup("❎", None, "disable_followup")])
+		await t.send_message(ctx, f"Did you want to use ``{prefix}rest long``?", reply = True, followups = [c.FollowupButton("✅", None, "rest"), c.FollowupButton("❎", None, "disable")])
 	elif text[:4] == "coin":
-		await t.send_message(ctx, f"Did you want to use ``{prefix}coin``?", reply = True, followups = [c.Followup("✅", None, "coin"), c.Followup("❎", None, "disable_followup")])
+		await t.send_message(ctx, f"Did you want to use ``{prefix}coin``?", reply = True, followups = [c.FollowupButton("✅", None, "coin"), c.FollowupButton("❎", None, "disable")])
 	else:
 		loader = await t.load(ctx, f"-roll {text}")
 		try:
@@ -174,7 +174,7 @@ async def pc_command(ctx, command: str, char_name: str, sheet_name: str, image_u
 					elif ctx.author.id in s.ADMINS:
 						await t.send_dm(ctx, f"{sheet.user.user.mention} just set the character: {sheet.character}, because admins can just do that.", False, discord_id = sheet.owner.user.id)
 				silent = True
-				followups = [c.Followup("🗑️", ctx.message, "delete_message")]
+				followups = [c.FollowupButton("🗑️", ctx.message, "delete_message", style=discord.ButtonStyle.grey)]
 		case "clear":
 			if person.change_name:
 				try:
@@ -187,7 +187,7 @@ async def pc_command(ctx, command: str, char_name: str, sheet_name: str, image_u
 			person.update()
 			txt = f"Active character cleared."
 			silent = True
-			followups = [c.Followup("🗑️", ctx.message, "delete_message")]
+			followups = [c.FollowupButton("🗑️", ctx.message, "delete_message", style=discord.ButtonStyle.grey)]
 		case "delete":
 			txt = "An error has occurred!"
 			error = False
@@ -324,8 +324,13 @@ async def spell_command(ctx, spell_name, sent = None, interaction = None):
 
 	if found == "exact":
 		if interaction:
-			sent = await interaction.followup.send(embed = spell_out.create_embed(), reply = True)
-			asyncio.create_task(t.followup_instance(ctx, sent, spell_out.followups))
+			if spell_out.followups:
+				view = t.FollowupView(ctx)
+				for i in spell_out.followups:
+					view.add_item(i)
+			else:
+				view = None
+			await interaction.followup.send(embed = spell_out.create_embed(), reply = True, view = view)
 		else:
 			asyncio.create_task(t.send_message(ctx, spell_out.create_embed(), embed = True, reply = True, followups = spell_out.followups))
 	elif found == "multiple":
@@ -343,10 +348,15 @@ async def spell_command(ctx, spell_name, sent = None, interaction = None):
 			else:
 				reply = f"{reply}\n**{num}{spell_name}** - Not on player spell list."
 			if count < 9:
-				followups.append(c.Followup(s.REACTION_NUMBERS[count], spell, "spell"))
+				followups.append(c.FollowupButton(s.REACTION_NUMBERS[count], spell, "spell"))
 		if interaction:
-			sent = await interaction.followup.send(reply, reply = True)
-			asyncio.create_task(t.followup_instance(ctx, sent, followups))
+			if followups:
+				view = t.FollowupView(ctx)
+				for i in followups:
+					view.add_item(i)
+			else:
+				view = None
+			await interaction.followup.send(reply, reply = True, view = view)
 		else:
 			asyncio.create_task(t.send_message(ctx, reply, reply = True, followups = followups))
 	else:
@@ -376,8 +386,14 @@ async def cast_command(ctx, spell_name, sent = None, interaction = None, spell_l
 				return
 			else:
 				await t.send_dm(ctx, reply, silent = True)
-			sent = await interaction.followup.send(embed = spell_out.create_embed())
-			asyncio.create_task(t.followup_instance(ctx, sent, spell_out.followups))
+
+			if spell_out.followups:
+				view = t.FollowupView(ctx)
+				for i in spell_out.followups:
+					view.add_item(i)
+			else:
+				view = None
+			await interaction.followup.send(embed = spell_out.create_embed(), view = view)
 			await roll_command(ctx, spell_out.followups[spell_level - int(spell_out.level[0]) + 1].data, False)
 		else:
 			reply = sh.cast_slot(ctx, spell_level)
@@ -403,10 +419,15 @@ async def cast_command(ctx, spell_name, sent = None, interaction = None, spell_l
 			else:
 				reply = f"{reply}\n**{num}{spell_name}** - Not on player spell list."
 			if count < 9:
-				followups.append(c.Followup(s.REACTION_NUMBERS[count], [spell, spell_level], "cast"))
+				followups.append(c.FollowupButton(s.REACTION_NUMBERS[count], [spell, spell_level], "cast"))
 		if interaction:
-			sent = await interaction.followup.send(reply)
-			asyncio.create_task(t.followup_instance(ctx, sent, followups))
+			if followups:
+				view = t.FollowupView(ctx)
+				for i in followups:
+					view.add_item(i)
+			else:
+				view = None
+			await interaction.followup.send(reply, view = view)
 		else:
 			asyncio.create_task(t.send_message(ctx, reply, reply = True, followups = followups, silent = True))
 	else:

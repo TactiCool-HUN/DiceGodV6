@@ -1,6 +1,6 @@
-from ast import literal_eval
 from utils.bot_setup import bot
 from utils import settings as s, tools as t
+from views.followup_view import FollowupButton
 import textwrap
 import datetime
 import discord
@@ -226,7 +226,7 @@ class Pack:
 		self.ctx = ctx
 		self.single_rolls: list[SingleRoll] = []
 		self.single_rolls += single_rolls
-		self.followups = [Followup("\U0001F504", roll_raw, "roll")]
+		self.followups = [FollowupButton("\U0001F504", roll_raw, "reroll")]
 		for roll in single_rolls:
 			self.followups += roll.followups
 
@@ -348,7 +348,7 @@ class Pack:
 
 
 class SingleRoll:
-	def __init__(self, raw_text, inc_type, name = None, dice_number = 0, die_size = 0, add = 0, dynamic = False, pre_send = None, damage_type = None, roll_note = None, followups = None):
+	def __init__(self, raw_text, inc_type, name = None, dice_number = 0, die_size = 0, add = 0, dynamic = False, pre_send = None, damage_type = None, roll_note = None, followups: list[FollowupButton] = None):
 		self.raw_text = raw_text
 		self.sign = raw_text[0]
 		self.name = name
@@ -458,17 +458,6 @@ class SingleRoll:
 			if result[1]:
 				self.die_result += result[0]
 		self.full_result = self.die_result + self.add
-
-
-class Followup:
-	def __init__(self, emoji, data, f_type):
-		temp = bot.get_emoji(emoji)
-		if temp:
-			self.emoji = temp
-		else:
-			self.emoji = emoji
-		self.data = data
-		self.type = f_type
 
 
 class RollArgs:
@@ -630,7 +619,7 @@ class Spell:
 						emoji = s.REACTION_NUMBERS[i]
 				else:
 					emoji = s.REACTION_NUMBERS[i]
-				self.followups.append(Followup(emoji, f"{dmg}{self.get_damage_disp()}", "roll"))
+				self.followups.append(FollowupButton(emoji, f"{dmg}{self.get_damage_disp()}", "roll"))
 		for i, dmg in enumerate(dmg_area_2):
 			if dmg:
 				if self.is_cantrip:
@@ -646,9 +635,9 @@ class Spell:
 						emoji = s.ALT_REACTION_NUMBERS[i]
 				else:
 					emoji = s.ALT_REACTION_NUMBERS[i]
-				self.followups.append(Followup(emoji, f"{dmg}{self.get_damage_disp()}", "roll"))
+				self.followups.append(FollowupButton(emoji, f"{dmg}{self.get_damage_disp()}", "roll"))
 		if self.followups:
-			self.followups = [Followup("💥", None, "crit")] + self.followups
+			self.followups = [FollowupButton("💥", None, "crit", label="off", style=discord.ButtonStyle.red)] + self.followups
 
 	def get_damage_disp(self):
 		disp = ""
@@ -713,8 +702,8 @@ class Spell:
 		per_page = 1000
 		if len(self.description) > per_page:
 			chunks = textwrap.wrap(self.description, per_page, break_long_words = False, replace_whitespace = False)
-			self.followups.insert(0, Followup("▶", chunks, "scroll"))
-			self.followups.insert(0, Followup("◀", chunks, "scroll"))
+			self.followups.insert(0, FollowupButton("▶", chunks, "scroll"))
+			self.followups.insert(0, FollowupButton("◀", chunks, "scroll"))
 			embed.add_field(name = f"Description (1/{len(chunks)})", value = chunks[0], inline = False)
 		else:
 			embed.add_field(name = "Description", value = self.description, inline = False)

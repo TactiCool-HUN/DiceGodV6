@@ -251,5 +251,4 @@ async def bot_responses(ctx: discord.Message):
 			await ctx.add_reaction(emoji)
 
 
-
 pass

@@ -9,6 +9,7 @@ import discord
 import asyncio
 import random
 import math
+from views.followup_view import FollowupView, FollowupButton
 
 
 def exists(identifier, data_type):
@@ -117,19 +118,23 @@ def sign_merger(sign_list):
 		return "-"
 
 
-async def send_message(ctx, message, reply = False, embed = False, followups = None, is_return = False, ephemeral = False, silent = True, tts = False):
+async def send_message(ctx, message, reply: bool = False, embed: bool = False, followups: list[FollowupButton] = None, is_return: bool = False, ephemeral: bool = False, silent: bool = True, tts: bool = False):
+	if followups:
+		view = FollowupView(ctx)
+		for i in followups:
+			view.add_item(i)
+	else:
+		view = None
 	if reply:
 		if embed:
-			sent = await ctx.reply(embed = message, ephemeral = ephemeral, silent = silent)
+			sent = await ctx.reply(embed = message, ephemeral = ephemeral, silent = silent, view = view)
 		else:
-			sent = await ctx.reply(message, ephemeral = ephemeral, silent = silent, tts = tts)
+			sent = await ctx.reply(message, ephemeral = ephemeral, silent = silent, tts = tts, view = view)
 	else:
 		if embed:
-			sent = await ctx.send(embed = message, ephemeral = ephemeral, silent = silent)
+			sent = await ctx.send(embed = message, ephemeral = ephemeral, silent = silent, view = view)
 		else:
-			sent = await ctx.send(message, ephemeral = ephemeral, silent = silent, tts = tts)
-	if followups:
-		asyncio.create_task(followup_instance(ctx, sent, followups))
+			sent = await ctx.send(message, ephemeral = ephemeral, silent = silent, tts = tts, view = view)
 	if is_return:
 		return sent
 	return
@@ -433,15 +438,15 @@ def most_frequent(list_inc):
 	return num
 
 
-def mention_texts(id_list: list) -> str:
+def mention_texts(id_list: list[int]) -> str:
 	new_list = []
-	for i, my_id in enumerate(id_list):
+	for my_id in id_list:
 		new_list.append(f"<@{my_id}>")
 
 	return ", ".join(new_list)
 
 
-async def place_emojis(sent, emojis):
+"""async def place_emojis(sent, emojis):
 	for emoji in emojis:
 		await sent.add_reaction(emoji)
 
@@ -458,7 +463,7 @@ async def followup_instance(ctx, sent_inc, followups):
 	asyncio.create_task(place_emojis(sent_inc, emoticons))
 
 	def check(reaction_, user_):
-		return (user_ == ctx.author) and (str(reaction_.emoji) in emoticons or reaction_.emoji in emoticons) and (reaction_.message.id == sent_inc.id)
+		return (user_ == ctx.author) and (str(reaction_.emoji) in emoticons or reaction_.emoji in emoticons) and (reaction_.user_message.id == sent_inc.id)
 
 	active = True
 	while active:
@@ -561,7 +566,7 @@ async def followup_instance(ctx, sent_inc, followups):
 		except asyncio.TimeoutError:
 			for emoji in emoticons:
 				await sent_inc.clear_reaction(emoji)
-			active = False
+			active = False"""
 
 
 async def send_pack(pack, is_reply = True, secret = False):

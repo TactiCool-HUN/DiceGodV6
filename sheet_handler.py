@@ -1,4 +1,7 @@
 from datetime import datetime
+
+import discord
+
 from utils import settings as s, tools as t
 import classes as c
 import roller as r
@@ -335,7 +338,7 @@ def get_attack(sheet_inc, attack_inc: str):
 	feats = wks.get("A50:B200")
 	class_area = wks.get("A2:D5")
 
-	followups = [c.Followup("💥", None, "crit"), c.Followup("🇶", None, "queue")]
+	followups = [c.FollowupButton("💥", None, "crit", label="off", style=discord.ButtonStyle.red), c.FollowupButton("🇶", None, "queue", label="off", style=discord.ButtonStyle.grey)]
 
 	if len(attack_inc) == 3:
 		slot = 1
@@ -349,8 +352,8 @@ def get_attack(sheet_inc, attack_inc: str):
 		heavy = False
 		hvy_extra_dmg = ""
 
-	followups.append(c.Followup("👋", f"dmg{slot}{hvy_extra_dmg}", "roll"))
-	followups.append(c.Followup("\U0001F450", f"dmg{slot}_2h{hvy_extra_dmg}", "roll"))
+	followups.append(c.FollowupButton("👋", f"dmg{slot}{hvy_extra_dmg}", "roll", label="1h"))
+	followups.append(c.FollowupButton("\U0001F450", f"dmg{slot}_2h{hvy_extra_dmg}", "roll", label="2h"))
 
 	add = 0
 	adv = None
@@ -384,7 +387,7 @@ def get_attack(sheet_inc, attack_inc: str):
 			elif temp_add < 0:
 				temp += temp_add
 
-			followups.append(c.Followup("💪", f"flexible:{temp}[{dmg_type}]", "roll"))
+			followups.append(c.FollowupButton("💪", f"flexible:{temp}[{dmg_type}]", "roll", label="flex"))
 
 		temp = re.findall('extra \([0-9]+d[0-9]+ *[a-z]*\)', properties)  # extra damage
 		if temp:
@@ -394,12 +397,12 @@ def get_attack(sheet_inc, attack_inc: str):
 				dmg_type = re.findall("\[[a-z]+]", temp)[0]
 			except IndexError:
 				dmg_type = re.findall("[a-z]+", temp)[-1]
-			followups.append(c.Followup(s.DAMAGE_TYPES.get(dmg_type, '✨'), f"{temp_roll}[{dmg_type}]", "roll"))
+			followups.append(c.FollowupButton(s.DAMAGE_TYPES.get(dmg_type, '✨'), f"{temp_roll}[{dmg_type}]", "roll", label=temp_roll))
 
 	for feat in feats:
 		if feat[0] == "Polearm Master" and int(feat[1]):
 			temp_add = int(line[7])
-			followups.append(c.Followup("🪄", f"1d4+{temp_add}[bludgeoning]", "roll"))
+			followups.append(c.FollowupButton("🪄", f"1d4+{temp_add}[bludgeoning]", "roll", label="polearm"))
 			break
 
 	rogue_level = 0
@@ -444,7 +447,7 @@ def get_attack(sheet_inc, attack_inc: str):
 
 	if rogue_level > 0:
 		sneak_dmg = f"{math.ceil(rogue_level / 2)}d6"
-		followups.append(c.Followup("\U0001F52A", sneak_dmg, "roll"))
+		followups.append(c.FollowupButton("\U0001F52A", sneak_dmg, "roll", label=sneak_dmg))
 	elif p_rogue_level > 0:
 		if p_rogue_level > 17:
 			size = 12
@@ -455,60 +458,59 @@ def get_attack(sheet_inc, attack_inc: str):
 		else:
 			size = 6
 		sneak_dmg = f"{math.ceil(p_rogue_level / 2)}d{size}"
-		followups.append(c.Followup("\U0001F52A", sneak_dmg, "roll"))
+		followups.append(c.FollowupButton("\U0001F52A", sneak_dmg, "roll", label=sneak_dmg))
 
 	if zealot_level > 2:
 		temp = wks.acell("G14").value
-		followups.append(c.Followup("🏵️", f"1d6+{math.floor(zealot_level / 2)}[{temp}]", "roll"))
+		followups.append(c.FollowupButton("🏵️", f"1d6+{math.floor(zealot_level / 2)}[{temp}]", "roll", label="zealot"))
 
 	if paladin_level > 1:
-		followups.append(c.Followup("🎆", "2d8[radiant]", "roll"))
-		followups.append(c.Followup("🎇", "1d8[radiant]", "roll"))
+		followups.append(c.FollowupButton("🎆", "1d8[radiant]", "roll", label="SMITE", incremental=True))
 	if paladin_level > 10:
-		followups.append(c.Followup("🌠", "1d8[radiant]", "roll"))
+		followups.append(c.FollowupButton("🌠", "1d8[radiant]", "roll", label="1d8"))
 	if slain_level > 17:
 		extra_die = "1d6"
 	elif slain_level > 6:
 		extra_die = "1d4"
 
 	if runner_level > 16:
-		followups.append(c.Followup("🎯", "2d10", "roll"))
+		followups.append(c.FollowupButton("🎯", "2d10", "roll", label="2d10"))
 	elif runner_level > 10:
-		followups.append(c.Followup("🎯", "2d8", "roll"))
+		followups.append(c.FollowupButton("🎯", "2d8", "roll", label="2d8"))
 	elif runner_level > 4:
-		followups.append(c.Followup("🎯", "2d6", "roll"))
+		followups.append(c.FollowupButton("🎯", "2d6", "roll", label="2d6"))
 
 	if hunter_r_level > 5:
-		followups.append(c.Followup("👁️", "1d6", "roll"))
+		followups.append(c.FollowupButton("👁️", "1d6", "roll", "1d6"))
 
 	if whisper_level > 14:
-		followups.append(c.Followup("🧠", "8d6[psychic]", "roll"))
+		followups.append(c.FollowupButton("🧠", "8d6[psychic]", "roll", label="psi blades"))
 	elif whisper_level > 9:
-		followups.append(c.Followup("🧠", "5d6[psychic]", "roll"))
+		followups.append(c.FollowupButton("🧠", "5d6[psychic]", "roll", label="psi blades"))
 	elif whisper_level > 4:
-		followups.append(c.Followup("🧠", "3d6[psychic]", "roll"))
+		followups.append(c.FollowupButton("🧠", "3d6[psychic]", "roll", label="psi blades"))
 	elif whisper_level > 2:
-		followups.append(c.Followup("🧠", "2d6[psychic]", "roll"))
+		followups.append(c.FollowupButton("🧠", "2d6[psychic]", "roll", label="psi blades"))
 
 	if blood_level > 16:
-		followups.append(c.Followup("🩸", "1d10", "roll"))
+		followups.append(c.FollowupButton("🩸", "1d10", "roll", label="rite"))
 	elif blood_level > 10:
-		followups.append(c.Followup("🩸", "1d8", "roll"))
+		followups.append(c.FollowupButton("🩸", "1d8", "roll", label="rite"))
 	elif blood_level > 4:
-		followups.append(c.Followup("🩸", "1d6", "roll"))
+		followups.append(c.FollowupButton("🩸", "1d6", "roll", label="rite"))
 	elif blood_level > 1:
-		followups.append(c.Followup("🩸", "1d4", "roll"))
+		followups.append(c.FollowupButton("🩸", "1d4", "roll", label="rite"))
 
 	if eldritch_level > 8:
-		followups.append(c.Followup(1071167194165170207, "6d8[force]", "roll"))
+		followups.append(c.FollowupButton(1071167194165170207, "6d8[force]", "roll", "eldritch"))
 	elif eldritch_level > 6:
-		followups.append(c.Followup(1071167194165170207, "5d8[force]", "roll"))
+		followups.append(c.FollowupButton(1071167194165170207, "5d8[force]", "roll", "eldritch"))
 	elif eldritch_level > 4:
-		followups.append(c.Followup(1071167194165170207, "4d8[force]", "roll"))
+		followups.append(c.FollowupButton(1071167194165170207, "4d8[force]", "roll", "eldritch"))
 	elif eldritch_level > 2:
-		followups.append(c.Followup(1071167194165170207, "3d8[force]", "roll"))
+		followups.append(c.FollowupButton(1071167194165170207, "3d8[force]", "roll", "eldritch"))
 	elif eldritch_level > 0:
-		followups.append(c.Followup(1071167194165170207, "2d8[force]", "roll"))
+		followups.append(c.FollowupButton(1071167194165170207, "2d8[force]", "roll", "eldritch"))
 
 	if heavy:
 		add = add - get_prof(sheet_inc)
@@ -614,7 +616,7 @@ def get_c_attack(sheet_inc, attack_inc: str):
 	attacks = wks.get("G9:N12")
 	attack_inc = attack_inc[1:]
 
-	followups = [c.Followup("💥", None, "crit"), c.Followup("🇶", None, "queue")]
+	followups = [c.FollowupButton("💥", None, "crit", label="off", style=discord.ButtonStyle.red), c.FollowupButton("🇶", None, "queue", label="off", style=discord.ButtonStyle.grey)]
 
 	if len(attack_inc) == 3:
 		slot = 7
@@ -622,9 +624,9 @@ def get_c_attack(sheet_inc, attack_inc: str):
 		slot = int(attack_inc[3]) + 6
 
 	# noinspection SpellCheckingInspection
-	followups.append(c.Followup("👋", f"cdmg{slot - 6}", "roll"))
+	followups.append(c.FollowupButton("👋", f"cdmg{slot - 6}", "roll", label = "1h"))
 	# noinspection SpellCheckingInspection
-	followups.append(c.Followup("\U0001F450", f"cdmg{slot - 6}_2h", "roll"))
+	followups.append(c.FollowupButton("\U0001F450", f"cdmg{slot - 6}_2h", "roll", label = "2h"))
 
 	add = 0
 	adv = None
@@ -657,7 +659,7 @@ def get_c_attack(sheet_inc, attack_inc: str):
 			elif temp_add < 0:
 				temp += temp_add
 
-			followups.append(c.Followup("💪", f"flexible:{temp}[{dmg_type}]", "roll"))
+			followups.append(c.FollowupButton("💪", f"flexible:{temp}[{dmg_type}]", "roll", "flex"))
 
 		temp = re.findall('extra *\([0-9]+d[0-9]+ *[a-z]*\)', properties)  # extra damage
 		if temp:
@@ -667,7 +669,7 @@ def get_c_attack(sheet_inc, attack_inc: str):
 			except IndexError:
 				dmg_type = line[6]
 			dmg_type_disp = f"[{dmg_type}]"
-			followups.append(c.Followup(s.DAMAGE_TYPES.get(dmg_type), f"{temp}{dmg_type_disp}", "roll"))
+			followups.append(c.FollowupButton(s.DAMAGE_TYPES.get(dmg_type), f"{temp}{dmg_type_disp}", "roll", label=temp))
 
 	return add, adv, followups
 
@@ -1243,7 +1245,7 @@ async def heal_hurt(ctx, is_heal: bool, amount: str, is_companion: bool = False)
 				main.update("AP19", current)
 		if overheal:
 			responses.append(f"\nThere is some healing remaining, press the shield emoji under this message to apply it as temporary hitpoints!\nCurrent temp hp: {temp} | Remaining healing: {heal}")
-			followups.append(c.Followup("🛡️", [heal, is_companion], "confirm_temphp"))
+			followups.append(c.FollowupButton("🛡️", [heal, is_companion], "confirm_temphp", label=str(heal)))
 	else:
 		if update_extra_temp:
 			wks.update("AM19", extra_temp)
@@ -1255,15 +1257,15 @@ async def heal_hurt(ctx, is_heal: bool, amount: str, is_companion: bool = False)
 			wks.update("AP14", current)
 			if current == 0:
 				responses.append(f"\nYou just dropped to 0 hp, would you like me to set up your conditions?\n(the ✅ emoji will turn the prone and the unconscious conditions on)")
-				followups.append(c.Followup("✅", [["unconscious", True]], "conditions"))
-				followups.append(c.Followup("❎", None, "disable"))
+				followups.append(c.FollowupButton("✅", [["unconscious", True]], "conditions"))
+				followups.append(c.FollowupButton("❎", None, "disable"))
 			if from_the_dead:
 				responses.append("\nYou just came back from 0 hit points, should I turn off the unconscious condition?")
-				followups.append(c.Followup("✅", [["unconscious", False]], "conditions"))
-				followups.append(c.Followup("❎", None, "disable"))
+				followups.append(c.FollowupButton("✅", [["unconscious", False]], "conditions"))
+				followups.append(c.FollowupButton("❎", None, "disable"))
 		if overheal:
 			responses.append(f"\nThere is some healing remaining, press the shield emoji under this message to apply it as temporary hitpoints!\nCurrent temp hp: {temp} | Remaining healing: {heal}")
-			followups.append(c.Followup("🛡️", [heal, is_companion], "confirm_temphp"))
+			followups.append(c.FollowupButton("🛡️", [heal, is_companion], "confirm_temphp", label=str(heal)))
 
 	response = "\n".join(responses)
 
@@ -1316,7 +1318,7 @@ async def set_temp(ctx, amount, force = False, is_companion = False):
 			return txt, None
 		else:
 			txt = f"{character} has temporary hit points at the moment.\nCurrent: {current}\nNew: {amount}\nDo you want to swap it?"
-			followups = [c.Followup("✅", [amount, is_companion], "confirm_temphp"), c.Followup("❎", f"{character}'s temporary hit points have been left at {current}!", "disable")]
+			followups = [c.FollowupButton("✅", [amount, is_companion], "confirm_temphp"), c.FollowupButton("❎", f"{character}'s temporary hit points have been left at {current}!", "disable")]
 			return txt, followups
 
 

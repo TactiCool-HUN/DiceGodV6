@@ -1,7 +1,6 @@
 from discord import RawReactionActionEvent, Role, Message
 from utils.bot_setup import bot
 from utils.database_handler import DatabaseConnection
-from discord.utils import get
 import re
 
 
