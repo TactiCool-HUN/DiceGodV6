@@ -162,7 +162,7 @@ class FollowupButton(discord.ui.Button):
 
 class FollowupView(discord.ui.View):
 	def __init__(self, message: discord.Message):
-		super().__init__(timeout = 300)
+		super().__init__(timeout = 1000)
 		self.message_core = MessageCore(message = message)
 
 	def add_item(self, item: FollowupButton):
