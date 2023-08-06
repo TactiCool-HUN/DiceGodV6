@@ -13,7 +13,7 @@ async def roll_command(identifier: discord.Interaction | discord.ext.commands.Co
 	if isinstance(identifier, discord.Interaction):
 		identifier: discord.Interaction
 		try:
-			await identifier.response.defer(ephemeral = False)
+			await identifier.response.defer()
 		except discord.errors.InteractionResponded:
 			pass
 	if text[:4] == "hurt":
@@ -71,7 +71,7 @@ async def pc_command(identifier: discord.Interaction | discord.ext.commands.Cont
 	person = c.Person(identifier)
 	if isinstance(identifier, discord.Interaction):
 		identifier: discord.Interaction
-		await identifier.response.defer(ephemeral = False)
+		await identifier.response.defer()
 
 	txt = "An error has occurred!\nNo command match found. Possible commands: ``create``, ``update``, ``set``, ``access``, ``clear``, ``delete``"
 	silent = False

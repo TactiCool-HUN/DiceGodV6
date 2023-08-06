@@ -46,7 +46,7 @@ async def text_to_singles(identifier: discord.Interaction | discord.ext.commands
 			if current_single:
 				single_rolls.append(current_single)
 			current_single = c.SingleRoll(split, "vanilla roll")
-		elif re.findall("[+-][0-9]+[^+-]*", split):  # - - - - - vanilla add - - - - -
+		elif re.findall("[+-][0-9]+[^+-]*", split) and split[1:3] != "7t":  # - - - - - vanilla add - - - - -
 			if current_single:
 				current_single.add_vanilla_add(split)
 			else:
