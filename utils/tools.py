@@ -195,7 +195,10 @@ async def send_message(identifier: discord.Message | discord.Interaction | disco
 				else:
 					view = discord.ui.View()
 
-				sent = await identifier.followup.send(content = text, embed = embed, view = view, silent = silent, tts = tts, ephemeral = ephemeral)
+				try:
+					sent = await identifier.response.send_message(content = text, embed = embed, view = view, silent = silent, tts = tts, ephemeral = ephemeral)
+				except discord.InteractionResponded:
+					sent = await identifier.followup.send(content = text, embed = embed, view = view, silent = silent, tts = tts, ephemeral = ephemeral)
 			elif isinstance(identifier, discord.Message) or isinstance(identifier, discord.ext.commands.Context):
 				if isinstance(identifier, discord.ext.commands.Context):
 					message: discord.Message = identifier.message

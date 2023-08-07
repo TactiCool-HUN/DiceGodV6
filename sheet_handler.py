@@ -397,7 +397,7 @@ def get_attack(sheet_inc, attack_inc: str):
 				dmg_type = re.findall("\[[a-z]+]", temp)[0]
 			except IndexError:
 				dmg_type = re.findall("[a-z]+", temp)[-1]
-			followups.append(c.FollowupButton(s.DAMAGE_TYPES.get(dmg_type, '✨'), f"{temp_roll}[{dmg_type}]", "roll", label=temp_roll))
+			followups.append(c.FollowupButton(s.DAMAGE_TYPES.get(dmg_type, '✨'), f"{temp_roll}[{dmg_type}]", "roll", label=temp_roll, incremental = True))
 
 	for feat in feats:
 		if feat[0] == "Polearm Master" and int(feat[1]):

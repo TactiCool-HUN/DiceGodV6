@@ -54,6 +54,8 @@ class FollowupButton(discord.ui.Button):
 				else:
 					await interaction.response.defer()
 					asyncio.create_task(com.roll_command(self.core.identifier, self.data, crit = self.core.crit))
+			case "roll_negative":
+				pass
 			case "queue":
 				if self.core.queue:
 					roll_txt = []
