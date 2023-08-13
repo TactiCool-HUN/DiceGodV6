@@ -160,17 +160,17 @@ class VoteButton(discord.ui.Button):
 		if interaction.user.id in self.vote.voters or self.vote.voters == []:
 			if interaction.user.id in self.vote.poll_options[self.poll_index].voters:
 				self.vote.poll_options[self.poll_index].voters.remove(interaction.user.id)
-				await t.send_message(interaction, embed = self.vote.create_embed())
+				await interaction.response.edit_message(embed = self.vote.create_embed())
 			else:
 				if self.vote.vote_amount > 0:
 					if self.vote.get_vote_amount(interaction.user.id) >= self.vote.vote_amount:
 						await t.send_message(interaction, text = "You have too many votes here.", ephemeral = True)
 					else:
 						self.vote.poll_options[self.poll_index].voters.append(interaction.user.id)
-						await t.send_message(interaction, embed = self.vote.create_embed())
+						await interaction.response.edit_message(embed = self.vote.create_embed())
 				else:
 					self.vote.poll_options[self.poll_index].voters.append(interaction.user.id)
-					await t.send_message(interaction, embed = self.vote.create_embed())
+					await interaction.response.edit_message(embed = self.vote.create_embed())
 		else:
 			await t.send_message(interaction, text = "You cannot vote here.", ephemeral = True)
 
