@@ -4,7 +4,7 @@ import classes as c
 from utils import settings, bot_setup
 import random
 import re
-from secondary_functions.uwuifier import uwuify
+from secondary_functions.uwuifier import uwuify, generate_uwu
 from ast import literal_eval
 import utils.settings as s
 
@@ -239,7 +239,7 @@ async def bot_responses(message: discord.Message):
 
 	if person.uwuify:
 		embed = discord.Embed(
-			description = uwuify(message.clean_content),
+			description = generate_uwu(message.clean_content),
 			color = literal_eval(person.color)
 		)
 		embed.set_author(name = person.user.display_name, icon_url = person.user.avatar.url)
