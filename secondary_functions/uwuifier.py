@@ -1,5 +1,6 @@
 from random import randint as rand
-
+import random
+import pandas as pd
 # noinspection SpellCheckingInspection
 alphabet = list("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz")
 
@@ -72,6 +73,42 @@ def generate_uwu(input_text):
 			output_text += current_char
 
 	return output_text
+
+
+def uwu(sentence):  # The sentence-converter starts here
+	random_message = pd.read_csv("data_holder/uwu_word_list")["0"]
+	word_list = sentence.split()
+	for number, word in enumerate(word_list):
+		if word == "my":
+			word_list[number] = "mwy"
+		elif word == "to":
+			word_list[number] = "tuwu"
+		elif word == "had":
+			word_list[number] = "hawd"
+		elif word == "you":
+			word_list[number] = "yuw"
+		elif word == "go":
+			word_list[number] = "gow"
+		elif word == "and":
+			word_list[number] = "awnd"
+		elif word == "have":
+			word_list[number] = "haw"
+		else:
+			word = word.replace("ll", "w").replace("r", "w").replace("l", "w").replace("th", "d").replace("fu", "fwu")
+			word_list[number] = word
+
+		if random.randrange(0, 11) == 1:
+			word_list[number] = word[0] + "-" + word
+
+		if "." in word:
+			word_list[number] = word_list[number] + " " + random_message[random.randrange(0, len(random_message))]
+		if "!" in word:
+			word_list[number] = word_list[number] + " " + random_message[random.randrange(0, len(random_message))]
+		if "?" in word:
+			word_list[number] = word_list[number] + " " + random_message[random.randrange(0, len(random_message))]
+
+	final = " ".join(word_list)
+	return final
 
 
 pass
