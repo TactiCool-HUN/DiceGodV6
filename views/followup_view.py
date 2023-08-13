@@ -32,7 +32,7 @@ class FollowupButton(discord.ui.Button):
 		if self.view.myself is None:
 			self.view.myself = interaction.message
 
-		if self.core.person.user.id != interaction.user.id and self.core.person.user.id not in s.ADMINS:
+		if self.core.person.user.id != interaction.user.id and interaction.user.id not in s.ADMINS:
 			# noinspection SpellCheckingInspection
 			await t.send_message(interaction, text = "Sush!", ephemeral = True)
 			return
