@@ -1121,6 +1121,7 @@ async def heal_hurt(identifier: discord.Interaction | discord.ext.commands.Conte
 			responses.append(t.choice([
 				"Fully patched up and ready to fight!", 1,
 				"Back on full!", 1,
+				"Fully healed. Only emotional scars remain.", 1,
 			]))
 
 		if from_the_dead:
