@@ -7,6 +7,7 @@ import re
 from secondary_functions.uwuifier import uwuify, generate_uwu, uwu
 from ast import literal_eval
 import utils.settings as s
+import utils.tools as t
 
 
 async def bot_responses(message: discord.Message):
@@ -249,6 +250,40 @@ async def bot_responses(message: discord.Message):
 		if random.randint(1, 250) == 169:
 			emoji = random.choice(s.EMOJIS)
 			await message.add_reaction(emoji)
+
+	if not responses:
+		content = message.content
+		direct_mentions = []
+
+		for member in message.mentions:
+			member: discord.Member
+			if str(member.id) in content:
+				direct_mentions.append(member)
+
+		if direct_mentions and random.randint(1, 30) == 1:
+			person = random.choice(direct_mentions)
+
+			titles = t.get_titles(person)
+
+			major = []
+			for title in titles:
+				if title.rank == "Major":
+					major.append(title.name)
+
+			if major:
+				text = "Did you mean..."
+				for title in major:
+					ending = t.choice([
+						"?", 3,
+						"!", 1,
+						"?!", 1,
+					])
+					if ending == "?!":
+						text = f"{text}\nThe {title.upper()}{ending}"
+					else:
+						text = f"{text}\nThe {title}{ending}"
+
+				await t.send_message(message, text = text, reply = True)
 
 
 pass

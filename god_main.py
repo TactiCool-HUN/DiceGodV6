@@ -1217,7 +1217,7 @@ async def title_admin(interaction: discord.Interaction):
 		await title_command(interaction)
 
 
-@bot.tree.command(name = "title", description = "Request someone's titles.")
+@bot.tree.command(name = "titles", description = "Request someone's titles.")
 @app_commands.describe(person = "@ the person")
 async def title_request(interaction: discord.Interaction, person: discord.User = None):
 	if not person:
@@ -1226,7 +1226,7 @@ async def title_request(interaction: discord.Interaction, person: discord.User =
 	else:
 		outside_call = True
 
-	titles = t.get_titles([person])
+	titles = t.get_titles(person)
 
 	person = c.Person(discord_id = person.id)
 

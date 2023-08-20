@@ -424,7 +424,9 @@ def _get_titles(person: discord.User) -> list[c.Title]:
 		return []
 
 
-def get_titles(people: list[discord.User]) -> list[c.Title]:
+def get_titles(people: list[discord.User] | discord.User | discord.Member) -> list[c.Title]:
+	if type(people) != list:
+		people = [people]
 	titles = _get_titles(people[0])
 
 	temp = titles[:]
