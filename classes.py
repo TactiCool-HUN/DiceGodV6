@@ -742,4 +742,29 @@ class Components:
 		return disp
 
 
+class Title:
+	def __init__(self, title_id):
+		with t.DatabaseConnection("data.db") as connection:
+			cursor = connection.cursor()
+			cursor.execute("SELECT * FROM titles WHERE id = ?", (title_id,))
+			raw = cursor.fetchall()
+
+		if raw:
+			raw = raw[0]
+
+			self.name = raw[1]
+			self.rank = raw[2]
+
+			with t.DatabaseConnection("data.db") as connection:
+				cursor = connection.cursor()
+				cursor.execute("SELECT * FROM title_people WHERE title_id = ?", (title_id,))
+				raw2 = cursor.fetchall()
+
+			self.people_id: list[int] = []
+			for dc_id in raw2:
+				self.people_id.append(dc_id[1])
+		else:
+			raise ValueError("No Title Found")
+
+
 pass

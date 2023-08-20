@@ -408,6 +408,35 @@ async def load(ctx: discord.ext.commands.Context, load_message = None) -> discor
 			await sent.edit(content = "Load expired. We'll get 'em next time.")"""
 
 
+def _get_titles(person: discord.User) -> list[c.Title]:
+	with DatabaseConnection("data.db") as connection:
+		cursor = connection.cursor()
+		cursor.execute("SELECT * FROM title_people WHERE discord_id = ?", (person.id,))
+		raw = cursor.fetchall()
+
+	if raw:
+		titles = []
+		for item in raw:
+			titles.append(c.Title(item[2]))
+
+		return titles
+	else:
+		return []
+
+
+def get_titles(people: list[discord.User]) -> list[c.Title]:
+	titles = _get_titles(people[0])
+
+	temp = titles[:]
+	for title in temp:
+		for person in people:
+			if person.id not in title.people_id:
+				titles.remove(title)
+				break
+
+	return titles
+
+
 def seconds_to_clock(seconds):
 	seconds = math.ceil(seconds)
 	minutes = math.floor(seconds / 60)

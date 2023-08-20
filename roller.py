@@ -231,7 +231,7 @@ def random_roller(identifier: discord.Interaction | discord.ext.commands.Context
 	else:
 		amount = roll.dice_number
 
-	if (args.adv == "adv" or args.adv == "dis") and roll.dice_number == 1:
+	if (args.adv == "adv" or args.adv == "dis" or args.adv == "emp") and roll.dice_number == 1:
 		amount = 2
 
 	roll.results = []

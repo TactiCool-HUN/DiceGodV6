@@ -12,6 +12,7 @@ import textwrap
 from views.vote_command import vote_command
 from views.die_command import die_command
 from views.table_command import table_command
+from views.title_handler import title_command
 from secondary_functions import chatbot, emoji_role
 import discord.ext
 import asyncio
@@ -1177,7 +1178,7 @@ async def table_admin(interaction: discord.Interaction, command: Choice[str], ta
 				await t.send_message(interaction, text = f"Table ``{table_name}`` not found.", ephemeral = True)
 
 
-@bot.tree.command(name = "x_emoji_role", description = "Admin command to set up emoji roles")
+@bot.tree.command(name = "x_admin_emoji_role", description = "Admin command to set up emoji roles")
 @app_commands.describe(channel_id = "id of channel")
 @app_commands.describe(message_id = "id of message")
 @app_commands.describe(emoji = "emoji")
@@ -1207,6 +1208,54 @@ async def table_slash(interaction: discord.Interaction):
 @bot.command(name = "vote", aliases = ["v"])
 async def vote_slash(ctx, *, text_dump_):
 	await vote_command(ctx, text_dump_)
+
+
+@bot.tree.command(name = "x_admin_title", description = "Admin command to manage titles")
+async def title_admin(interaction: discord.Interaction):
+	person = c.Person(interaction)
+	if person.user.id in s.ADMINS:
+		await title_command(interaction)
+
+
+@bot.tree.command(name = "title", description = "Request someone's titles.")
+@app_commands.describe(person = "@ the person")
+async def title_request(interaction: discord.Interaction, person: discord.User = None):
+	if not person:
+		person = interaction.user
+		outside_call = False
+	else:
+		outside_call = True
+
+	titles = t.get_titles([person])
+
+	person = c.Person(discord_id = person.id)
+
+	major = []
+	minor = []
+	for title in titles:
+		if title.rank == "Major":
+			major.append(title.name)
+		else:
+			minor.append(title.name)
+	major = "\n- ".join(major)
+	minor = "\n- ".join(minor)
+
+	if major:
+		major = f"- {major}"
+	if minor:
+		minor = f"- {minor}"
+
+	embed = discord.Embed(
+		title = f"Major Titles",
+		description = major,
+		color = literal_eval(person.color)
+	)
+	embed.set_author(name = person.user.display_name, icon_url = person.user.avatar.url)
+	embed.add_field(name = "Minor Titles", value = minor, inline = False)
+	if outside_call:
+		embed.set_footer(text = f"Requested by {interaction.user.name}")
+
+	await t.send_message(interaction, embed = embed)
 
 
 with open("data_holder/token.txt", "r") as f:

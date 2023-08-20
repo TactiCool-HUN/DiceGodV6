@@ -134,5 +134,40 @@ with DatabaseConnection("data.db") as connection:
 	except sqlite3.OperationalError:
 		print(f"role_bot found")
 
+	# - - - titles - - -
+	try:
+		cursor.execute(
+			'CREATE TABLE titles('
+			'id integer primary key,'
+			'title text,'
+			'rank text)'
+		)
+	except sqlite3.OperationalError:
+		print(f"titles found")
+
+	# - - - title-people connector - - -
+	try:
+		cursor.execute(
+			'CREATE TABLE title_people('
+			'id primary key,'
+			'discord_id integer,'
+			'title_id integer)'
+		)
+	except sqlite3.OperationalError:
+		print(f"title-people found")
+
+	# - - - alignment - - -
+	try:
+		cursor.execute(
+			'CREATE TABLE alignment('
+			'discord_id integer primary key,'
+			'good integer,'
+			'evil integer,'
+			'law integer,'
+			'chaos integer,)'
+		)
+	except sqlite3.OperationalError:
+		print(f"alignment found")
+
 
 pass
