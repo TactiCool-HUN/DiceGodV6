@@ -14,13 +14,14 @@ class TitleClass:
 
 	def create_message(self):
 		if self.people:
-			txt = f"Affected People/Person: "
+			txt = f"Affected People/Person:"
 			first = True
 			for person in self.people:
 				if first:
-					txt = f"{txt}{person.name}"
+					txt = f"{txt} {person.display_name}"
+					first = False
 				else:
-					txt = f"{txt}, {person.name}"
+					txt = f"{txt}, {person.display_name}"
 
 			return txt
 		else:

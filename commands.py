@@ -286,7 +286,7 @@ async def pc_command(identifier: discord.Interaction | discord.ext.commands.Cont
 						cursor = connection.cursor()
 						cursor.execute("INSERT INTO sheet_rents(owner_id, user_id, character) VALUES (?, ?, ?)", (person.user.id, person_inc.id, sheet.character))
 					await t.send_message(person_inc, text = f"{sheet.character} is now rented to you. You can set and clear the character through Dice God but have no other permissions for it.\nSheet Owner: {sheet.owner.user.display_name}\nAccess Granted by: {t.identifier_to_member(identifier).name}")
-					txt = f"{sheet.character} is now rented to {person_inc.name}."
+					txt = f"{sheet.character} is now rented to {person_inc.display_name}."
 
 	await t.send_message(identifier, text = txt, reply = True, followups = followups, silent = silent)
 

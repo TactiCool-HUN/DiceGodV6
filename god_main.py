@@ -1253,7 +1253,7 @@ async def title_request(interaction: discord.Interaction, person: discord.User =
 	embed.set_author(name = person.user.display_name, icon_url = person.user.avatar.url)
 	embed.add_field(name = "Minor Titles", value = minor, inline = False)
 	if outside_call:
-		embed.set_footer(text = f"Requested by {interaction.user.name}")
+		embed.set_footer(text = f"Requested by {interaction.user.display_name}")
 
 	await t.send_message(interaction, embed = embed)
 
