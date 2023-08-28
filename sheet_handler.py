@@ -272,21 +272,33 @@ def get_skill(sheet_inc, skill_inc: str):
 			score_used = line[4]
 			break
 
+	eloquence_found = False
+	rogue_found = False
+	mothfolk_found = False
+	barbarian_found = False
+
 	for line in class_area:
 		while len(line) < 4:
 			line.append("")
 
-		if line[1] == "Eloquence" and int(line[2]) > 2 and skill_inc in ["persuasion", "deception"]:
-			minmax_type = "min"
-			minmax_size = 10
-		if line[0] == "Rogue" and int(line[2]) > 10 and prof:
-			minmax_type = "min"
-			minmax_size = 10
-		if line[0] == "Mothfolk" and line[1] == "Royal" and score_used == "CHA":
-			minmax_type = "min"
-			minmax_size = 5
-		if line[0] == "Barbarian" and int(line[2]) > 17 and score_used == "STR":
-			pre_send.append(f"If the check's total is lower than {wks.acell('H22').value} (Strength score) you can use it in it's place.")
+		if line[1] == "Eloquence" and not eloquence_found:
+			if int(line[2]) > 2 and skill_inc in ["persuasion", "deception"]:
+				minmax_type = "min"
+				minmax_size = 10
+				eloquence_found = True
+		if line[0] == "Rogue" and not rogue_found:
+			if int(line[2]) > 10 and prof:
+				minmax_type = "min"
+				minmax_size = 10
+				rogue_found = True
+		if line[0] == "Mothfolk" and not mothfolk_found:
+			if line[1] == "Royal" and score_used == "CHA":
+				minmax_type = "min"
+				minmax_size = 5
+		if line[0] == "Barbarian" and not barbarian_found:
+			if int(line[2]) > 17 and score_used == "STR":
+				pre_send.append(f"If the check's total is lower than {wks.acell('H22').value} (Strength score) you can use it in it's place.")
+				barbarian_found = True
 
 	if skill_inc == "init":
 		speciality = "init"
