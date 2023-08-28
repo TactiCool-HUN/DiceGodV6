@@ -1436,7 +1436,7 @@ async def rest(identifier: discord.Interaction | discord.ext.commands.Context, l
 	else:  # | | | | | | | | | | | | | | | | | | | | short rest | | | | | | | | | | | | | | | | | | | |
 		# - - - - - - - - - - deft explorer - - - - - - - - - -
 		temp = sh.worksheet("ClassFeatureCalc")
-		if temp.acell("B233").value == "TRUE":
+		if temp.acell("B237").value == "TRUE":
 			temp = sh.worksheet("BotRead")
 			temp = temp.get("A2:C4")
 			ranger = False
