@@ -148,11 +148,13 @@ async def bot_responses(message: discord.Message):
 		]
 		# noinspection SpellCheckingInspection
 		mark = [
-			"Yes", 1,
+			"yea, sure", 1,
 			"No.", 1,
 			"Maybe?", 1,
 			"<:Kyrihihihi:1058348961523576872>", 1,
 			"Be careful when you speak my name, mortal.", 1,
+			"shut", 1,
+			"You are always looking for animals to copy. Not accepting that you are useless either way.", 0.2,
 			"🐸", 1,
 		]
 		# noinspection SpellCheckingInspection
