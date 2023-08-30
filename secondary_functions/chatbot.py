@@ -261,7 +261,7 @@ async def bot_responses(message: discord.Message):
 				if not c.Person(discord_id = member.id).chat_ignore:
 					direct_mentions.append(member)
 
-		if direct_mentions and random.randint(1, 30) == 1:
+		if direct_mentions and random.randint(1, 25) == 1:
 			person = random.choice(direct_mentions)
 
 			titles = t.get_titles(person)
