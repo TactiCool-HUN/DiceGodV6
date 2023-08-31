@@ -1765,7 +1765,7 @@ async def clear_sheet(interaction, sheet, player, dm):
 
 	progress = {
 		"Overall": [0, 0],
-		"Setup": [0, 23],
+		"Setup": [0, 25],
 		"Features": [0, 1],
 		"Main": [0, 18],
 		"LimitedUse": [0, 2],
@@ -1819,6 +1819,10 @@ async def clear_sheet(interaction, sheet, player, dm):
 	wks.update("AB21", False)
 	wks.update("I23:I31", [['AUTO'], ['AUTO'], ['AUTO'], ['AUTO'], ['AUTO'], ['AUTO'], ['AUTO'], ['AUTO'], ['AUTO']])
 	wks.update("Y23:Y31", [['AUTO'], ['AUTO'], ['AUTO'], ['AUTO'], ['AUTO'], ['AUTO'], ['AUTO'], ['AUTO'], ['AUTO']])
+	wks.update("N23:N31", [[''], [''], [''], [''], [''], [''], [''], [''], ['']])
+	asyncio.create_task(t.clear_progress(player, sheet, progress, start_time, current, 5, sent))
+	await asyncio.sleep(timer)
+	wks.update("AD23:AD31", [[''], [''], [''], [''], [''], [''], [''], [''], ['']])
 	filler = [
 		['', '', '', '', '', '', '', '', False],
 		[True, '', 'Base Health', '', '', '', '', 0],
@@ -1834,7 +1838,7 @@ async def clear_sheet(interaction, sheet, player, dm):
 		['', '', '', 'Official D&D']
 	]
 	wks.update("AN20:AV31", filler)
-	asyncio.create_task(t.clear_progress(player, sheet, progress, start_time, current, 5, sent))
+	asyncio.create_task(t.clear_progress(player, sheet, progress, start_time, current, 2, sent))
 	await asyncio.sleep(timer)
 	wks.update("E33:AQ33", [[False, 'Armor Proficiencies', '', '', '', '', '', '', '', 'Manual', '', '', False, 'Tool Proficiencies', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', 'Auto EXP on all PROF ', '', '', '', '', '', '', False]])
 	wks.update("I35:K43", [[False], [False], [False], [False], [], ['', False, 10], ['', False, 2], ['', False, 0], ['', False, 2]])
