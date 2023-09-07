@@ -184,7 +184,9 @@ async def pc_command(identifier: discord.Interaction | discord.ext.commands.Cont
 				txt += f"\nThe character is {sheet.owner.user.mention}'s property, you cannot edit it!"
 				error = True
 			if not error:
-				if color[0] == "#":
+				if color == "clear":
+					color = None
+				elif color[0] == "#":
 					color = f"0x{color[1:]}"
 				sheet.color = color
 				sheet.update()
