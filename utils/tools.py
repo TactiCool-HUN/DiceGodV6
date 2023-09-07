@@ -795,7 +795,7 @@ async def send_pack(pack: c.Pack, is_reply: bool = True, ephemeral: bool = False
 	if person.active:
 		sheet = c.Sheet(pack.identifier)
 		if sheet.color:
-			color = sheet.color
+			color = literal_eval(sheet.color)
 		else:
 			color = literal_eval(person.color)
 	else:
@@ -846,7 +846,7 @@ async def send_multipack(packs: list[c.Pack], roll_text: str, is_reply: bool = T
 	if person.active:
 		sheet = c.Sheet(packs[0].identifier)
 		if sheet.color:
-			color = sheet.color
+			color = literal_eval(sheet.color)
 		else:
 			color = literal_eval(person.color)
 	else:
