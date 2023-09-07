@@ -564,7 +564,7 @@ async def settings(interaction: discord.Interaction, change_name: Choice[int] = 
 
 	await t.send_message(interaction, text = response, ephemeral = ephemeral)
 	if test_roll:
-		await com.roll_command(interaction, "1")
+		await com.roll_command(interaction, "1d1")
 
 
 @bot.tree.command(name = "condition", description = "Set exhaustion or conditions on your active character.")
