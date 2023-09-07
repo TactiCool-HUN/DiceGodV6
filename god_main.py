@@ -339,6 +339,7 @@ async def pc_old(ctx: discord.ext.commands.Context, command, char_name = None, s
 	app_commands.Choice(name = "create - Create a new character, requires: char_name, sheet_name", value = "create"),
 	app_commands.Choice(name = "update - Update a character to a new sheet, requires: char_name, sheet_name", value = "update"),
 	app_commands.Choice(name = "set image - Add a !portrait! image to your character. requires: char_name, image_url.", value = "image"),
+	app_commands.Choice(name = "set color - Add a custom color to your character, requires: char_name, color", value = "color"),
 	app_commands.Choice(name = "access - Grant or revoke access to the character from someone, requires: char_name, person", value = "access"),
 	app_commands.Choice(name = "set - Set an existing character as your active, requires: char_name.", value = "set"),
 	app_commands.Choice(name = "clear - Clear your active character, requires: [nothing]", value = "clear"),

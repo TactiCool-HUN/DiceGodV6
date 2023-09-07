@@ -135,6 +135,7 @@ async def pc_command(identifier: discord.Interaction | discord.ext.commands.Cont
 
 			if sheet.user != sheet.owner and person.user.id not in s.ADMINS:
 				txt += f"\nThe character is {sheet.owner.user.mention}'s property, you cannot edit it!"
+				error = True
 
 			if not error:
 				old_sheet = sheet.sheet
@@ -160,9 +161,32 @@ async def pc_command(identifier: discord.Interaction | discord.ext.commands.Cont
 
 			if sheet.user != sheet.owner and person.user.id not in s.ADMINS:
 				txt += f"\nThe character is {sheet.owner.user.mention}'s property, you cannot edit it!"
+				error = True
 			if not error:
 				sheet.set_picture(image_url)
 				txt = f"Character image set, try it out with a roll!"
+				if sheet.user != sheet.owner and person.user.id in s.ADMINS:
+					await t.send_message(sheet.owner, text = f"Admin privileges were used to edit the sheet of {sheet.character}")
+		case "color":
+			txt = "An error has occurred!"
+			error = False
+
+			if char_name is None or color is None:
+				txt += "\nYou need to give both a character name and a color hex-code!"
+				error = True
+			elif not t.exists(char_name, "char"):
+				txt += f"\nThere is no sheet under the character name {char_name}. Use ``-pc create`` to make a new PC."
+				error = True
+
+			sheet = c.Sheet(identifier, char_name)
+
+			if sheet.user != sheet.owner and person.user.id not in s.ADMINS:
+				txt += f"\nThe character is {sheet.owner.user.mention}'s property, you cannot edit it!"
+				error = True
+			if not error:
+				sheet.color = color
+				sheet.update()
+				txt = f"Character color set, try it out with a roll!"
 				if sheet.user != sheet.owner and person.user.id in s.ADMINS:
 					await t.send_message(sheet.owner, text = f"Admin privileges were used to edit the sheet of {sheet.character}")
 		case "set":
@@ -180,6 +204,7 @@ async def pc_command(identifier: discord.Interaction | discord.ext.commands.Cont
 
 			if sheet.user != sheet.owner and person.user.id not in s.ADMINS and not t.is_rented(sheet, person.user):
 				txt += f"\nThe character is {sheet.owner.user.mention}'s property, and is not rented to you, you cannot set it!"
+				error = True
 
 			if not error:
 				person.active = char_name
