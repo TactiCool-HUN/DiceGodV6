@@ -792,10 +792,19 @@ async def send_pack(pack: c.Pack, is_reply: bool = True, ephemeral: bool = False
 			else:
 				complex_roll = f"{complex_roll} {roll.sign} {roll.full_result}"
 
+	if person.active:
+		sheet = c.Sheet(pack.identifier)
+		if sheet.color:
+			color = sheet.color
+		else:
+			color = literal_eval(person.color)
+	else:
+		color = literal_eval(person.color)
+
 	embed = discord.Embed(
 		title = f"**Roll Result:** {num2word(result)} {''.join(all_damage_types)}",
 		description = complex_roll,
-		color = literal_eval(person.color)
+		color = color
 	)
 
 	if has_dynamic:
@@ -834,9 +843,18 @@ async def send_multipack(packs: list[c.Pack], roll_text: str, is_reply: bool = T
 	result = 0
 	has_dynamic = False
 
+	if person.active:
+		sheet = c.Sheet(packs[0].identifier)
+		if sheet.color:
+			color = sheet.color
+		else:
+			color = literal_eval(person.color)
+	else:
+		color = literal_eval(person.color)
+
 	embed = discord.Embed(
 		title = f"Multi-Roll",
-		color = literal_eval(person.color)
+		color = color
 	)
 
 	for i, pack in enumerate(packs):

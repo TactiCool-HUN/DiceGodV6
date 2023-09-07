@@ -67,7 +67,7 @@ async def roll_command(identifier: discord.Interaction | discord.ext.commands.Co
 			raise e
 
 
-async def pc_command(identifier: discord.Interaction | discord.ext.commands.Context, command: str, char_name: str, sheet_name: str, image_url: str, person_inc: discord.Member):
+async def pc_command(identifier: discord.Interaction | discord.ext.commands.Context, command: str, char_name: str, sheet_name: str, image_url: str, person_inc: discord.Member, color: str):
 	person = c.Person(identifier)
 	if isinstance(identifier, discord.Interaction):
 		identifier: discord.Interaction
@@ -102,7 +102,10 @@ async def pc_command(identifier: discord.Interaction | discord.ext.commands.Cont
 				error = True
 
 			if not error:
-				c.Sheet(identifier, char_name, sheet_name, True)
+				sheet = c.Sheet(identifier, char_name, sheet_name, True)
+				if color:
+					sheet.color = color
+					sheet.update()
 				txt = f"Character successfully created!\nUse the ``-pc set {char_name}`` or the ``/pc`` command to set your new character!"
 		case "update":
 			txt = "An error has occurred!"
@@ -136,6 +139,8 @@ async def pc_command(identifier: discord.Interaction | discord.ext.commands.Cont
 			if not error:
 				old_sheet = sheet.sheet
 				sheet.sheet = sheet_name
+				if color:
+					sheet.color = color
 				sheet.update()
 				txt = f"{sheet.character}'s sheet is changed from ``{old_sheet}`` to ``{sheet.sheet}``."
 				if sheet.user != sheet.owner and person.user.id in s.ADMINS:

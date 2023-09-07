@@ -42,6 +42,7 @@ async def activity_changer():
 				choices = [
 					"cries of agony", 1,
 					"the joy of a laughing GM", 1,
+					"the joy of slaughter", 1,
 					"the growing hum of the cult", 2,
 					"the what Mag has to say", 0.1,
 				]
@@ -328,8 +329,8 @@ async def coin_slash(interaction: discord.Interaction):
 
 
 @bot.command(name = "pc", aliases = ["char", "character"])
-async def pc_old(ctx: discord.ext.commands.Context, command, char_name = None, sheet_name = None, person = None):
-	await com.pc_command(ctx, command, char_name, sheet_name, '', person)
+async def pc_old(ctx: discord.ext.commands.Context, command, char_name = None, sheet_name = None, person = None, color = None):
+	await com.pc_command(ctx, command, char_name, sheet_name, '', person, color)
 
 
 @bot.tree.command(name = "pc", description = "Connect your Google Sheet(tm) to Dice God. You can also: set, clear, update, or delete characters.")
@@ -346,8 +347,9 @@ async def pc_old(ctx: discord.ext.commands.Context, command, char_name = None, s
 @discord.app_commands.describe(sheet_name = "Provide the exact name of the Google Sheet you want to interact with.")
 @discord.app_commands.describe(image_url = "Provide an openly accessible !portrait! image's url.")
 @discord.app_commands.describe(person = "Ping a person. Only needed for the Access command.")
-async def pc_slash(interaction: discord.Interaction, command: Choice[str], char_name: str = None, sheet_name: str = None, image_url: str = None, person: discord.Member = None):
-	await com.pc_command(interaction, command.value, char_name, sheet_name, image_url, person)
+@discord.app_commands.describe(color = "Custom color for this PC")
+async def pc_slash(interaction: discord.Interaction, command: Choice[str], char_name: str = None, sheet_name: str = None, image_url: str = None, person: discord.Member = None, color: str = None):
+	await com.pc_command(interaction, command.value, char_name, sheet_name, image_url, person, color)
 
 
 """@bot.tree.command(name = "die", description = "Create custom named dice, any complex roll. You can also: update, or delete already existing ones.")

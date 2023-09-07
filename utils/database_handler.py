@@ -75,6 +75,7 @@ with DatabaseConnection("data.db") as connection:
 			'character text,'
 			'sheet text,'
 			'char_image text,'
+			'color text,'
 			'last_warning timestamp)'
 		)
 	except sqlite3.OperationalError:

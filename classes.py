@@ -99,6 +99,7 @@ class Sheet:
 		self.sheet = sheet
 		self.google_sheet = None
 		self.char_image = None
+		self.color = None
 		self.last_warning = datetime.datetime.now() - datetime.timedelta(days = 2)
 
 		if new:
@@ -137,24 +138,27 @@ class Sheet:
 			self.user = self.owner
 			self.sheet = raw[3]
 			self.char_image = raw[4]
-			self.last_warning = datetime.datetime.strptime(raw[5], "%Y-%m-%d %H:%M:%S.%f")
+			self.color = raw[5]
+			self.last_warning = datetime.datetime.strptime(raw[6], "%Y-%m-%d %H:%M:%S.%f")
 		elif t.is_rented(self, member):  # check if rented
 			self.owner = Person(discord_id = raw[1])
 			self.sheet = raw[3]
 			self.char_image = raw[4]
-			self.last_warning = datetime.datetime.strptime(raw[5], "%Y-%m-%d %H:%M:%S.%f")
+			self.color = raw[5]
+			self.last_warning = datetime.datetime.strptime(raw[6], "%Y-%m-%d %H:%M:%S.%f")
 		elif member.id in s.ADMINS:
 			self.owner = Person(discord_id = raw[1])
 			self.sheet = raw[3]
 			self.char_image = raw[4]
-			self.last_warning = datetime.datetime.strptime(raw[5], "%Y-%m-%d %H:%M:%S.%f")
+			self.color = raw[5]
+			self.last_warning = datetime.datetime.strptime(raw[6], "%Y-%m-%d %H:%M:%S.%f")
 
 	def update(self):
 		with t.DatabaseConnection("data.db") as connection:
 			cursor = connection.cursor()
 			cursor.execute(
-				'UPDATE sheets SET sheet = ?, last_warning = ? WHERE character = ?',
-				(self.sheet, self.last_warning, self.character)
+				'UPDATE sheets SET sheet = ?, color = ?, last_warning = ? WHERE character = ?',
+				(self.sheet, self.color, self.last_warning, self.character)
 			)
 
 	def delete(self):
