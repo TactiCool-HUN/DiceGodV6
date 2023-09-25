@@ -441,4 +441,29 @@ async def cast_command(identifier: discord.Interaction | discord.ext.commands.Co
 		asyncio.create_task(t.send_message(identifier, text = f"No spell matching ``{spell_name}`` found.", reply = True))
 
 
+async def draw_card(ctx: discord.ext.commands.Context, deck: str):
+	deck = c.Deck(deck)
+
+	chosen_card: c.Card = random.choice(deck.cards)
+
+	for card in deck.cards:
+		if card.name == chosen_card.name:
+			card.in_draw = 0
+			deck.update()
+			break
+
+	await t.send_message(ctx, f"You draw ``{chosen_card.name}``!")
+
+
+async def shuffle_deck(ctx: discord.ext.commands.Context, deck: str):
+	deck = c.Deck(deck)
+
+	for card in deck.cards:
+		card.in_draw = 1
+
+	deck.update()
+
+	await t.send_message(ctx, "Deck shuffled.")
+
+
 pass

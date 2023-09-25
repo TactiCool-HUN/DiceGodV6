@@ -2,7 +2,6 @@ import discord
 import utils.settings as s
 import utils.tools as t
 from classes import Person, Die
-from utils.bot_setup import bot
 
 
 async def die_command(interaction: discord.Interaction):
@@ -98,7 +97,7 @@ class DieEditModal(discord.ui.Modal, title = "Edit Die"):
 				message.append(f"Die Name change from ``{die.name}`` to ``{self.die_name}``.")
 				die.name = self.die_name
 			if self.die_roll:
-				message.append(f"Die Name change from ``{die.roll}`` to ``{self.die_roll}``.")
+				message.append(f"Die Roll change from ``{die.roll}`` to ``{self.die_roll}``.")
 				die.roll = self.die_roll
 
 			die.update()
@@ -179,6 +178,7 @@ class DieDeleteButton(discord.ui.Button):
 	async def callback(self, interaction: discord.Interaction):
 		die = Die(self.die_to_delete)
 		die.delete()
+		self.disabled = True
 		message = t.random.choice([
 			f"``{self.die_to_delete}`` won't bother us anymore.",
 			f"``{self.die_to_delete}`` has been eliminated.",

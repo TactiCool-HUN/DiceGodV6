@@ -1,3 +1,5 @@
+import sqlite3
+
 from utils.bot_setup import bot
 from utils import settings as s, tools as t
 from views.followup_view import FollowupButton
@@ -769,6 +771,97 @@ class Title:
 				self.people_id.append(dc_id[1])
 		else:
 			raise ValueError("No Title Found")
+
+
+class Card:
+	def __init__(self, name, in_draw):
+		self.name = name
+		self.in_draw = in_draw
+
+
+class Deck:
+	def __init__(self, name, owner_id = None, cards: list[Card] = None, new = False):
+		self.deck_id = None
+		self.name = name
+		self.owner_id = None
+		self.cards: list[Card] = cards
+
+		if new:
+			self.create(owner_id)
+		else:
+			self.load()
+
+	def create(self, owner_id):
+		with t.DatabaseConnection("card_base.db") as connection:
+			cursor = connection.cursor()
+			cursor.execute("INSERT INTO decks(name, owner_id) VALUES (?, ?)", (self.name, owner_id))
+		self.load()
+
+		for card in self.cards:
+			with t.DatabaseConnection("card_base.db") as connection:
+				cursor = connection.cursor()
+				cursor.execute(
+					"INSERT INTO cards(deck_id, name, in_draw) VALUES (?, ?, 1)",
+					(self.deck_id, card.name)
+				)
+		self.load()
+
+	def load(self):
+		with t.DatabaseConnection("card_base.db") as connection:
+			cursor = connection.cursor()
+			cursor.execute("SELECT * FROM decks WHERE name = ?", (self.name,))
+			raw = cursor.fetchall()[0]
+		self.deck_id = raw[0]
+		self.owner_id = raw[1]
+
+		with t.DatabaseConnection("card_base.db") as connection:
+			cursor = connection.cursor()
+			cursor.execute("SELECT * FROM cards WHERE deck_id = ?", (self.deck_id,))
+			raw = cursor.fetchall()
+
+		if raw:
+			cards = []
+			for card in raw:
+				card = Card(card[2], card[3])
+				cards.append(card)
+			self.cards = cards
+
+	def update(self):
+		with t.DatabaseConnection("card_base.db") as connection:
+			cursor = connection.cursor()
+			cursor.execute(
+				"UPDATE decks SET name = ?, owner_id = ? WHERE deck_id = ?",
+				(self.name, self.owner_id, self.deck_id)
+			)
+
+		with t.DatabaseConnection("card_base.db") as connection:
+			cursor = connection.cursor()
+			cursor.execute(
+				"DELETE FROM cards WHERE deck_id = ?",
+				(self.deck_id,)
+			)
+
+		for card in self.cards:
+			with t.DatabaseConnection("card_base.db") as connection:
+				cursor = connection.cursor()
+				cursor.execute(
+					"INSERT INTO cards(deck_id, name, in_draw) VALUES (?, ?, ?)",
+					(self.deck_id, card.name, card.in_draw)
+				)
+
+	def delete(self):
+		with t.DatabaseConnection("card_base.db") as connection:
+			cursor = connection.cursor()
+			cursor.execute(
+				"DELETE FROM decks WHERE deck_id = ?",
+				(self.deck_id,)
+			)
+		with t.DatabaseConnection("card_base.db") as connection:
+			cursor = connection.cursor()
+			cursor.execute(
+				"DELETE FROM cards WHERE deck_id = ?",
+				(self.deck_id,)
+			)
 
 
 pass

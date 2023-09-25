@@ -159,16 +159,45 @@ with DatabaseConnection("data.db") as connection:
 
 	# - - - alignment - - -
 	try:
-		cursor.execute(
+		pass
+		"""cursor.execute(
 			'CREATE TABLE alignment('
 			'discord_id integer primary key,'
 			'good integer,'
 			'evil integer,'
 			'law integer,'
-			'chaos integer,)'
-		)
+			'chaos integer)'
+		)"""
 	except sqlite3.OperationalError:
 		print(f"alignment found")
+
+print("--------")
+
+with DatabaseConnection("card_base.db") as connection:
+	cursor = connection.cursor()
+
+	# - - - decks - - -
+	try:
+		cursor.execute(
+			'CREATE TABLE decks('
+			'deck_id integer primary key,'
+			'owner_id integer,'
+			'name text)'
+		)
+	except sqlite3.OperationalError as e:
+		print(f"decks found")
+
+	# - - - cards - - -
+	try:
+		cursor.execute(
+			'CREATE TABLE cards('
+			'card_id integer primary key,'
+			'deck_id integer,'
+			'name text,'
+			'in_draw integer)'
+		)
+	except sqlite3.OperationalError as e:
+		print(f"cards found")
 
 
 pass

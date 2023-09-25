@@ -12,6 +12,7 @@ import textwrap
 from views.vote_command import vote_command
 from views.die_command import die_command
 from views.table_command import table_command
+from views.deck_command import deck_command
 from views.title_handler import title_command
 from secondary_functions import chatbot, emoji_role
 import discord.ext
@@ -1259,6 +1260,21 @@ async def title_request(interaction: discord.Interaction, person: discord.User =
 		embed.set_footer(text = f"Requested by {interaction.user.display_name}")
 
 	await t.send_message(interaction, embed = embed)
+
+
+@bot.command(name = "draw", aliases = ["d"])
+async def draw(ctx: discord.ext.commands.Context, deck: str):
+	await com.draw_card(ctx, deck)
+
+
+@bot.command(name = "shuffle")
+async def shuffle(ctx: discord.ext.commands.Context, deck: str):
+	await com.shuffle_deck(ctx, deck)
+
+
+@bot.tree.command(name = "deck", description = "Create, edit, or remove your decks.")
+async def deck_slash(interaction: discord.Interaction):
+	await deck_command(interaction)
 
 
 with open("data_holder/token.txt", "r") as f:

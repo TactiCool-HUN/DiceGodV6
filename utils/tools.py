@@ -51,6 +51,13 @@ def exists(identifier, data_type):
 				die = cursor.fetchall()
 			if die:
 				return True
+		case "deck":
+			with DatabaseConnection("card_base.db") as connection:
+				cursor = connection.cursor()
+				cursor.execute("SELECT * FROM decks WHERE name = ?", (identifier,))
+				deck = cursor.fetchall()
+			if deck:
+				return True
 
 	return False
 
