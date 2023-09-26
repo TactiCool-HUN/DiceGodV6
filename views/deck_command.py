@@ -18,6 +18,7 @@ async def deck_command(interaction: discord.Interaction):
 			options = [
 				discord.SelectOption(label = "Create New Deck"),
 				discord.SelectOption(label = "Edit Existing Deck"),
+				discord.SelectOption(label = "Add Art to Deck"),
 				discord.SelectOption(label = "Delete Deck")
 			]
 		)
@@ -53,7 +54,7 @@ class DeckCreateModal(discord.ui.Modal, title = "Create Deck"):
 			raw_cards = self.deck_cards.split(", ")
 			cards = []
 			for card in raw_cards:
-				cards.append(Card(card, 1))
+				cards.append(Card(None, card, 1))
 			Deck(self.deck_name, person.user.id, cards, True)
 			if t.exists(self.deck_name, "deck"):
 				await t.send_message(interaction, text = f"Deck name ``{self.deck_name}`` successfully created!", ephemeral = True)
@@ -102,7 +103,7 @@ class DeckEditModal(discord.ui.Modal, title = "Edit Deck"):
 			message.append(f"Deck Cards changed.")
 			cards = []
 			for card in self.deck_cards.split(", "):
-				cards.append(Card(card, 1))
+				cards.append(Card(None, card, 1))
 			deck.cards = cards
 
 		deck.update()
@@ -116,42 +117,61 @@ class DeckCommandSelect(discord.ui.Select):
 		self.person = person
 
 	async def callback(self, interaction: discord.Interaction):
-		if self.values[0] == "Create New Deck":
-			await interaction.response.send_modal(DeckCreateModal())
-		elif self.values[0] == "Edit Existing Deck":
-			with t.DatabaseConnection("card_base.db") as connection:
-				cursor = connection.cursor()
-				cursor.execute("SELECT * FROM decks WHERE owner_id = ?", (self.person.user.id,))
-				raw = cursor.fetchall()
+		match self.values[0]:
+			case "Create New Deck":
+				await interaction.response.send_modal(DeckCreateModal())
+			case "Edit Existing Deck":
+				with t.DatabaseConnection("card_base.db") as connection:
+					cursor = connection.cursor()
+					cursor.execute("SELECT * FROM decks WHERE owner_id = ?", (self.person.user.id,))
+					raw = cursor.fetchall()
 
-			decks = []
-			for deck in raw:
-				decks.append(discord.SelectOption(label = deck[2]))
+				decks = []
+				for deck in raw:
+					decks.append(discord.SelectOption(label = deck[2]))
 
-			decks = DeckEditSelect(
-				decks,
-				placeholder = "Select which deck to edit."
-			)
-			view = discord.ui.View()
-			view.add_item(decks)
-			await interaction.response.edit_message(content = "", view = view)
-		elif self.values[0] == "Delete Deck":
-			with t.DatabaseConnection("card_base.db") as connection:
-				cursor = connection.cursor()
-				cursor.execute("SELECT * FROM decks WHERE owner_id = ?", (self.person.user.id,))
-				raw = cursor.fetchall()
+				decks = DeckEditSelect(
+					decks,
+					placeholder = "Select which deck to edit."
+				)
+				view = discord.ui.View()
+				view.add_item(decks)
+				await interaction.response.edit_message(content = "", view = view)
+			case "Add Art to Deck":
+				with t.DatabaseConnection("card_base.db") as connection:
+					cursor = connection.cursor()
+					cursor.execute("SELECT * FROM decks WHERE owner_id = ?", (self.person.user.id,))
+					raw = cursor.fetchall()
 
-			decks = []
-			for deck in raw:
-				decks.append(discord.SelectOption(label = deck[2]))
+				decks = []
+				for deck in raw:
+					decks.append(discord.SelectOption(label = deck[2]))
 
-			decks = DeckDeleteSelect(
-				decks,
-				placeholder = "Select which deck to delete."
-			)
-			view = discord.ui.View()
-			view.add_item(decks)
-			await interaction.response.edit_message(content = "", view = view)
+				decks = DeckArtSelect(
+					decks,
+					placeholder = "Select which deck to assign art to."
+				)
+
+				view = discord.ui.View()
+				view.add_item(decks)
+				await interaction.response.edit_message(content = "# Please have all the art links available outside of Discord when you start!", view = view)
+			case "Delete Deck":
+				with t.DatabaseConnection("card_base.db") as connection:
+					cursor = connection.cursor()
+					cursor.execute("SELECT * FROM decks WHERE owner_id = ?", (self.person.user.id,))
+					raw = cursor.fetchall()
+
+				decks = []
+				for deck in raw:
+					decks.append(discord.SelectOption(label = deck[2]))
+
+				decks = DeckDeleteSelect(
+					decks,
+					placeholder = "Select which deck to delete."
+				)
+				view = discord.ui.View()
+				view.add_item(decks)
+				await interaction.response.edit_message(content = "", view = view)
 
 
 class DeckEditSelect(discord.ui.Select):
@@ -193,6 +213,71 @@ class DeckDeleteButton(discord.ui.Button):
 			f"``{interaction.user.display_name}`` has murdered ``{self.deck_to_delete}`` in cold blood! This cannot go unanswered, may the Dice God bring you bad luck when you most need it!|| ...oh, that's me.||"
 		])
 		await interaction.response.edit_message(content = message)
+
+
+class DeckArtSelect(discord.ui.Select):
+	def __init__(self, options: list[discord.SelectOption], placeholder = None):
+		super().__init__(options = options, placeholder = placeholder)
+
+	async def callback(self, interaction: discord.Interaction):
+
+		button = DeckArtButton(Deck(self.values[0]))
+
+		view = discord.ui.View()
+		view.add_item(button)
+
+		await interaction.response.edit_message(content = "# Please have all the art links available outside of Discord when you start!", view = view)
+
+
+class DeckArtButton(discord.ui.Button):
+	def __init__(self, deck_to_art: Deck, emoji = None, style = discord.ButtonStyle.red, label = "Start Assigning Art"):
+		super().__init__(emoji = emoji, style = style, label = label)
+		self.deck_to_art = deck_to_art
+
+	async def callback(self, interaction: discord.Interaction):
+		await interaction.response.send_modal(DeckArtModal(self.deck_to_art, None))
+
+
+class DeckArtModal(discord.ui.Modal, title = "Edit Deck"):
+	def __init__(self, deck: Deck, card_inc: int | None):
+		super().__init__()
+		self.deck = deck
+		if card_inc:
+			for card in deck.cards:
+				if card.card_id == card_inc:
+					self.card = card
+					break
+		else:
+			self.card = deck.cards[0]
+
+		if self.card.card_url:
+			self.card_art.default = self.card.card_url
+
+	card_art = discord.ui.TextInput(
+		label = "placeholder label",
+		style = discord.TextStyle.short,
+		placeholder = "Art URL",
+		required = False,
+		min_length = 3
+	)
+
+	async def on_submit(self, interaction: discord.Interaction) -> None:
+		self.card.card_url = self.card_art.value[0]
+
+		for i, card in enumerate(self.deck.cards):
+			if card.card_id == self.card.card_id:
+				self.deck.cards[i] = self.card
+				break
+
+		pick = False
+		for card in self.deck.cards:
+			if pick:
+				await interaction.response.send_modal(DeckArtModal(self.deck, card.card_id))
+				return
+			if card.card_id == self.card.card_id:
+				pick = True
+		else:
+			return
 
 
 pass

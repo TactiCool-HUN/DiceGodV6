@@ -194,7 +194,8 @@ with DatabaseConnection("card_base.db") as connection:
 			'card_id integer primary key,'
 			'deck_id integer,'
 			'name text,'
-			'in_draw integer)'
+			'in_draw integer,'
+			'art_url text)'
 		)
 	except sqlite3.OperationalError as e:
 		print(f"cards found")

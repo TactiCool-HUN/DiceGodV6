@@ -1,5 +1,4 @@
 import sqlite3
-
 from utils.bot_setup import bot
 from utils import settings as s, tools as t
 from views.followup_view import FollowupButton
@@ -774,9 +773,11 @@ class Title:
 
 
 class Card:
-	def __init__(self, name, in_draw):
+	def __init__(self, card_id, name, in_draw, card_url = None):
+		self.card_id = card_id
 		self.name = name
 		self.in_draw = in_draw
+		self.card_url = card_url
 
 
 class Deck:
@@ -822,7 +823,7 @@ class Deck:
 		if raw:
 			cards = []
 			for card in raw:
-				card = Card(card[2], card[3])
+				card = Card(card[0], card[2], card[3], card[4])
 				cards.append(card)
 			self.cards = cards
 
@@ -845,8 +846,8 @@ class Deck:
 			with t.DatabaseConnection("card_base.db") as connection:
 				cursor = connection.cursor()
 				cursor.execute(
-					"INSERT INTO cards(deck_id, name, in_draw) VALUES (?, ?, ?)",
-					(self.deck_id, card.name, card.in_draw)
+					"INSERT INTO cards(deck_id, name, in_draw, art_url) VALUES (?, ?, ?, ?)",
+					(self.deck_id, card.name, card.in_draw, card.card_url)
 				)
 
 	def delete(self):
