@@ -323,17 +323,27 @@ def random_roller(identifier: discord.Interaction | discord.ext.commands.Context
 		elif roll.args.adv == "dis" and roll.results[0][0] == roll.die_size and roll.results[1][0] == roll.die_size:
 			pre_send.append("Lady Luck smiles on you!")
 
-	if size == 20 and person.user.id == 875753704685436938 and roll.results[0][0] == 1 and roll.results[0][1] and random.randint(1, 2) == 1:
+	if size == 20 and roll.results[0][0] == 1 and roll.results[0][1] and person.user.id == 875753704685436938 and random.randint(1, 2) == 1:
 		msg = t.choice([
 			"lol", 3,
 			"Well, no luck (take a guess who has it...)", 1,
 			"Yep, Dani stole your luck again, sry...", 1
 		])
 		pre_send.append(msg)
+	elif size == 20 and roll.results[0][0] == 20 and roll.results[0][1] and person.user.id == 875753704685436938 and random.randint(1, 4) == 1:
+		if person.active == "Scorpio" and random.randint(1, 2) == 1:
+			msg = "Yria's amulet seem to be working?"
+		else:
+			msg = t.choice([
+				"Didn't think I'll live to see this day.", 1,
+				"It's cheating to ask Dani to roll you nat20s.", 1,
+				"And where did you steal this from?", 1
+			])
+		pre_send.append(msg)
 	if size == 20 and roll.results[0][0] == 20 and person.user.id == 886672003396927530 and random.randint(1, 5) == 1:
 		msg = f"Going around stealing Nika's luck again I see."
 		pre_send.append(msg)
-	elif size == 1 and roll.results[0][0] == 20 and person.user.id == 886672003396927530 and random.randint(1, 5) == 1:
+	elif size == 20 and roll.results[0][0] == 1 and person.user.id == 886672003396927530 and random.randint(1, 5) == 1:
 		msg = f"Welcome to the other side!"
 		pre_send.append(msg)
 	if size == 20 and roll.dynamic:
