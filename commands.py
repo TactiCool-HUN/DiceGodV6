@@ -452,10 +452,10 @@ async def draw_card(ctx: discord.ext.commands.Context, deck: str):
 	if len(cards) == 0:
 		await t.send_message(ctx, f"Deck empty (either no cards or all of them are drawn)!")
 	else:
-		chosen_card: c.Card = random.choice(deck.cards)
+		chosen_card: c.Card = random.choice(cards)
 
 		for card in deck.cards:
-			if card.name == chosen_card.name:
+			if card.card_id == chosen_card.card_id:
 				card.in_draw = 0
 				deck.update()
 				break

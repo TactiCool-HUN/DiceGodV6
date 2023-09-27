@@ -823,7 +823,7 @@ class Deck:
 		if raw:
 			cards = []
 			for card in raw:
-				card = Card(card[0], card[2], card[3], card[4])
+				card = Card(card[0], card[2], int(card[3]), card[4])
 				cards.append(card)
 			self.cards = cards
 

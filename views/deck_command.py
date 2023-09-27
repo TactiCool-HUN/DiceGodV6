@@ -246,6 +246,7 @@ class DeckArtModal(discord.ui.Modal, title = "Edit Deck"):
 			for card in deck.cards:
 				if card.card_id == card_inc:
 					self.card = card
+					self.card_art.label = card.name
 					break
 		else:
 			self.card = deck.cards[0]
@@ -254,7 +255,7 @@ class DeckArtModal(discord.ui.Modal, title = "Edit Deck"):
 			self.card_art.default = self.card.card_url
 
 	card_art = discord.ui.TextInput(
-		label = "placeholder label",
+		label = "Adjust Card Art",
 		style = discord.TextStyle.short,
 		placeholder = "Art URL",
 		required = False,
