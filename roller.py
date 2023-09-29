@@ -332,7 +332,10 @@ def random_roller(identifier: discord.Interaction | discord.ext.commands.Context
 		pre_send.append(msg)
 	elif size == 20 and roll.results[0][0] == 20 and roll.results[0][1] and person.user.id == 875753704685436938 and random.randint(1, 4) == 1:
 		if person.active == "Scorpio" and random.randint(1, 2) == 1:
-			msg = "Yria's amulet seem to be working?"
+			msg = t.choice([
+				"Yria's amulet seem to be working?", 4,
+				"WAIT!", 1
+			])
 		else:
 			msg = t.choice([
 				"Didn't think I'll live to see this day.", 1,

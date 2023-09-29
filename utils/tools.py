@@ -724,6 +724,7 @@ async def send_pack(pack: c.Pack, is_reply: bool = True, ephemeral: bool = False
 	complex_roll = ""
 	has_dynamic = False
 	has_death = False
+	debt = False
 	all_damage_types = []
 	roll_display_pack = []
 	all_roll_notes = []
@@ -731,7 +732,9 @@ async def send_pack(pack: c.Pack, is_reply: bool = True, ephemeral: bool = False
 	for roll in pack.single_rolls:
 		if roll.pre_send:
 			for text in roll.pre_send:
-				if "lol" in roll.pre_send and person.user.id == 875753704685436938:
+				if "WAIT!" in roll.pre_send:
+					break
+				elif "lol" in roll.pre_send and person.user.id == 875753704685436938:
 					tts = True
 					reply = False
 				else:
@@ -834,7 +837,28 @@ async def send_pack(pack: c.Pack, is_reply: bool = True, ephemeral: bool = False
 
 	if has_death:
 		await com.sh.set_deathsave(pack.identifier, has_death, result)
-	await send_message(pack.identifier, embed = embed, reply = is_reply, followups = pack.followups, ephemeral = ephemeral)
+	sent = await send_message(pack.identifier, embed = embed, reply = is_reply, followups = pack.followups, ephemeral = ephemeral)
+
+	if debt:
+		await send_message(pack.identifier, text = "# WAIT!", reply = False, tts = True)
+		await asyncio.sleep(3)
+		await send_message(pack.identifier, text = "# I bear a message from Lady Luck herself.", reply = True, tts = False)
+		await asyncio.sleep(5)
+		await send_message(pack.identifier, text = "# Scorpio. There is a debt to be paid.", reply = True, tts = False)
+		await sent.delete()
+		new_single_rolls = []
+		for roll in pack.single_rolls:
+			roll.pre_send = []
+			new_results = []
+			for local_result in roll.results:
+				new_results.append([1, local_result[1]])
+			roll.results = new_results
+			roll.die_result = 1
+			roll.full_result = 1 + roll.add
+			new_single_rolls.append(roll)
+		pack.single_rolls = new_single_rolls
+		await send_pack(pack)
+
 
 
 async def send_multipack(packs: list[c.Pack], roll_text: str, is_reply: bool = True, ephemeral: bool = False) -> None:
