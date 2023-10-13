@@ -97,6 +97,7 @@ class Vote:
 		self.vote_amount: int = vote_amount
 		self.poll_options: list[PollOption] = []
 		self.vote_text: str = vote_text
+		self.warning_sent: bool = False
 
 	def get_vote_amount(self, user_id: int):
 		amount = 0
@@ -106,7 +107,8 @@ class Vote:
 
 		return amount
 
-	def create_embed(self) -> discord.Embed:
+	def create_embed(self) -> (discord.Embed, bool):
+		everyone_voted = False
 		person = c.Person(discord_id = self.original_author.id)
 		embed = discord.Embed(
 			title = f"Vote by {person.user.display_name}",
@@ -133,6 +135,7 @@ class Vote:
 			temp = t.mention_texts(no_votes_ppl)
 		else:
 			temp = "None"
+			everyone_voted = True
 		if not self.voters == []:
 			embed.add_field(name = "No Vote", value = temp, inline = False)
 		embed.set_author(name = person.user.display_name, icon_url = person.user.avatar.url)
@@ -142,7 +145,7 @@ class Vote:
 			temp = f"You may pick {self.vote_amount} of options."
 		embed.set_footer(text = temp)
 
-		return embed
+		return embed, everyone_voted
 
 
 class VoteButton(discord.ui.Button):
@@ -157,22 +160,30 @@ class VoteButton(discord.ui.Button):
 			raise ValueError
 
 	async def callback(self, interaction: discord.Interaction):
-		if interaction.user.id in self.vote.voters or self.vote.voters == []:
-			if interaction.user.id in self.vote.poll_options[self.poll_index].voters:
+		warning = False
+		if interaction.user.id in self.vote.voters or self.vote.voters == []:  # if person can vote
+			if interaction.user.id in self.vote.poll_options[self.poll_index].voters:  # if person has no vote
 				self.vote.poll_options[self.poll_index].voters.remove(interaction.user.id)
-				await interaction.response.edit_message(embed = self.vote.create_embed())
+				embed, warning = self.vote.create_embed()
+				await interaction.response.edit_message(embed = embed)
 			else:
-				if self.vote.vote_amount > 0:
-					if self.vote.get_vote_amount(interaction.user.id) >= self.vote.vote_amount:
+				if self.vote.vote_amount > 0:  # if there is vote limit
+					if self.vote.get_vote_amount(interaction.user.id) >= self.vote.vote_amount:  # if they have too many votes
 						await t.send_message(interaction, text = "You have too many votes here.", ephemeral = True)
 					else:
 						self.vote.poll_options[self.poll_index].voters.append(interaction.user.id)
-						await interaction.response.edit_message(embed = self.vote.create_embed())
+						embed, warning = self.vote.create_embed()
+						await interaction.response.edit_message(embed = embed)
 				else:
 					self.vote.poll_options[self.poll_index].voters.append(interaction.user.id)
-					await interaction.response.edit_message(embed = self.vote.create_embed())
+					embed, warning = self.vote.create_embed()
+					await interaction.response.edit_message(embed = embed)
 		else:
 			await t.send_message(interaction, text = "You cannot vote here.", ephemeral = True)
+
+		if warning and not self.vote.warning_sent:
+			self.vote.warning_sent = True
+			await t.send_message(self.vote.original_author, f"Everyone voted on the vote you posted in {interaction.channel.name}!")
 
 
 class VoteView(discord.ui.View):

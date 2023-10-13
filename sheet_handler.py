@@ -21,10 +21,7 @@ def ping_sheet(sheet_name):
 		return False
 	wks = sh.worksheet("Setup")
 	value = wks.acell('B2').value
-	if value:
-		return True
-	else:
-		return False
+	return bool(value)
 
 
 def transfer_inventory(old_sheet, new_sheet):
