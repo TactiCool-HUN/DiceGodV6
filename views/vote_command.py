@@ -183,7 +183,7 @@ class VoteButton(discord.ui.Button):
 
 		if warning and not self.vote.warning_sent:
 			self.vote.warning_sent = True
-			await t.send_message(self.vote.original_author, f"Everyone voted on the vote you posted in <{interaction.channel.jump_url}>!")
+			await t.send_message(self.vote.original_author, f"Everyone voted on the vote you posted in {interaction.channel.jump_url}!")
 
 
 class VoteView(discord.ui.View):
