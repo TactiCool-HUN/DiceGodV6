@@ -74,7 +74,7 @@ async def vote_command(identifier: discord.Interaction | discord.ext.commands.Co
 		option.option_text = line_text
 		vote.poll_options.append(option)
 
-	embed = vote.create_embed()
+	embed, warning = vote.create_embed()
 
 	if isinstance(identifier, discord.Interaction):
 		await identifier.followup.send_message(embed = embed, view = VoteView(vote))
