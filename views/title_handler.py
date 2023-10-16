@@ -178,6 +178,10 @@ class AddTitleModal(discord.ui.Modal):
 				cursor = connection.cursor()
 				cursor.execute("SELECT * FROM titles WHERE title = ?", (self.title_name,))
 				raw = cursor.fetchall()
+		elif raw[0][2] != self.title_rank:
+			with t.DatabaseConnection("data.db") as connection:
+				cursor = connection.cursor()
+				cursor.execute("UPDATE titles SET rank = ? WHERE id = ?", (self.title_rank, raw[0][0]))
 
 		title_id = raw[0][0]
 
