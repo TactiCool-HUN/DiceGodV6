@@ -186,9 +186,18 @@ class AddTitleModal(discord.ui.Modal):
 		title_id = raw[0][0]
 
 		for person in self.my_title.people:
+			title_exists = False
 			with t.DatabaseConnection("data.db") as connection:
 				cursor = connection.cursor()
-				cursor.execute("INSERT INTO title_people(discord_id, title_id) VALUES (?, ?)", (person.id, title_id))
+				cursor.execute("SELECT * FROM title_people WHERE discord_id = ?", (person.id,))
+				raw = cursor.fetchall()
+			for title_person in raw:
+				if title_id == title_person[2]:
+					title_exists = True
+			if not title_exists:
+				with t.DatabaseConnection("data.db") as connection:
+					cursor = connection.cursor()
+					cursor.execute("INSERT INTO title_people(discord_id, title_id) VALUES (?, ?)", (person.id, title_id))
 
 		await t.send_message(interaction, text = "Title(s) successfully added.", ephemeral = True)
 
