@@ -1,9 +1,8 @@
 import markovify
-import random
 
 
 def markov_learner(text: str):
-    text = text.replace("@Dice God ", "")
+    text = text.replace("<@953258800759070720> ", "")
     with open("data_holder/markov_studies.txt", "a") as f:
         f.write(f"{text}\n")
 
@@ -12,7 +11,7 @@ def markov_learner(text: str):
 def markovifier():
     with open("data_holder/markov_studies.txt", "r") as f:
         text = f.readlines()
-    text = " ".join(text)
+    text = "\n".join(text)
 
     markov_chain_model = markovify.Text(text)
     return markov_chain_model.make_short_sentence(70, 20, tries = 20)

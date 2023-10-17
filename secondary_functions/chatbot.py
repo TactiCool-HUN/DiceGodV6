@@ -44,7 +44,7 @@ async def bot_responses(message: discord.Message):
 	if bot_setup.bot.user.mentioned_in(message) or "dice god" in content or "dicegod" in content:
 		for role in author.roles:
 			if role.id == 992398146942550116:
-				markov.markov_learner(message.clean_content)
+				markov.markov_learner(message.content)
 				break
 		for role in author.roles:
 			if role.id == 1163961459324231763:
