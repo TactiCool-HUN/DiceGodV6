@@ -13,5 +13,5 @@ def markovifier():
     with open("data_holder/markov_studies.txt", "r") as f:
         text = f.read()
 
-    markov_chain_model = markovify.Text(text, state_size = 3)
-    return markov_chain_model.make_sentence(random.randint(20, 70), tries = 20)
+    markov_chain_model = markovify.Text(text)
+    return markov_chain_model.make_short_sentence(70, 20)
