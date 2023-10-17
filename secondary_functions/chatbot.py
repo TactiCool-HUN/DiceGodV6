@@ -8,6 +8,7 @@ from secondary_functions.uwuifier import uwuify, generate_uwu, uwu
 from ast import literal_eval
 import utils.settings as s
 import utils.tools as t
+import secondary_functions.markovifier as markov
 
 
 async def bot_responses(message: discord.Message):
@@ -203,6 +204,7 @@ async def bot_responses(message: discord.Message):
 					for role in author.roles:
 						if role.id == 992398146942550116:
 							pack = cultist_base
+							markov.markov_learner(message.clean_content)
 							break
 					else:
 						pack = comonner_base
