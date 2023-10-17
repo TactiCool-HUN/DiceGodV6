@@ -4,7 +4,7 @@ from itertools import chain
 
 
 def markov_learner(text: str):
-    text = text.replace("@Dice God", "")
+    text = text.replace("@Dice God ", "")
     with open("data_holder/markov_studies.txt", "a") as f:
         f.write(text)
 
