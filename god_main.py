@@ -1197,7 +1197,7 @@ async def emoji_role_setup(interaction: discord.Interaction, channel_id: str, me
 				(interaction.guild_id, channel_id, message_id, emoji, role.id)
 			)
 
-		message: discord.Message = interaction.message
+		message: discord.Message = await interaction.guild.get_channel(channel_id).fetch_message(message_id)
 		await message.add_reaction(emoji)
 		await t.send_message(interaction, text = f"Emoji_role successfully set up", ephemeral = True)
 	else:

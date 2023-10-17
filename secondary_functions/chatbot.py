@@ -14,6 +14,8 @@ import secondary_functions.markovifier as markov
 async def bot_responses(message: discord.Message):
 	if bot_setup.prefix == "--" and message.guild.id != 953258116496097340:
 		return
+	elif bot_setup.prefix == "--" and message.guild.id == 953258116496097340:
+		return
 	if isinstance(message.channel, discord.channel.DMChannel):
 		return
 	if message.channel.category_id == 996065301055688794:
