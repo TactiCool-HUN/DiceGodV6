@@ -1,6 +1,4 @@
 import markovify
-import pandas as pd
-from itertools import chain
 
 
 def markov_learner(text: str):
@@ -9,4 +7,10 @@ def markov_learner(text: str):
         f.write(text)
 
 
-pass
+# noinspection SpellCheckingInspection
+def markovifier():
+    with open("data_holder/markov_studies.txt", "r") as f:
+        text = f.read()
+
+    markov_chain_model = markovify.Text(text)
+    return markov_chain_model.make_sentence()

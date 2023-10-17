@@ -38,13 +38,18 @@ async def bot_responses(message: discord.Message):
 			]
 			responses.append(choice(response_list))
 
+	skipper = False
 	if bot_setup.bot.user.mentioned_in(message):
 		for role in author.roles:
 			if role.id == 992398146942550116:
 				markov.markov_learner(message.clean_content)
 				break
+		for role in author.roles:
+			if role.id == 1163961459324231763:
+				responses.append(markov.markovifier())
+				skipper = True
 
-	if bot_setup.bot.user.mentioned_in(message) or "dice god" in content or "dicegod" in content:
+	if not skipper and (bot_setup.bot.user.mentioned_in(message) or "dice god" in content or "dicegod" in content):
 		# noinspection SpellCheckingInspection
 		admin_base = [
 			"Yes", 2,
