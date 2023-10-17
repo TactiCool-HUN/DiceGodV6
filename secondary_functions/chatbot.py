@@ -38,6 +38,12 @@ async def bot_responses(message: discord.Message):
 			]
 			responses.append(choice(response_list))
 
+	if bot_setup.bot.user.mentioned_in(message):
+		for role in author.roles:
+			if role.id == 992398146942550116:
+				markov.markov_learner(message.clean_content)
+				break
+
 	if bot_setup.bot.user.mentioned_in(message) or "dice god" in content or "dicegod" in content:
 		# noinspection SpellCheckingInspection
 		admin_base = [
@@ -204,7 +210,6 @@ async def bot_responses(message: discord.Message):
 					for role in author.roles:
 						if role.id == 992398146942550116:
 							pack = cultist_base
-							markov.markov_learner(message.clean_content)
 							break
 					else:
 						pack = comonner_base
