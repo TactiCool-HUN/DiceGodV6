@@ -46,7 +46,7 @@ class DeckCreateModal(discord.ui.Modal, title = "Create Deck"):
 
 	async def on_submit(self, interaction: discord.Interaction) -> None:
 		person = Person(discord_id = interaction.user.id)
-		self.deck_name = self.deck_name.value
+		self.deck_name = self.deck_name.value.replace(" ", "")
 		self.deck_cards = self.deck_cards.value
 		if t.exists(self.deck_name, "deck"):
 			await t.send_message(interaction, text = f"The name ``{self.deck_name}`` is already used by another deck.", ephemeral = True)

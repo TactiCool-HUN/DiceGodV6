@@ -443,6 +443,7 @@ async def cast_command(identifier: discord.Interaction | discord.ext.commands.Co
 
 
 async def draw_card(ctx: discord.ext.commands.Context, deck: str):
+	deck = deck.replace(" ", "")
 	if deck[0].isnumeric():
 		multiplier = ""
 		counting = True
@@ -478,11 +479,13 @@ async def draw_card(ctx: discord.ext.commands.Context, deck: str):
 		else:
 			chosen_card: c.Card = random.choice(cards)
 
+			temp = []
 			for card in deck.cards:
 				if card.card_id == chosen_card.card_id:
 					card.in_draw = 0
 					card.update()
-					break
+				temp.append(card)
+			deck.cards = temp
 
 			cards_drawn.append(chosen_card.name)
 
