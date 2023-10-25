@@ -1270,7 +1270,12 @@ async def draw(ctx: discord.ext.commands.Context, deck: str):
 
 @bot.command(name = "shuffle", aliases = ["reshuffle"])
 async def shuffle(ctx: discord.ext.commands.Context, deck: str):
+	if random.randint(1, 20) == 20:
+		loader = await t.load(ctx, "Everyday I'm shufflin'")
+	else:
+		loader = await t.load(ctx, "Shuffling in progress.")
 	await com.shuffle_deck(ctx, deck)
+	await loader.delete()
 
 
 @bot.tree.command(name = "deck", description = "Create, edit, or remove your decks.")
