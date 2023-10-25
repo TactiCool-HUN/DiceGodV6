@@ -773,11 +773,20 @@ class Title:
 
 
 class Card:
-	def __init__(self, card_id, name, in_draw, card_url = None):
+	def __init__(self, card_id, name, in_draw, card_url = None, deck_id: int = None):
 		self.card_id = card_id
+		self.deck_id = deck_id
 		self.name = name
 		self.in_draw = in_draw
 		self.card_url = card_url
+
+	def update(self):
+		with t.DatabaseConnection("card_base.db") as connection:
+			cursor = connection.cursor()
+			cursor.execute(
+				"UPDATE cards SET name = ?, in_draw = ?, art_url = ? WHERE card_id = ? ",
+				(self.name, self.in_draw, self.card_url, self.card_id)
+			)
 
 
 class Deck:
@@ -826,7 +835,7 @@ class Deck:
 		if raw:
 			cards = []
 			for card_raw in raw:
-				card = Card(card_raw[0], card_raw[2], int(card_raw[3]), card_raw[4])
+				card = Card(card_raw[0], card_raw[2], int(card_raw[3]), card_raw[4], self.deck_id)
 				cards.append(card)
 			self.cards = cards
 

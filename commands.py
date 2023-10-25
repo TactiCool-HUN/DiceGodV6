@@ -444,29 +444,24 @@ async def cast_command(identifier: discord.Interaction | discord.ext.commands.Co
 
 async def draw_card(ctx: discord.ext.commands.Context, deck: str):
 	deck = c.Deck(deck)
-	ic("deck loaded")
 
 	cards = []
 	for card in deck.cards:
 		if card.in_draw:
 			cards.append(card)
-	ic("cards listed")
 
 	if len(cards) == 0:
 		await t.send_message(ctx, f"Deck empty (either no cards or all of them are drawn)!")
 	else:
 		chosen_card: c.Card = random.choice(cards)
-		ic("card chosen")
 
 		for card in deck.cards:
 			if card.card_id == chosen_card.card_id:
 				card.in_draw = 0
-				deck.update()
+				card.update()
 				break
-		ic("deck updated")
 
 		await t.send_message(ctx, f"You draw:\n{chosen_card.name}")
-		ic("message sent")
 
 
 async def shuffle_deck(ctx: discord.ext.commands.Context, deck: str):
