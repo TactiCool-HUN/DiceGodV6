@@ -484,7 +484,8 @@ async def draw_card(ctx: discord.ext.commands.Context, deck: str):
 				if card.card_id == chosen_card.card_id:
 					card.in_draw = 0
 					card.update()
-				temp.append(card)
+				else:
+					temp.append(card)
 			cards = temp
 
 			cards_drawn.append(chosen_card.name)
