@@ -50,6 +50,8 @@ class DeckCreateModal(discord.ui.Modal, title = "Create Deck"):
 		self.deck_cards = self.deck_cards.value
 		if t.exists(self.deck_name, "deck"):
 			await t.send_message(interaction, text = f"The name ``{self.deck_name}`` is already used by another deck.", ephemeral = True)
+		elif self.deck_name[0].isnumeric():
+			await t.send_message(interaction, text = f"You cannot start deck name with a numeric character.")
 		else:
 			raw_cards = self.deck_cards.split(", ")
 			cards = []

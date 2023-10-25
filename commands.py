@@ -443,6 +443,25 @@ async def cast_command(identifier: discord.Interaction | discord.ext.commands.Co
 
 
 async def draw_card(ctx: discord.ext.commands.Context, deck: str):
+	if deck[0].isnumeric():
+		multiplier = ""
+		counting = True
+		deck_name = ""
+		for char in deck:
+			if counting:
+				if char.isnumeric():
+					multiplier = f"{multiplier}{char}"
+				elif char == "x":
+					counting = False
+				else:
+					raise ValueError("Bad deck name.")
+			else:
+				deck_name = f"{deck_name}{char}"
+		deck = deck_name
+		multiplier = int(multiplier)
+	else:
+		multiplier = 1
+
 	deck = c.Deck(deck)
 
 	cards = []
@@ -450,18 +469,28 @@ async def draw_card(ctx: discord.ext.commands.Context, deck: str):
 		if card.in_draw:
 			cards.append(card)
 
-	if len(cards) == 0:
+	empty = False
+	cards_drawn = []
+	for i in range(multiplier):
+		if len(cards) == 0:
+			empty = True
+			break
+		else:
+			chosen_card: c.Card = random.choice(cards)
+
+			for card in deck.cards:
+				if card.card_id == chosen_card.card_id:
+					card.in_draw = 0
+					card.update()
+					break
+
+			cards_drawn.append(chosen_card.name)
+
+	if cards_drawn:
+		cards_drawn = '\n'.join(cards_drawn)
+		await t.send_message(ctx, f"You draw:\n{cards_drawn}")
+	if empty:
 		await t.send_message(ctx, f"Deck empty (either no cards or all of them are drawn)!")
-	else:
-		chosen_card: c.Card = random.choice(cards)
-
-		for card in deck.cards:
-			if card.card_id == chosen_card.card_id:
-				card.in_draw = 0
-				card.update()
-				break
-
-		await t.send_message(ctx, f"You draw:\n{chosen_card.name}")
 
 
 async def shuffle_deck(ctx: discord.ext.commands.Context, deck: str):
