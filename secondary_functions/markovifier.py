@@ -14,4 +14,4 @@ def markovifier():
     text = "\n".join(text)
 
     markov_chain_model = markovify.Text(text)
-    return markov_chain_model.make_short_sentence(70, 20, tries = 20)
+    return markov_chain_model.make_short_sentence(50, 20, tries = 20)

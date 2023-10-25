@@ -781,10 +781,10 @@ class Card:
 
 
 class Deck:
-	def __init__(self, name, owner_id = None, cards: list[Card] = None, new = False):
+	def __init__(self, name: str, owner_id = None, cards: list[Card] = None, new = False):
 		self.deck_id = None
 		self.name = name
-		self.owner_id = None
+		self.owner_id = owner_id
 		self.cards: list[Card] = cards
 
 		if new:
@@ -793,10 +793,13 @@ class Deck:
 			self.load()
 
 	def create(self, owner_id):
-		with t.DatabaseConnection("card_base.db") as connection:
-			cursor = connection.cursor()
-			cursor.execute("INSERT INTO decks(name, owner_id) VALUES (?, ?)", (self.name, owner_id))
-		self.load()
+		if owner_id:
+			with t.DatabaseConnection("card_base.db") as connection:
+				cursor = connection.cursor()
+				cursor.execute("INSERT INTO decks(name, owner_id) VALUES (?, ?)", (self.name, owner_id))
+			self.load()
+		else:
+			raise ValueError("Owner ID is none.")
 
 		for card in self.cards:
 			with t.DatabaseConnection("card_base.db") as connection:
@@ -822,8 +825,8 @@ class Deck:
 
 		if raw:
 			cards = []
-			for card in raw:
-				card = Card(card[0], card[2], int(card[3]), card[4])
+			for card_raw in raw:
+				card = Card(card_raw[0], card_raw[2], int(card_raw[3]), card_raw[4])
 				cards.append(card)
 			self.cards = cards
 

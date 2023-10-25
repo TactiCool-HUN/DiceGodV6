@@ -587,7 +587,7 @@ def most_frequent(list_inc):
 	return num
 
 
-def mention_texts(id_list: list[int]) -> str:
+def mention_ids(id_list: list[int]) -> str:
 	new_list = []
 	for my_id in id_list:
 		new_list.append(f"<@{my_id}>")

@@ -460,7 +460,7 @@ async def draw_card(ctx: discord.ext.commands.Context, deck: str):
 				deck.update()
 				break
 
-		await t.send_message(ctx, f"You draw ``{chosen_card.name}``!")
+		await t.send_message(ctx, f"You draw:\n{chosen_card.name}")
 
 
 async def shuffle_deck(ctx: discord.ext.commands.Context, deck: str):

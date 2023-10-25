@@ -118,7 +118,7 @@ class Vote:
 
 		for option in self.poll_options:
 			if option.voters:
-				temp = t.mention_texts(option.voters)
+				temp = t.mention_ids(option.voters)
 			else:
 				temp = "None"
 
@@ -132,7 +132,7 @@ class Vote:
 				except ValueError:
 					pass
 		if no_votes_ppl:
-			temp = t.mention_texts(no_votes_ppl)
+			temp = t.mention_ids(no_votes_ppl)
 		else:
 			temp = "None"
 			everyone_voted = True
