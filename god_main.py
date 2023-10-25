@@ -1268,7 +1268,7 @@ async def draw(ctx: discord.ext.commands.Context, deck: str):
 	await com.draw_card(ctx, deck)
 
 
-@bot.command(name = "shuffle")
+@bot.command(name = "shuffle", aliases = ["reshuffle"])
 async def shuffle(ctx: discord.ext.commands.Context, deck: str):
 	await com.shuffle_deck(ctx, deck)
 
