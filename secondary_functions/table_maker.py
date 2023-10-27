@@ -129,7 +129,7 @@ class TableMakerModalTwo(discord.ui.Modal, title = "Create Table"):
         max_length = 7
     )
     table_name = discord.ui.TextInput(
-        label = 'How should the "Table" command know the table?',
+        label = 'Name for the "Table" command',
         style = discord.TextStyle.short,
         placeholder = "Table name",
         required = True,
