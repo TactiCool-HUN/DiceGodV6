@@ -225,6 +225,15 @@ async def _thingy(message: discord.Message):
 	c.Person(message)
 
 
+"""@bot.tree.command(name = "thing")
+@app_commands.describe(role = "role")
+@app_commands.describe(pos = "pos")
+async def __thingy(interaction: discord.Interaction, role: discord.Role, pos: str):
+	roles = list(interaction.guild.roles)
+	pos = int(pos)
+	await role.edit(position = pos)"""
+
+
 @bot.command(name = "ping")
 async def ping_command(ctx: discord.ext.commands.Context):
 	response_list = [
