@@ -14,9 +14,9 @@ class Person:
 			raise ValueError("Improper Person initiation.")
 
 		if identifier:
-			self.user = t.identifier_to_member(identifier)
+			self.user: discord.Member = t.identifier_to_member(identifier)
 		else:
-			self.user = bot.get_user(discord_id)
+			self.user: discord.User = bot.get_user(discord_id)
 
 		self.active = None
 		self.tag = None

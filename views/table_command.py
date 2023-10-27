@@ -1,6 +1,5 @@
 import utils.tools as t
 import discord
-from utils.bot_setup import bot
 from classes import Person
 import utils.settings as s
 import asyncio

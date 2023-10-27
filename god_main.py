@@ -15,6 +15,7 @@ from views.table_command import table_command
 from views.deck_command import deck_command
 from views.title_handler import title_command
 from secondary_functions import chatbot, emoji_role
+from secondary_functions.table_maker import table_maker_main
 import discord.ext
 import asyncio
 import random
@@ -1163,7 +1164,7 @@ async def table_admin(interaction: discord.Interaction, command: Choice[str], ta
 					f"INSERT INTO tables(table_name, dm_id, role_id, guest_id, auto_guest_add, main_channel_id) VALUES (?, ?, ?, ?, 0, ?)",
 					(table_name, gm.id, player_role.id, guest_role.id, main_channel.id)
 				)
-			await t.send_message(interaction, text = f"Table with name ``{table_name}`` created.", ephemeral = True)
+			await t.send_message(interaction, f"Table with name ``{table_name}`` created.", ephemeral = True)
 			await t.send_message(gm, f"You are the DM of the following table: ``{table_name}``.\nYou can add a player with the /table command.\nAll changes will notify the person in question!")
 		else:
 			with t.DatabaseConnection("data.db") as connection:
@@ -1208,6 +1209,11 @@ async def emoji_role_setup(interaction: discord.Interaction, channel_id: str, me
 @bot.tree.command(name = "table", description = "Manage your own tables! (send it in empty)")
 async def table_slash(interaction: discord.Interaction):
 	await table_command(interaction)
+
+
+@bot.tree.command(name = "create_table", description = "Create your own table! (send it in empty)")
+async def create_table(interaction: discord.Interaction):
+	await table_maker_main(interaction)
 
 
 @bot.command(name = "vote", aliases = ["v"])
