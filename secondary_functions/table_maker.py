@@ -4,6 +4,7 @@ import utils.tools as t
 import discord
 from classes import Person
 from icecream import ic
+from utils.bot_setup import bot
 
 
 async def table_maker_main(interaction: discord.Interaction):
@@ -159,7 +160,14 @@ class TableMakerModalTwo(discord.ui.Modal, title = "Create Table"):
             reason = f"Requested by {interaction.user.name}."
         )
 
+        for i, role in enumerate(guild.roles):
+            if role.id == 1009089291110072361:
+                await main_role.edit(position = i)
+                await guest_role.edit(position = i)
+                break
+
         await interaction.user.add_roles(main_role)
+
         await asyncio.sleep(5)
 
         perm_overwrites = {
