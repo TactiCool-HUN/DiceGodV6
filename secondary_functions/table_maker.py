@@ -160,6 +160,7 @@ class TableMakerModalTwo(discord.ui.Modal, title = "Create Table"):
         )
 
         await interaction.user.add_roles(main_role)
+        await asyncio.sleep(5)
 
         perm_overwrites = {
             guild.default_role: discord.PermissionOverwrite(read_messages = False),
@@ -207,6 +208,7 @@ class TableMakerModalTwo(discord.ui.Modal, title = "Create Table"):
             category = category_channel
         )
         await bs_channel.edit(sync_permissions = True)
+        await asyncio.sleep(5)
 
         perm_overwrites[main_role] = discord.PermissionOverwrite(send_messages = False)
         perm_overwrites[guest_role] = discord.PermissionOverwrite(send_messages = False)
@@ -226,6 +228,7 @@ class TableMakerModalTwo(discord.ui.Modal, title = "Create Table"):
             category = category_channel
         )
         await voice_channel.edit(sync_permissions = True)
+        await asyncio.sleep(5)
 
         with t.DatabaseConnection("data.db") as connection:
             cursor = connection.cursor()
