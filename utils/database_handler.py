@@ -48,6 +48,7 @@ with DatabaseConnection("data.db") as connection:
 			'color text,'
 			'change_name integer,'
 			'auto_tag integer,'
+			'markov_chance integer,'
 			'chat_ignore integer,'
 			'uwuify integer)'
 		)

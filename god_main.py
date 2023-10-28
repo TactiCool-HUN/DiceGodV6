@@ -225,13 +225,9 @@ async def _thingy(message: discord.Message):
 	c.Person(message)
 
 
-"""@bot.tree.command(name = "thing")
-@app_commands.describe(role = "role")
-@app_commands.describe(pos = "pos")
-async def __thingy(interaction: discord.Interaction, role: discord.Role, pos: str):
-	roles = list(interaction.guild.roles)
-	pos = int(pos)
-	await role.edit(position = pos)"""
+@bot.tree.command(name = "thing")
+async def __thingy(interaction: discord.Interaction):
+	c.Person(interaction)
 
 
 @bot.command(name = "ping")
@@ -494,6 +490,7 @@ async def die_slash(interaction: discord.Interaction):
 @app_commands.choices(auto_roll_tagging=[
 	app_commands.Choice(name = "on", value = 1),
 	app_commands.Choice(name = "off", value = 0)])
+@discord.app_commands.describe(markov_chance = "Set the markov response chance percentage for yourself. 0 for none, 100 for always")
 @app_commands.choices(chat_ignore=[
 	app_commands.Choice(name = "on", value = 1),
 	app_commands.Choice(name = "off", value = 0)])
@@ -502,11 +499,12 @@ async def die_slash(interaction: discord.Interaction):
 	app_commands.Choice(name = "off", value = 0)])
 @discord.app_commands.describe(color = "Set your color!")
 @discord.app_commands.describe(tag = 'Set which tag your rolls will be saved! (use "clear" to empty it)')
-async def settings(interaction: discord.Interaction, change_name: Choice[int] = None, auto_roll_tagging: Choice[int] = None, chat_ignore: Choice[int] = None, uwuify_messages: Choice[int] = None, color: str = None, tag: str = None):
+async def settings(interaction: discord.Interaction, change_name: Choice[int] = None, auto_roll_tagging: Choice[int] = None, markov_chance: str = None, chat_ignore: Choice[int] = None, uwuify_messages: Choice[int] = None, color: str = None, tag: str = None):
 	person = c.Person(interaction)
 	ephemeral = True
 	test_roll = False
 	response = "Settings changed!"
+
 	if color is not None:
 		if color[0] == "#":
 			color = f"0x{color[1:]}"
@@ -515,6 +513,7 @@ async def settings(interaction: discord.Interaction, change_name: Choice[int] = 
 		response += "\nColor set, there should be a test roll below.\n If no test roll appears here use ``0`` for the color code in this command and it'll reset your color."
 		test_roll = True
 		ephemeral = False
+
 	if change_name is not None:
 		change_name = change_name.value
 		if change_name:
@@ -535,6 +534,7 @@ async def settings(interaction: discord.Interaction, change_name: Choice[int] = 
 			response += "\nFrom now on your name will not be set by the bot (it is also reset)."
 			ephemeral = True
 		person.update()
+
 	if auto_roll_tagging is not None:
 		auto_roll_tagging = auto_roll_tagging.value
 		if auto_roll_tagging:
@@ -548,6 +548,16 @@ async def settings(interaction: discord.Interaction, change_name: Choice[int] = 
 				person.tag = None
 			response += f"\nYour roll tags no longer automatically follows your active character changes. It has also been cleared."
 		person.update()
+
+	if markov_chance is not None:
+		markov_chance.replace("%", "")
+		if markov_chance.isnumeric() and 0 <= int(markov_chance) <= 100:
+			person.markov_chance = int(markov_chance)
+			person.update()
+			response += f"\nMarkov response chance set to {markov_chance}%"
+		else:
+			response += f"\n__Markov chance needs to be a numeric value between 0 and 100."
+
 	if chat_ignore is not None:
 		person.chat_ignore = chat_ignore.value
 		person.update()
@@ -555,6 +565,7 @@ async def settings(interaction: discord.Interaction, change_name: Choice[int] = 
 			response += f"\nDice God will no longer respond to you outside of commands."
 		else:
 			response += f"\nDice God will once again respond to you outside of commands."
+
 	if uwuify_messages is not None:
 		person.uwuify = uwuify_messages.value
 		person.update()
@@ -562,6 +573,7 @@ async def settings(interaction: discord.Interaction, change_name: Choice[int] = 
 			response += f"\nDice God will no longer uwuify your messages."
 		else:
 			response += f"\nDice God will once again uwuify your messages (note: requires chat_ignore to be off)."
+
 	if tag is not None:
 		tag = tag.lower()
 		if tag == "clear":
