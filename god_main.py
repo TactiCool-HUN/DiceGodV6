@@ -1236,6 +1236,9 @@ async def recalc_veterancy_message(interaction: discord.Interaction, message_ori
 
 	message = channel.fetch_message(message_id)
 	people = message.mentions
+
+	await t.send_message(interaction, "WIP", ephemeral = True)
+
 	for person in people:
 		await com.veterancy_command(interaction, person, True, False)
 
