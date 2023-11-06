@@ -508,4 +508,102 @@ async def shuffle_deck(ctx: discord.ext.commands.Context, deck: str):
 	await t.send_message(ctx, "Deck shuffled.")
 
 
+async def veterancy_command(interaction: discord.Interaction, person: discord.Member = None, change_rank = False):
+	if person is None:
+		person = c.Person(interaction)
+	else:
+		person = c.Person(person.id)
+
+	guild = t.bot.get_guild(562373378967732226)
+	hall_of_fame = guild.get_channel(911770517533507604)
+	time_stopped = guild.get_channel(1171006228265193542)
+
+	veterancy_points = 0
+
+	messages: list[discord.Message] = [message async for message in hall_of_fame.history(limit = 200)]
+	for message in messages:
+		for mention in message.mentions:
+			if mention.id == person.user.id:
+				temp = re.findall("Duration \(irl\): [0-9]+ day", str(message.clean_content))
+				if len(temp) == 0:
+					veterancy_points += 1
+					break
+				if len(temp) != 1:
+					await t.send_message(person, "Hall of Fame read failed.")
+					return
+
+				temp = re.findall("[0-9]+", temp[0])
+				temp = int(temp[0])
+				if temp >= 365:
+					veterancy_points += 2
+				else:
+					veterancy_points += 1
+				break
+
+	messages: list[discord.Message] = [message async for message in time_stopped.history(limit = 200)]
+	for message in messages:
+		for mention in message.mentions:
+			if mention.id == person.user.id:
+				temp = re.findall("Duration \(irl\): [0-9]+ day", str(message.clean_content))
+				if len(temp) == 0:
+					veterancy_points += 1
+					break
+				if len(temp) != 1:
+					await t.send_message(person, "Hall of Fame read failed.")
+					return
+
+				temp = re.findall("[0-9]+", temp[0])
+				temp = int(temp[0])
+				if temp >= 365:
+					veterancy_points += 2
+				else:
+					veterancy_points += 1
+				break
+
+	# --------------------------------------------------------------------------
+
+	if veterancy_points == 0:
+		veterancy_rank = "Commoner"
+		next_points = 1
+	elif veterancy_points < 5:
+		veterancy_rank = "Greenhorn"
+		next_points = 5
+	elif veterancy_points < 9:
+		veterancy_rank = "Adventurer"
+		next_points = 9
+	elif veterancy_points < 13:
+		veterancy_rank = "Hero"
+		next_points = 13
+	elif veterancy_points < 17:
+		veterancy_rank = "Legend"
+		next_points = 17
+	elif veterancy_points < 21:
+		veterancy_rank = "Mythic"
+		next_points = 21
+	else:
+		veterancy_rank = "Planeswalker"
+		next_points = "∞"
+
+	await t.send_message(interaction, f"{person.user.display_name} is currently on the rank of {veterancy_rank} with {veterancy_points}/{next_points} towards the next tier.")
+
+	if change_rank:
+		roles: dict[str, discord.Role] = {
+			"commoner": guild.get_role(1170854299786563735),
+			"greenhorn": guild.get_role(562619225928105984),
+			"adventurer": guild.get_role(562618251079712796),
+			"hero": guild.get_role(695250745276235807),
+			"legend": guild.get_role(869611219693236234),
+			"mythic": guild.get_role(1170854863068991528),
+			"planeswalker": guild.get_role(1170854843611615252)
+		}
+		veterancy_rank = veterancy_rank.lower()
+		member: discord.Member = await guild.get_member(person.user.id)
+
+		for key in roles:
+			if key == veterancy_rank:
+				await member.add_roles(roles[key])
+			else:
+				await member.remove_roles(roles[key])
+
+
 pass

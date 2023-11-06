@@ -1207,6 +1207,17 @@ async def deck_slash(interaction: discord.Interaction):
 	await deck_command(interaction)
 
 
+@bot.tree.command(name = "veterancy", description = "Get the veterancy rank of a person.")
+@app_commands.describe(person = "@ the person")
+async def veterancy(interaction: discord.Interaction, person: discord.User = None):
+	await com.veterancy_command(interaction, person)
+
+
+@bot.tree.command(name = "x_admin_veterancy_recalc", description = "Recalculates the veterancy of a person.")
+async def recalc_veterancy(interaction: discord.Interaction, person: discord.User = None):
+	await com.veterancy_command(interaction, person, True)
+
+
 with open("data_holder/token.txt", "r") as f:
 	_lines_ = f.readlines()
 
