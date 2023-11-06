@@ -21,16 +21,26 @@ def identifier_to_member(identifier: discord.Interaction | discord.ext.commands.
 		return identifier.author
 
 
-def exists(identifier, data_type):
+def exists(identifier, data_type: str) -> bool:
 	match data_type:
 		case "person":
+			if type(identifier) not in [str, int]:
+				raise TypeError('exists() for "person" type requires str or int (discord ID)')
+			if len(str(identifier)) != 18:
+				raise ValueError(f'exists() for "person" requires the discord ID which is 18 digits long. {identifier} is {len(str(identifier))} digits long.')
+			if type(identifier) == str and not identifier.isnumeric():
+				raise ValueError('exists() for "person" needs to be numeric (discord ID)')
+
 			with DatabaseConnection("data.db") as connection:
 				cursor = connection.cursor()
-				cursor.execute("SELECT * FROM people WHERE discord_id = ?", (identifier,))
+				cursor.execute("SELECT * FROM people WHERE discord_id = ?", (int(identifier),))
 				person = cursor.fetchall()
 			if person:
 				return True
 		case "char":
+			if type(identifier) not in [str, int]:
+				raise TypeError('exists() for "char" type requires str')
+
 			with DatabaseConnection("data.db") as connection:
 				cursor = connection.cursor()
 				cursor.execute("SELECT * FROM sheets WHERE character = ?", (identifier,))

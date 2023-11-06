@@ -21,6 +21,7 @@ import asyncio
 import random
 import ast
 import re
+from icecream import ic
 
 
 async def activity_changer():
@@ -124,6 +125,9 @@ async def on_member_update(before: discord.Member, after: discord.Member):
 	if before.roles == after.roles:
 		return
 
+	guild = before.guild
+	member = before
+
 	with t.DatabaseConnection("data.db") as connection:
 		cursor = connection.cursor()
 		cursor.execute(
@@ -148,7 +152,18 @@ async def on_member_update(before: discord.Member, after: discord.Member):
 
 	if roles_added:
 		for role in roles_added:
-			if role.id in guest_roles:  # someone got a guest role
+			if role.id == 1159498034795794603:  # person just joined
+				splitter_1 = guild.get_role(1170868005824122921)
+				splitter_2 = guild.get_role(1170867216812609606)
+				splitter_3 = guild.get_role(1170867216812609606)
+				splitter_4 = guild.get_role(1170866746194931742)
+				splitter_5 = guild.get_role(1170864676574351380)
+				await member.add_roles(splitter_1)
+				await member.add_roles(splitter_2)
+				await member.add_roles(splitter_3)
+				await member.add_roles(splitter_4)
+				await member.add_roles(splitter_5)
+			elif role.id in guest_roles:  # someone got a guest role
 				with t.DatabaseConnection("data.db") as connection:
 					cursor = connection.cursor()
 					cursor.execute(
@@ -360,124 +375,6 @@ async def pc_slash(interaction: discord.Interaction, command: Choice[str], char_
 	await com.pc_command(interaction, command.value, char_name, sheet_name, image_url, person, color)
 
 
-"""@bot.tree.command(name = "die", description = "Create custom named dice, any complex roll. You can also: update, or delete already existing ones.")
-@app_commands.choices(command=[
-	app_commands.Choice(name = "create", value = "create"),
-	app_commands.Choice(name = "update", value = "update"),
-	app_commands.Choice(name = "delete", value = "delete")])
-@discord.app_commands.describe(new_die_name = "Give a new die name (needed for: create | optional for: update).")
-@discord.app_commands.describe(old_die_name = "Give the name of an existing die (needed for: update, delete).")
-@discord.app_commands.describe(die_roll = "Set the roll of a die (needed for: create | optional for: update).")
-async def die_stuff(interaction: discord.Interaction, command: Choice[str], new_die_name: str = None, old_die_name: str = None, die_roll: str = None):
-	ctx = await bot.get_context(interaction)
-	await ctx.defer()
-	person = c.Person(ctx)
-	message = "An error has occurred!\nNo command match found. Possible commands: ``create``, ``update``, ``delete``"
-	send_reply = True
-	stop = False
-	command = command.value
-
-	if new_die_name:
-		new_die_name = new_die_name.replace(" ", "").lower()
-	if old_die_name:
-		old_die_name = old_die_name.replace(" ", "").lower()
-	if die_roll:
-		die_roll = die_roll.replace(" ", "").lower()
-
-	match command:
-		case "create":
-			# needs: die name + die roll
-			if not new_die_name:
-				message = f"``new_die_name`` is required for the ``create`` command."
-			elif not die_roll:
-				message = f"``die_roll`` is required for the ``create`` command."
-			elif new_die_name in s.SHEET_ROLLS:
-				message = f"The name ``{new_die_name}`` is already used by a built in function."
-			elif new_die_name.isnumeric():
-				message = f"The die name cannot start with a number."
-			elif t.exists(new_die_name, "die"):
-				message = f"The name ``{new_die_name}`` is already used by another die."
-			else:
-				pack = await r.text_to_pack(ctx, die_roll)
-				await pack.send_pack()
-				await asyncio.sleep(1)
-				sent = await ctx.send("Was the die roll successful?")
-				reply = await t.followup_instance(ctx, sent, [c.Followup("✅", None, "return_true"), c.Followup("❎", None, "return_false")])
-				await sent.delete()
-				if reply:
-					c.Die(new_die_name, person.user.id, die_roll, True)
-					if t.exists(new_die_name, "die"):
-						message = f"Die name ``{new_die_name}`` with the roll of ``{die_roll}`` successfully created!"
-					else:
-						message = "There was an error in the die creation process, I recommend notifying Tacti about this error"
-				else:
-					message = "Die creation canceled."
-		case "update":
-			if not old_die_name:
-				message = f"``old_die_name`` is required for the ``create`` command."
-			elif not die_roll and not new_die_name:
-				message = f"Please provide either a new name, or a new roll for the die."
-			else:
-				die = c.Die(old_die_name)
-				if die.owner_id == person.user.id or person.user.id in s.ADMINS:
-					if die.owner_id == person.user.id:
-						message = "You have:"
-					else:
-						message = "An admin has:"
-					if die.name != new_die_name:
-						if new_die_name in s.SHEET_ROLLS:
-							message = f"The name {new_die_name} is already used by a built in function."
-						elif t.exists(new_die_name, "die"):
-							message = f"The name {new_die_name} is already used by another die."
-						else:
-							message = f"{message}\nChanged die name from ``{die.name}`` to ``{new_die_name}``."
-							die.name = new_die_name
-					if die_roll:
-						pack = await r.text_to_pack(ctx, die_roll)
-						await pack.send_pack()
-						await asyncio.sleep(1)
-						sent = await ctx.reply("Was the die roll successful?")
-						reply = await t.followup_instance(ctx, sent, [c.Followup("✅", None, "return_true"), c.Followup("❎", None, "return_false")])
-						await sent.delete()
-						if reply:
-							old_roll = die.roll
-							die.roll = die_roll
-							message = f"{message}\nChanged die's roll from ``{old_roll}`` to ``{die_roll}``."
-						else:
-							stop = True
-							message = "Die update canceled."
-					if not stop:
-						die.update()
-				else:
-					message = f"You cannot modify <@{die.owner_id}>'s die."
-		case "delete":
-			if not old_die_name:
-				message = f"``old_die_name`` is required for the ``create`` command."
-			else:
-				die = c.Die(old_die_name)
-				if die.owner_id == person.user.id:
-					die.delete()
-					message = random.choice([
-						f"``{old_die_name}`` won't bother us anymore.",
-						f"``{old_die_name}`` has been eliminated.",
-						f"``{old_die_name}`` met it's doom.",
-						f"``{old_die_name}`` has been torn to a thousand pieces and fed to abyssal chickens.",
-						f"The die died. ||{old_die_name}||",
-						f"``{person.user.display_name}`` has murdered ``{old_die_name}`` in cold blood! This cannot go unanswered, may the Dice God bring you bad luck when you most need it!|| ...oh, that's me.||"
-					])
-				elif person.user.id in s.ADMINS:
-					die.delete()
-					message = f"Hey <@{die.owner_id}>, an admin deleted your die named {old_die_name}!"
-				else:
-					message = random.choice([
-						f"Did you really just tried to kill <@{die.owner_id}>'s die?",
-						f"You should ask <@{die.owner_id}> to do this, since... you know... the die is theirs?"
-					])
-
-	if send_reply:
-		await ctx.send(message)"""
-
-
 @bot.tree.command(name = "die", description = "Create custom named dice, any complex roll. You can also: update, or delete already existing ones.")
 async def die_slash(interaction: discord.Interaction):
 	await die_command(interaction)
@@ -497,7 +394,7 @@ async def die_slash(interaction: discord.Interaction):
 @app_commands.choices(uwuify_messages=[
 	app_commands.Choice(name = "on", value = 1),
 	app_commands.Choice(name = "off", value = 0)])
-@discord.app_commands.describe(color = "Set your color!")
+@discord.app_commands.describe(color = "Set your color! (use #000000 or 0x000000 hex code)")
 @discord.app_commands.describe(tag = 'Set which tag your rolls will be saved! (use "clear" to empty it)')
 async def settings(interaction: discord.Interaction, change_name: Choice[int] = None, auto_roll_tagging: Choice[int] = None, markov_chance: str = None, chat_ignore: Choice[int] = None, uwuify_messages: Choice[int] = None, color: str = None, tag: str = None):
 	person = c.Person(interaction)
