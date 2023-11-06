@@ -1213,9 +1213,31 @@ async def veterancy(interaction: discord.Interaction, person: discord.User = Non
 	await com.veterancy_command(interaction, person)
 
 
-@bot.tree.command(name = "x_admin_veterancy_recalc", description = "Recalculates the veterancy of a person.")
-async def recalc_veterancy(interaction: discord.Interaction, person: discord.User = None):
+@bot.tree.command(name = "x_admin_veterancy_person", description = "Recalculates the veterancy of a person.")
+@app_commands.describe(person = "@ the person")
+async def recalc_veterancy_person(interaction: discord.Interaction, person: discord.User = None):
 	await com.veterancy_command(interaction, person, True)
+
+
+@bot.tree.command(name = "x_admin_veterancy_person", description = "Recalculates the veterancy of a person.")
+@app_commands.choices(message_origin = [
+	app_commands.Choice(name = "Hall of Fame", value = "1"),
+	app_commands.Choice(name = "Stopped Time", value = "0"),
+])
+@app_commands.describe(message_id = "message_id")
+async def recalc_veterancy_message(interaction: discord.Interaction, message_origin: Choice[str], message_id: str):
+	message_id = int(message_id)
+	message_origin = int(message_origin.value)
+	guild = bot.get_guild(562373378967732226)
+	if message_origin:
+		channel = guild.get_channel(911770517533507604)  # hall fo fame
+	else:
+		channel = guild.get_channel(1171006228265193542)  # stopped time
+
+	message = channel.fetch_message(message_id)
+	people = message.mentions
+	for person in people:
+		await com.veterancy_command(interaction, person, True, False)
 
 
 with open("data_holder/token.txt", "r") as f:

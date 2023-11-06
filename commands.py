@@ -508,7 +508,7 @@ async def shuffle_deck(ctx: discord.ext.commands.Context, deck: str):
 	await t.send_message(ctx, "Deck shuffled.")
 
 
-async def veterancy_command(interaction: discord.Interaction, person: discord.Member = None, change_rank = False):
+async def veterancy_command(interaction: discord.Interaction, person: discord.Member = None, change_rank = False, send_message = True):
 	if person is None:
 		person = c.Person(interaction)
 	else:
@@ -584,7 +584,8 @@ async def veterancy_command(interaction: discord.Interaction, person: discord.Me
 		veterancy_rank = "Planeswalker"
 		next_points = "∞"
 
-	await t.send_message(interaction, f"{person.user.display_name} is currently on the rank of {veterancy_rank} with {veterancy_points}/{next_points} towards the next tier.")
+	if send_message:
+		await t.send_message(interaction, f"{person.user.display_name} is currently on the rank of **{veterancy_rank}** with **{veterancy_points}/{next_points}** towards the next tier.")
 
 	if change_rank:
 		roles: dict[str, discord.Role] = {
@@ -597,7 +598,7 @@ async def veterancy_command(interaction: discord.Interaction, person: discord.Me
 			"planeswalker": guild.get_role(1170854843611615252)
 		}
 		veterancy_rank = veterancy_rank.lower()
-		member: discord.Member = await guild.get_member(person.user.id)
+		member: discord.Member = guild.get_member(person.user.id)
 
 		for key in roles:
 			if key == veterancy_rank:
