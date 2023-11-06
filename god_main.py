@@ -1219,7 +1219,7 @@ async def recalc_veterancy_person(interaction: discord.Interaction, person: disc
 	await com.veterancy_command(interaction, person, True)
 
 
-@bot.tree.command(name = "x_admin_veterancy_person", description = "Recalculates the veterancy of a person.")
+@bot.tree.command(name = "x_admin_veterancy_message", description = "Recalculates the veterancy of a person.")
 @app_commands.choices(message_origin = [
 	app_commands.Choice(name = "Hall of Fame", value = "1"),
 	app_commands.Choice(name = "Stopped Time", value = "0"),
