@@ -1,11 +1,9 @@
-import azure.cognitiveservices.speech as speechsdk
+# import azure.cognitiveservices.speech as speechsdk
 import discord
-import utils.tools as t
 import pathlib
 from icecream import ic
 import random
 import asyncio
-from os import close
 
 base_path = pathlib.Path(__file__).parent.parent.resolve()
 temp_path = base_path / "data_holder/speech_key.txt"
