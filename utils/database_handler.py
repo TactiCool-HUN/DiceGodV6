@@ -50,6 +50,7 @@ with DatabaseConnection("data.db") as connection:
 			'auto_tag integer,'
 			'markov_chance integer,'
 			'chat_ignore integer,'
+			'tts_perms integer,'
 			'uwuify integer)'
 		)
 	except sqlite3.OperationalError:

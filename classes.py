@@ -26,6 +26,7 @@ class Person:
 		self.markov_chance = 0
 		self.chat_ignore = 0
 		self.uwuify = 0
+		self.tts_perms = 0
 
 		if t.exists(self.user.id, "person"):
 			self.load()
@@ -36,9 +37,9 @@ class Person:
 		with t.DatabaseConnection("data.db") as connection:
 			cursor = connection.cursor()
 			cursor.execute(
-				"INSERT INTO people(discord_id, name, active, tag, color, change_name, auto_tag, markov_chance, chat_ignore, uwuify)"
-				"VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
-				(self.user.id, self.user.display_name, self.active, self.tag, self.color, self.change_name, self.auto_tag, self.markov_chance, self.chat_ignore, self.uwuify)
+				"INSERT INTO people(discord_id, name, active, tag, color, change_name, auto_tag, markov_chance, chat_ignore, uwuify, tts_perms)"
+				"VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+				(self.user.id, self.user.display_name, self.active, self.tag, self.color, self.change_name, self.auto_tag, self.markov_chance, self.chat_ignore, self.uwuify, self.tts_perms)
 			)
 
 		self.load()
@@ -57,14 +58,15 @@ class Person:
 		self.markov_chance = int(raw[7])
 		self.chat_ignore = bool(raw[8])
 		self.uwuify = bool(raw[9])
+		self.tts_perms = int(raw[10])
 
 	def update(self):
 		with t.DatabaseConnection("data.db") as connection:
 			cursor = connection.cursor()
 			cursor.execute(
-				"UPDATE people SET name = ?, active = ?, tag = ?, color = ?, change_name = ?, auto_tag = ?, markov_chance = ?, chat_ignore = ?, uwuify = ?"
+				"UPDATE people SET name = ?, active = ?, tag = ?, color = ?, change_name = ?, auto_tag = ?, markov_chance = ?, chat_ignore = ?, uwuify = ?, tts_perms = ?"
 				"WHERE discord_id = ?",
-				(self.user.display_name, self.active, self.tag, self.color, self.change_name, self.auto_tag, self.markov_chance, self.chat_ignore, self.uwuify, self.user.id)
+				(self.user.display_name, self.active, self.tag, self.color, self.change_name, self.auto_tag, self.markov_chance, self.chat_ignore, self.uwuify, self.tts_perms, self.user.id)
 			)
 
 	def add_roll(self, outcome, size, used, roll_text):

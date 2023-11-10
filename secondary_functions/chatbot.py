@@ -9,11 +9,12 @@ from ast import literal_eval
 import utils.settings as s
 import utils.tools as t
 import secondary_functions.markovifier as markov
+# from secondary_functions.azure_tts import azure_tts
 
 
 async def bot_responses(message: discord.Message):
 	if bot_setup.prefix == "--" and message.guild.id != 953258116496097340:
-		return
+		pass  # return
 	elif bot_setup.prefix == "--" and message.guild.id == 953258116496097340:
 		return
 	if isinstance(message.channel, discord.channel.DMChannel):
@@ -24,6 +25,13 @@ async def bot_responses(message: discord.Message):
 	person = c.Person(message)
 	if person.chat_ignore:
 		return
+
+	voice = discord.utils.get(t.bot.voice_clients, guild = message.guild)
+	try:
+		if voice.channel.id == message.channel.id and person.tts_perms:
+			pass  # azure_tts(message)
+	except AttributeError:
+		pass
 
 	content = message.clean_content.lower()
 	content_splits = re.split(" ", content)

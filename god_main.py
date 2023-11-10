@@ -1243,6 +1243,30 @@ async def recalc_veterancy_message(interaction: discord.Interaction, message_ori
 		await com.veterancy_command(interaction, person, True, False)
 
 
+@bot.tree.command(name = "request_presence", description = "Request DiceGod to join your voice channel.")
+async def request_presence(interaction: discord.Interaction):
+	try:
+		voice_channel = interaction.user.voice.channel
+	except AttributeError:
+		await t.send_message(interaction, "You are not in a voice channel.", ephemeral = True)
+		return
+
+	voice_channel: discord.VoiceChannel
+	if voice_channel.guild.id != 562373378967732226:
+		await t.send_message(interaction, "Sorry, I can only join voice channels in the corner.", ephemeral = True)
+		return
+
+	await t.send_message(interaction, "Connecting...", ephemeral = True)
+	await voice_channel.connect()
+
+	# voice_client = discord.utils.get(bot.voice_clients, guild = interaction.guild)
+
+
+@bot.tree.command(name = "leave", description = "Disconnect DiceGod from the channel he is in.")
+async def leave(interaction: discord.Interaction):
+	await interaction.guild.voice_client.disconnect(force = True)
+
+
 with open("data_holder/token.txt", "r") as f:
 	_lines_ = f.readlines()
 
