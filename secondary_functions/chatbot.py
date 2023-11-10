@@ -1,3 +1,5 @@
+import asyncio
+
 import discord.channel
 from utils.tools import choice, send_message
 import classes as c
@@ -9,7 +11,7 @@ from ast import literal_eval
 import utils.settings as s
 import utils.tools as t
 import secondary_functions.markovifier as markov
-# from secondary_functions.azure_tts import azure_tts
+from secondary_functions.azure_tts import azure_tts
 
 
 async def bot_responses(message: discord.Message):
@@ -26,10 +28,10 @@ async def bot_responses(message: discord.Message):
 	if person.chat_ignore:
 		return
 
-	voice = discord.utils.get(t.bot.voice_clients, guild = message.guild)
+	voice_client = discord.utils.get(t.bot.voice_clients, guild = message.guild)
 	try:
-		if voice.channel.id == message.channel.id and person.tts_perms:
-			pass  # azure_tts(message)
+		if voice_client.channel.id == message.channel.id and person.tts_perms:
+			asyncio.create_task(azure_tts(message, voice_client))
 	except AttributeError:
 		pass
 

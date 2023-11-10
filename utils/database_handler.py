@@ -50,8 +50,8 @@ with DatabaseConnection("data.db") as connection:
 			'auto_tag integer,'
 			'markov_chance integer,'
 			'chat_ignore integer,'
-			'tts_perms integer,'
-			'uwuify integer)'
+			'uwuify integer,'
+			'tts_perms integer)'
 		)
 	except sqlite3.OperationalError:
 		print(f"people found")

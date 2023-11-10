@@ -26,7 +26,7 @@ def exists(identifier, data_type: str) -> bool:
 		case "person":
 			if type(identifier) not in [str, int]:
 				raise TypeError('exists() for "person" type requires str or int (discord ID)')
-			if len(str(identifier)) != 18:
+			if len(str(identifier)) < 18:
 				raise ValueError(f'exists() for "person" requires the discord ID which is 18 digits long. {identifier} is {len(str(identifier))} digits long.')
 			if type(identifier) == str and not identifier.isnumeric():
 				raise ValueError('exists() for "person" needs to be numeric (discord ID)')

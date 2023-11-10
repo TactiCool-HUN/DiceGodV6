@@ -72,17 +72,21 @@ async def activity_changer():
 		await asyncio.sleep(timer)
 
 
+sync = False
+
+
 @bot.event
 async def on_ready():
 	asyncio.create_task(activity_changer())
 
 	print(f"{bot.user.name.upper()} is online!")
 
-	try:
-		synced = await bot.tree.sync()
-		print(f"Synced {len(synced)} command(s)")
-	except Exception as e:
-		print(e)
+	if sync:
+		try:
+			synced = await bot.tree.sync()
+			print(f"Synced {len(synced)} command(s)")
+		except Exception as e:
+			print(e)
 
 
 @bot.event
@@ -1258,8 +1262,6 @@ async def request_presence(interaction: discord.Interaction):
 
 	await t.send_message(interaction, "Connecting...", ephemeral = True)
 	await voice_channel.connect()
-
-	# voice_client = discord.utils.get(bot.voice_clients, guild = interaction.guild)
 
 
 @bot.tree.command(name = "leave", description = "Disconnect DiceGod from the channel he is in.")
