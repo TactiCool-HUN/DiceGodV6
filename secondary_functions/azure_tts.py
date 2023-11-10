@@ -1,4 +1,4 @@
-# import azure.cognitiveservices.speech as speechsdk
+import azure.cognitiveservices.speech as speechsdk
 import discord
 import pathlib
 from icecream import ic

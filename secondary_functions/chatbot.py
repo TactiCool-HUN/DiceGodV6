@@ -28,12 +28,12 @@ async def bot_responses(message: discord.Message):
 	if person.chat_ignore:
 		return
 
-	"""voice_client = discord.utils.get(t.bot.voice_clients, guild = message.guild)
+	voice_client = discord.utils.get(t.bot.voice_clients, guild = message.guild)
 	try:
 		if voice_client.channel.id == message.channel.id and person.tts_perms:
 			asyncio.create_task(azure_tts(message, voice_client))
 	except AttributeError:
-		pass"""
+		pass
 
 	content = message.clean_content.lower()
 	content_splits = re.split(" ", content)
