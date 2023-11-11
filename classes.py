@@ -388,6 +388,7 @@ class SingleRoll:
 		else:
 			self.damage_type = []
 		self.speciality = None
+		self.extra_crit_dice: int = 0
 
 		raw_text = raw_text[1:]
 		match inc_type:

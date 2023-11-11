@@ -11,7 +11,7 @@ sa = gspread.service_account(filename = "data_holder/service_account.json")
 
 
 async def text_to_pack(identifier: discord.Interaction | discord.ext.commands.Context, roll_txt, crit = False):
-	if type(roll_txt) == str:
+	if isinstance(roll_txt, str):
 		roll_txt = roll_txt.replace(" ", "").lower()
 	else:
 		roll_txt = str(roll_txt)
@@ -24,7 +24,7 @@ async def text_to_pack(identifier: discord.Interaction | discord.ext.commands.Co
 	return c.Pack(identifier, single_rolls, roll_txt)
 
 
-async def text_to_singles(identifier: discord.Interaction | discord.ext.commands.Context, roll_txt):
+async def text_to_singles(identifier: discord.Interaction | discord.ext.commands.Context, roll_txt: str) -> list[c.SingleRoll]:
 	single_rolls = []
 
 	if roll_txt[:9] == "flexible:":
@@ -96,12 +96,13 @@ async def text_to_singles(identifier: discord.Interaction | discord.ext.commands
 				case "DAMAGE":
 					if current_single:
 						single_rolls.append(current_single)
-					temp = sh.get_damage(sheet, split_cut)
+					temp, extra_crit_dice = sh.get_damage(sheet, split_cut)
 					damage_singles = await text_to_singles(identifier, temp)
 					for single in damage_singles:
 						single.args.merge_args(args)
 						single.dynamic = True
 						single.name = split_cut
+						single.extra_crit_dice = extra_crit_dice
 					single_rolls = single_rolls + damage_singles
 					current_single = None
 				case "C_SKILLS":
@@ -227,7 +228,7 @@ def random_roller(identifier: discord.Interaction | discord.ext.commands.Context
 	pre_send = []
 
 	if args.crit:
-		amount = roll.dice_number * 2
+		amount = roll.dice_number * 2 + roll.extra_crit_dice
 	else:
 		amount = roll.dice_number
 

@@ -531,7 +531,11 @@ def get_attack(sheet_inc, attack_inc: str):
 def get_damage(sheet_inc, damage_inc: str):
 	sh = sheet_inc.google_sheet
 	wks = sh.worksheet("BotRead")
-	attacks = wks.get("G2:N7")
+	classes = wks.get("A2:C4")
+	attacks = wks.get("G2:O7")
+	extra_crit_dice = 0
+	is_melee = False
+	props = False
 
 	if damage_inc[-3:] == "_2h":
 		two_handed = True
@@ -549,7 +553,7 @@ def get_damage(sheet_inc, damage_inc: str):
 		slot = int(dmg[3])
 
 	for line in attacks:
-		while len(line) < 8:
+		while len(line) < 9:
 			line.append("")
 
 		if int(line[0]) == slot:
@@ -561,12 +565,31 @@ def get_damage(sheet_inc, damage_inc: str):
 				dmg = line[4]
 				if not dmg:
 					dmg = line[5]
+
+			props = line[3]
+			is_melee = line[8] == "TRUE"
 			break
+
+	if is_melee:
+		for line in classes:
+			if line is []:
+				break
+			elif line[0] == "Barbarian":
+				lvl = int(line[2])
+				if lvl > 16:
+					extra_crit_dice = 3
+				elif lvl > 12:
+					extra_crit_dice = 2
+				elif lvl > 8:
+					extra_crit_dice = 1
+
+	if "Brutal" in props:
+		extra_crit_dice += 1
 
 	damage_type = re.findall("[a-z]+", dmg)[-1]
 	dmg = dmg.replace(damage_type, f"[{damage_type}]")
 
-	return dmg
+	return dmg, extra_crit_dice
 
 
 def get_c_skill(sheet_inc, skill_inc: str):
