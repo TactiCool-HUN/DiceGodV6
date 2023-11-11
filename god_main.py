@@ -276,8 +276,8 @@ async def pong_command(ctx: discord.ext.commands.Context):
 
 
 @bot.command(name = 'emoji')
-async def emoji_command(emoji):
-	print(emoji.user_message.content)
+async def emoji_command(ctx: discord.ext.commands.Context):
+	print(ctx.message.clean_content)
 
 
 @bot.command(name = "kill")

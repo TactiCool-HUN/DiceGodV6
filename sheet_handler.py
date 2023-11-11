@@ -415,112 +415,153 @@ def get_attack(sheet_inc, attack_inc: str):
 			followups.append(c.FollowupButton("🪄", f"1d4+{temp_add}[bludgeoning]", "roll", label="polearm"))
 			break
 
-	rogue_level = 0
-	blood_level = 0
-	slain_level = 0
-	runner_level = 0
-	zealot_level = 0
-	p_rogue_level = 0
-	whisper_level = 0
-	paladin_level = 0
-	eldritch_level = 0
-	hunter_r_level = 0
-
 	for line in class_area:
 		while len(line) < 4:
 			line.append("")
 
 		if line[0] == "Rogue":
 			rogue_level = int(line[2])
+			if rogue_level > 0:
+				sneak_dmg = f"{math.ceil(rogue_level / 2)}d6"
+				followups.append(c.FollowupButton("\U0001F52A", sneak_dmg, "roll", sneak_dmg))
 		elif line[0] == "Proper Rogue":
 			p_rogue_level = int(line[2])
-		elif line[1] == "Zealot":
-			zealot_level = int(line[2])
+			if p_rogue_level > 0:
+				if p_rogue_level > 17:
+					size = 12
+				elif p_rogue_level > 13:
+					size = 10
+				elif p_rogue_level > 6:
+					size = 8
+				else:
+					size = 6
+				sneak_dmg = f"{math.ceil(p_rogue_level / 2)}d{size}"
+				followups.append(c.FollowupButton("\U0001F52A", sneak_dmg, "roll", sneak_dmg))
 		elif line[0] == "Paladin":
 			paladin_level = int(line[2])
-		elif line[1] == "Hunter (r)":
-			hunter_r_level = int(line[2])
-			runner_level = int(line[2])
-		elif line[1] == "Whispers":
-			whisper_level = int(line[2])
+			if paladin_level > 1:
+				followups.append(c.FollowupButton("🎆", "1d8[radiant]", "roll", "SMITE", incremental = True))
+			if paladin_level > 10:
+				followups.append(c.FollowupButton("🌠", "1d8[radiant]", "roll", "1d8"))
 		elif line[0] == "Runner":
 			runner_level = int(line[2])
+			if runner_level > 16:
+				followups.append(c.FollowupButton("🎯", "2d10", "roll", "2d10"))
+			elif runner_level > 10:
+				followups.append(c.FollowupButton("🎯", "2d8", "roll", "2d8"))
+			elif runner_level > 4:
+				followups.append(c.FollowupButton("🎯", "2d6", "roll", "2d6"))
 		elif line[0] == "Blood Hunter":
 			blood_level = int(line[2])
+			if blood_level > 16:
+				followups.append(c.FollowupButton("🩸", "1d10", "roll", "rite"))
+			elif blood_level > 10:
+				followups.append(c.FollowupButton("🩸", "1d8", "roll", "rite"))
+			elif blood_level > 4:
+				followups.append(c.FollowupButton("🩸", "1d6", "roll", "rite"))
+			elif blood_level > 1:
+				followups.append(c.FollowupButton("🩸", "1d4", "roll", "rite"))
 		elif line[0] == "Warlock":
 			warlock_invocations = wks.get("C50:D200")
 			for invocation in warlock_invocations:
 				if invocation[0] == "Eldritch Smite" and invocation[1]:
 					eldritch_level = int(line[2])
+					if eldritch_level > 8:
+						followups.append(c.FollowupButton(bot.get_emoji(1071167194165170207), "6d8[force]", "roll", "eldritch"))
+					elif eldritch_level > 6:
+						followups.append(c.FollowupButton(bot.get_emoji(1071167194165170207), "5d8[force]", "roll", "eldritch"))
+					elif eldritch_level > 4:
+						followups.append(c.FollowupButton(bot.get_emoji(1071167194165170207), "4d8[force]", "roll", "eldritch"))
+					elif eldritch_level > 2:
+						followups.append(c.FollowupButton(bot.get_emoji(1071167194165170207), "3d8[force]", "roll", "eldritch"))
+					elif eldritch_level > 0:
+						followups.append(c.FollowupButton(bot.get_emoji(1071167194165170207), "2d8[force]", "roll", "eldritch"))
+
 		if line[1] == "Slain":
 			slain_level = int(line[2])
-
-	if rogue_level > 0:
-		sneak_dmg = f"{math.ceil(rogue_level / 2)}d6"
-		followups.append(c.FollowupButton("\U0001F52A", sneak_dmg, "roll", label=sneak_dmg))
-	elif p_rogue_level > 0:
-		if p_rogue_level > 17:
-			size = 12
-		elif p_rogue_level > 13:
-			size = 10
-		elif p_rogue_level > 6:
-			size = 8
-		else:
-			size = 6
-		sneak_dmg = f"{math.ceil(p_rogue_level / 2)}d{size}"
-		followups.append(c.FollowupButton("\U0001F52A", sneak_dmg, "roll", label=sneak_dmg))
-
-	if zealot_level > 2:
-		temp = wks.acell("G14").value
-		followups.append(c.FollowupButton("🏵️", f"1d6+{math.floor(zealot_level / 2)}[{temp}]", "roll", label="zealot"))
-
-	if paladin_level > 1:
-		followups.append(c.FollowupButton("🎆", "1d8[radiant]", "roll", label="SMITE", incremental=True))
-	if paladin_level > 10:
-		followups.append(c.FollowupButton("🌠", "1d8[radiant]", "roll", label="1d8"))
-	if slain_level > 17:
-		extra_die = "1d6"
-	elif slain_level > 6:
-		extra_die = "1d4"
-
-	if runner_level > 16:
-		followups.append(c.FollowupButton("🎯", "2d10", "roll", label="2d10"))
-	elif runner_level > 10:
-		followups.append(c.FollowupButton("🎯", "2d8", "roll", label="2d8"))
-	elif runner_level > 4:
-		followups.append(c.FollowupButton("🎯", "2d6", "roll", label="2d6"))
-
-	if hunter_r_level > 5:
-		followups.append(c.FollowupButton("👁️", "1d6", "roll", "1d6"))
-
-	if whisper_level > 14:
-		followups.append(c.FollowupButton("🧠", "8d6[psychic]", "roll", label="psi blades"))
-	elif whisper_level > 9:
-		followups.append(c.FollowupButton("🧠", "5d6[psychic]", "roll", label="psi blades"))
-	elif whisper_level > 4:
-		followups.append(c.FollowupButton("🧠", "3d6[psychic]", "roll", label="psi blades"))
-	elif whisper_level > 2:
-		followups.append(c.FollowupButton("🧠", "2d6[psychic]", "roll", label="psi blades"))
-
-	if blood_level > 16:
-		followups.append(c.FollowupButton("🩸", "1d10", "roll", label="rite"))
-	elif blood_level > 10:
-		followups.append(c.FollowupButton("🩸", "1d8", "roll", label="rite"))
-	elif blood_level > 4:
-		followups.append(c.FollowupButton("🩸", "1d6", "roll", label="rite"))
-	elif blood_level > 1:
-		followups.append(c.FollowupButton("🩸", "1d4", "roll", label="rite"))
-
-	if eldritch_level > 8:
-		followups.append(c.FollowupButton(bot.get_emoji(1071167194165170207), "6d8[force]", "roll", "eldritch"))
-	elif eldritch_level > 6:
-		followups.append(c.FollowupButton(bot.get_emoji(1071167194165170207), "5d8[force]", "roll", "eldritch"))
-	elif eldritch_level > 4:
-		followups.append(c.FollowupButton(bot.get_emoji(1071167194165170207), "4d8[force]", "roll", "eldritch"))
-	elif eldritch_level > 2:
-		followups.append(c.FollowupButton(bot.get_emoji(1071167194165170207), "3d8[force]", "roll", "eldritch"))
-	elif eldritch_level > 0:
-		followups.append(c.FollowupButton(bot.get_emoji(1071167194165170207), "2d8[force]", "roll", "eldritch"))
+			if slain_level > 17:
+				extra_die = "1d6"
+			elif slain_level > 6:
+				extra_die = "1d4"
+		elif line[1] == "Twilight":
+			twilight_level = int(line[2])
+			if twilight_level > 13:
+				followups.append(c.FollowupButton("☀️", "2d8[radiant]", "roll", "divine strike"))
+			elif twilight_level > 7:
+				followups.append(c.FollowupButton("☀️", "1d8[radiant]", "roll", "divine strike"))
+		elif line[1] == "Discovery":
+			discovery_level = int(line[2])
+			if discovery_level > 13:
+				followups.append(c.FollowupButton("🌊", "2d8", "roll", "divine strike"))
+			elif discovery_level > 7:
+				followups.append(c.FollowupButton("🌊", "1d8", "roll", "divine strike"))
+		elif line[1] == "War":
+			war_level = int(line[2])
+			if war_level > 13:
+				followups.append(c.FollowupButton("🗡️", "2d8", "roll", "divine strike"))
+			elif war_level > 7:
+				followups.append(c.FollowupButton("🗡️", "1d8", "roll", "divine strike"))
+		elif line[1] == "Death":
+			death_level = int(line[2])
+			if death_level > 13:
+				followups.append(c.FollowupButton("💀", "2d8[necrotic]", "roll", "divine strike"))
+			elif death_level > 7:
+				followups.append(c.FollowupButton("💀", "1d8[necrotic]", "roll", "divine strike"))
+		elif line[1] == "Forge":
+			forge_level = int(line[2])
+			if forge_level > 13:
+				followups.append(c.FollowupButton("🔥", "2d8[fire]", "roll", "divine strike"))
+			elif forge_level > 7:
+				followups.append(c.FollowupButton("🔥", "1d8[fire]", "roll", "divine strike"))
+		elif line[1] == "Life":
+			life_level = int(line[2])
+			if life_level > 13:
+				followups.append(c.FollowupButton("☀️", "2d8[radiant]", "roll", "divine strike"))
+			elif life_level > 7:
+				followups.append(c.FollowupButton("☀️", "1d8[radiant]", "roll", "divine strike"))
+		elif line[1] == "Nature":
+			nature_level = int(line[2])
+			if nature_level > 13:
+				followups.append(c.FollowupButton("🌊", "2d8", "roll", "divine strike"))
+			elif nature_level > 7:
+				followups.append(c.FollowupButton("🌊", "1d8", "roll", "divine strike"))
+		elif line[1] == "Order":
+			order_level = int(line[2])
+			if order_level > 13:
+				followups.append(c.FollowupButton("🧠", "2d8[psychic]", "roll", "divine strike"))
+			elif order_level > 7:
+				followups.append(c.FollowupButton("🧠", "1d8[psychic]", "roll", "divine strike"))
+		elif line[1] == "Tempest":
+			tempest_level = int(line[2])
+			if tempest_level > 13:
+				followups.append(c.FollowupButton("🔊", "2d8[thunder]", "roll", "divine strike"))
+			elif tempest_level > 7:
+				followups.append(c.FollowupButton("🔊", "1d8[thunder]", "roll", "divine strike"))
+		elif line[1] == "Trickery":
+			trickery_level = int(line[2])
+			if trickery_level > 13:
+				followups.append(c.FollowupButton("🐍", "2d8[poison]", "roll", "divine strike"))
+			elif trickery_level > 7:
+				followups.append(c.FollowupButton("🐍", "1d8[poison]", "roll", "divine strike"))
+		elif line[1] == "Zealot":
+			zealot_level = int(line[2])
+			if zealot_level > 2:
+				temp = wks.acell("G14").value
+				followups.append(c.FollowupButton("🏵️", f"1d6+{math.floor(zealot_level / 2)}[{temp}]", "roll", "zealot"))
+		elif line[1] == "Hunter (r)":
+			hunter_r_level = int(line[2])
+			if hunter_r_level > 5:
+				followups.append(c.FollowupButton("👁️", "1d6", "roll", "1d6"))
+		elif line[1] == "Whispers":
+			whisper_level = int(line[2])
+			if whisper_level > 14:
+				followups.append(c.FollowupButton("🧠", "8d6[psychic]", "roll", "psi blades"))
+			elif whisper_level > 9:
+				followups.append(c.FollowupButton("🧠", "5d6[psychic]", "roll", "psi blades"))
+			elif whisper_level > 4:
+				followups.append(c.FollowupButton("🧠", "3d6[psychic]", "roll", "psi blades"))
+			elif whisper_level > 2:
+				followups.append(c.FollowupButton("🧠", "2d6[psychic]", "roll", "psi blades"))
 
 	if heavy:
 		add = add - get_prof(sheet_inc)
