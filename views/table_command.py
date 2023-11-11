@@ -100,7 +100,7 @@ class SelectTable(discord.ui.Select):
 		self.table.table_name = self.values[0]
 
 		for item in self.table.list_of_items:
-			if type(item) == SelectTable:
+			if isinstance(item, SelectTable):
 				self.table.list_of_items.remove(item)
 				break
 
@@ -116,7 +116,7 @@ class SelectMainCommand(discord.ui.Select):
 		self.table.command = self.values[0]
 
 		for item in self.table.list_of_items:
-			if type(item) == SelectMainCommand:
+			if isinstance(item, SelectMainCommand):
 				self.table.list_of_items.remove(item)
 				break
 

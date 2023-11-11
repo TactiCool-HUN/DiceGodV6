@@ -24,11 +24,9 @@ def identifier_to_member(identifier: discord.Interaction | discord.ext.commands.
 def exists(identifier, data_type: str) -> bool:
 	match data_type:
 		case "person":
-			if type(identifier) not in [str, int]:
+			if not isinstance(identifier, str) and not isinstance(identifier, int):
 				raise TypeError('exists() for "person" type requires str or int (discord ID)')
-			if len(str(identifier)) < 18:
-				raise ValueError(f'exists() for "person" requires the discord ID which is 18 digits long. {identifier} is {len(str(identifier))} digits long.')
-			if type(identifier) == str and not identifier.isnumeric():
+			if isinstance(identifier, str) and not identifier.isnumeric():
 				raise ValueError('exists() for "person" needs to be numeric (discord ID)')
 
 			with DatabaseConnection("data.db") as connection:
@@ -87,7 +85,7 @@ def choice(incoming):  # weighted list or dict
 	choice_list = []
 	weight_list = []
 
-	if type(incoming) == list:
+	if isinstance(incoming, list):
 		for i, item in enumerate(incoming):
 			if i % 2 == 1:
 				weight_list.append(item)
@@ -213,6 +211,7 @@ async def send_message(identifier: discord.Message | discord.Interaction | disco
 					view = discord.ui.View()
 
 				try:
+					# noinspection PyUnresolvedReferences
 					sent = await identifier.response.send_message(content = text, embed = embed, view = view, silent = silent, tts = tts, ephemeral = ephemeral)
 				except discord.InteractionResponded:
 					sent = await identifier.followup.send(content = text, embed = embed, view = view, silent = silent, tts = tts, ephemeral = ephemeral)
@@ -442,7 +441,7 @@ def _get_titles(person: discord.User) -> list[c.Title]:
 
 
 def get_titles(people: list[discord.User] | discord.User | discord.Member) -> list[c.Title]:
-	if type(people) != list:
+	if not isinstance(people, list):
 		people = [people]
 	titles = _get_titles(people[0])
 
@@ -868,7 +867,6 @@ async def send_pack(pack: c.Pack, is_reply: bool = True, ephemeral: bool = False
 			new_single_rolls.append(roll)
 		pack.single_rolls = new_single_rolls
 		await send_pack(pack)
-
 
 
 async def send_multipack(packs: list[c.Pack], roll_text: str, is_reply: bool = True, ephemeral: bool = False) -> None:

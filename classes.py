@@ -1,4 +1,3 @@
-import sqlite3
 from utils.bot_setup import bot
 from utils import settings as s, tools as t
 from views.followup_view import FollowupButton
@@ -99,6 +98,7 @@ class Person:
 class Sheet:
 	def __init__(self, identifier: discord.Interaction | discord.ext.commands.Context, character: str = None, sheet: str = None, new: bool = False):
 		self.user = Person(identifier)
+		# noinspection PyTypeChecker
 		self.owner: Person = None
 		self.character = character
 		self.sheet = sheet

@@ -75,6 +75,7 @@ def generate_uwu(input_text):
 	return output_text
 
 
+# noinspection SpellCheckingInspection
 def uwu(sentence):  # The sentence-converter starts here
 	random_message = pd.read_csv("data_holder/uwu_word_list")["0"]
 	word_list = sentence.split()

@@ -42,6 +42,7 @@ DAMAGE_TYPES = {
 	"healing": "❤️‍🩹"
 }
 
+# noinspection SpellCheckingInspection
 EMOJIS = ["✨", "❤️", "💖", "💜", "🐸", "<:idek:694605001502228540>", "<:zorablush:1021403403768844308>", "<:UwU:959931778905276456>", "<:Kyrihihihi:1058348961523576872>", "<:point:951578243415302235>", "<:diebish:694527515921743883>"]
 
 SPELL_SCHOOL_ICONS = {"Abjuration": "https://media-waterdeep.cursecdn.com/attachments/2/707/abjuration.png", "Conjuration": "https://media-waterdeep.cursecdn.com/attachments/2/708/conjuration.png", "Divination": "https://media-waterdeep.cursecdn.com/attachments/2/709/divination.png", "Enchantment": "https://media-waterdeep.cursecdn.com/attachments/2/702/enchantment.png", "Evocation": "https://media-waterdeep.cursecdn.com/attachments/2/703/evocation.png", "Illusion": "https://media-waterdeep.cursecdn.com/attachments/2/704/illusion.png", "Necromancy": "https://media-waterdeep.cursecdn.com/attachments/2/720/necromancy.png", "Transmutation": "https://media-waterdeep.cursecdn.com/attachments/2/722/transmutation.png"}

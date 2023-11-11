@@ -6,7 +6,6 @@ import discord.ext
 import roller as r
 import asyncio
 import random
-from icecream import ic
 import re
 
 
@@ -292,7 +291,7 @@ async def pc_command(identifier: discord.Interaction | discord.ext.commands.Cont
 
 			sheet = c.Sheet(identifier, char_name)
 
-			if type(person_inc) != discord.Member:
+			if isinstance(person_inc, discord.Member):
 				txt += "\nPerson was not properly mention!"
 				error = True
 

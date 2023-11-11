@@ -1,7 +1,5 @@
-import utils.settings as s
 import utils.tools as t
 import discord
-import asyncio
 
 
 class TitleClass:
@@ -48,6 +46,7 @@ async def title_command(interaction: discord.Interaction):
 		)
 	)
 
+	# noinspection PyUnresolvedReferences
 	await interaction.response.send_message(content = my_title.create_message(), view = my_title.create_view(), ephemeral = True)
 
 
@@ -63,7 +62,7 @@ class SelectUser(discord.ui.UserSelect):
 		self.my_title.people = self.values
 
 		for item in self.my_title.list_of_items:
-			if type(item) == SelectUser:
+			if isinstance(item, SelectUser):
 				self.my_title.list_of_items.remove(item)
 				break
 
@@ -79,6 +78,7 @@ class SelectUser(discord.ui.UserSelect):
 			)
 		)
 
+		# noinspection PyUnresolvedReferences
 		await interaction.response.edit_message(content = self.my_title.create_message(), view = self.my_title.create_view())
 
 
@@ -91,11 +91,12 @@ class SelectMainCommand(discord.ui.Select):
 		self.my_title.command = self.values[0]
 
 		for item in self.my_title.list_of_items:
-			if type(item) == SelectMainCommand:
+			if isinstance(item, SelectMainCommand):
 				self.my_title.list_of_items.remove(item)
 				break
 
 		if self.my_title.command == "Add Title":
+			# noinspection PyUnresolvedReferences
 			await interaction.response.send_modal(AddTitleModal(self.my_title))
 		elif self.my_title.command == "Remove Title":
 			titles = t.get_titles(self.my_title.people)
@@ -112,6 +113,7 @@ class SelectMainCommand(discord.ui.Select):
 				)
 			)
 
+			# noinspection PyUnresolvedReferences
 			await interaction.response.edit_message(content = self.my_title.create_message(), view = self.my_title.create_view())
 
 
@@ -137,6 +139,7 @@ class SelectTitleRemove(discord.ui.Select):
 					cursor = connection.cursor()
 					cursor.execute("DELETE FROM title_people WHERE title_id = ? AND discord_id = ?", (raw[0], person.id))
 
+			# noinspection PyUnresolvedReferences
 			await interaction.response.edit_message(content = "Title successfully removed.", view = None)
 
 

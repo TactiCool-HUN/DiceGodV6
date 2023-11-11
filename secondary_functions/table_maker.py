@@ -3,12 +3,11 @@ from ast import literal_eval
 import utils.tools as t
 import discord
 from classes import Person
-from icecream import ic
-from utils.bot_setup import bot
 
 
 async def table_maker_main(interaction: discord.Interaction):
     person = Person(interaction)
+    # noinspection PyTypeHints
     person.user: discord.Member
 
     for role in person.user.roles:  # check for permission

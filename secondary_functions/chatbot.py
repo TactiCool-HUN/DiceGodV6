@@ -1,17 +1,16 @@
-import asyncio
-
 import discord.channel
 from utils.tools import choice, send_message
 import classes as c
 from utils import settings, bot_setup
 import random
 import re
-from secondary_functions.uwuifier import uwuify, generate_uwu, uwu
+from secondary_functions.uwuifier import uwu
 from ast import literal_eval
 import utils.settings as s
 import utils.tools as t
 import secondary_functions.markovifier as markov
 from secondary_functions.azure_tts import azure_tts
+import asyncio
 
 
 async def bot_responses(message: discord.Message):

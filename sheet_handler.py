@@ -440,7 +440,7 @@ def get_attack(sheet_inc, attack_inc: str):
 		elif line[0] == "Paladin":
 			paladin_level = int(line[2])
 			if paladin_level > 1:
-				followups.append(c.FollowupButton("🎆", "1d8[radiant]", "roll", "SMITE", incremental = True))
+				followups.append(c.FollowupButton("🎆", "1d8[radiant]", "roll", "SMITE", discord.ButtonStyle.blurple, True))
 			if paladin_level > 10:
 				followups.append(c.FollowupButton("🌠", "1d8[radiant]", "roll", "1d8"))
 		elif line[0] == "Runner":
@@ -1479,7 +1479,7 @@ async def rest(identifier: discord.Interaction | discord.ext.commands.Context, l
 		cast_type = spells.acell("B2").value
 		if cast_type == "Spell Slots":
 			area = spells.get("F3:S11")
-			block = []
+			block: list = []
 			for count, line in enumerate(area):
 				max_slots = int(line[0])
 				block.append([])

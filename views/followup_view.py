@@ -21,6 +21,7 @@ class FollowupButton(discord.ui.Button):
 			super().__init__(emoji = temp, style = style, label = label)
 		else:
 			super().__init__(emoji = emoji, style = style, label = label)
+		# noinspection PyTypeChecker
 		self.core: MessageCore = None
 		self.data = data
 		self.f_type = f_type

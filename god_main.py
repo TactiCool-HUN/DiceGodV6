@@ -21,7 +21,6 @@ import asyncio
 import random
 import ast
 import re
-from icecream import ic
 
 
 async def activity_changer():
@@ -1199,6 +1198,7 @@ async def draw(ctx: discord.ext.commands.Context, deck: str):
 @bot.command(name = "shuffle", aliases = ["reshuffle"])
 async def shuffle(ctx: discord.ext.commands.Context, deck: str):
 	if random.randint(1, 20) == 20:
+		# noinspection SpellCheckingInspection
 		loader = await t.load(ctx, "Everyday I'm shufflin'")
 	else:
 		loader = await t.load(ctx, "Shuffling in progress.")
