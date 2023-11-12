@@ -104,17 +104,17 @@ Options:
 - access:
 - - Grant someone access to your character, they will be able to set the character and use sheet based commands.
 - - Requires: char_name, person
-- - Example: ``/pc command:access char_name:[character's name] person:[@ping of the person]``
+- - Example: ```/pc command:access char_name:[character's name] person:[@ping of the person]```
 
 - image:
 - - Add an image to your character.
 - - Requires: char_name, image_url
-- - Example: ``/pc command:image char_name:[character's name] image_url:[url]``
+- - Example: ```/pc command:image char_name:[character's name] image_url:[url]```
 
 - color:
 - - Add a custom color for your character's rolls.
 - - Requires: char_name, color (#000000 or 0x000000)
-- - Example: ``/pc command:color char_name:[character's name] color:0x040053``
+- - Example: ```/pc command:color char_name:[character's name] color:0x040053```
 		""",
 		"example_uses": []
 	},
@@ -316,7 +316,7 @@ vote type: pick 1
 Is drakkenheim great?
 ---
 :one: - yes!
-:two: - no :c"""
+:two: - no :c```"""
 		]
 	},
 	{
