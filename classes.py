@@ -359,7 +359,7 @@ class Pack:
 
 
 class SingleRoll:
-	def __init__(self, raw_text, inc_type, name = None, dice_number = 0, die_size = 0, add = 0, dynamic = False, pre_send = None, damage_type = None, roll_note = None, followups: list[FollowupButton] = None):
+	def __init__(self, raw_text, inc_type, name = None, dice_number = 0, die_size = 0, add = 0, dynamic = False, pre_send = None, damage_type = None, roll_note = None, followups: list[FollowupButton] = None, extra_crit_dice: int = 0, exploding: bool = False):
 		self.raw_text = raw_text
 		self.sign = raw_text[0]
 		self.name = name
@@ -388,7 +388,7 @@ class SingleRoll:
 		else:
 			self.damage_type = []
 		self.speciality = None
-		self.extra_crit_dice: int = 0
+		self.extra_crit_dice: int = extra_crit_dice
 
 		raw_text = raw_text[1:]
 		match inc_type:
@@ -481,6 +481,7 @@ class RollArgs:
 		self.minmax_size = None
 		self.crit = False
 		self.spell_level = None
+		self.exploding = False
 		if text:
 			self.override_args(text.lower())
 
@@ -505,6 +506,8 @@ class RollArgs:
 		if temp:
 			temp = re.findall("lvl[1-9]|level[1-9]", text)[0]
 			self.spell_level = int(re.findall("[1-9]", temp)[0])
+		if re.findall("ex", text):
+			self.exploding = True
 
 	def merge_args(self, text):
 		if not text:
@@ -523,6 +526,8 @@ class RollArgs:
 			self.adv = "emp"
 		if re.findall("crit", text):
 			self.crit = True
+		if re.findall("ex", text):
+			self.exploding = True
 		temp = re.findall("kh|kl", text)
 		if temp:
 			self.keep_type = temp[0]
@@ -537,6 +542,10 @@ class RollArgs:
 			self.spell_level = int(re.findall("[1-9]", temp)[0])
 
 	def create_args_display(self):
+		if self.exploding:
+			e_disp = "ex"
+		else:
+			e_disp = ""
 		if self.crit:
 			c_disp = "crit"
 		else:
@@ -554,9 +563,10 @@ class RollArgs:
 		else:
 			a_disp = ""
 
-		args = f"{a_disp}{k_disp}{m_disp}{c_disp}"
+		args = f"{e_disp}{a_disp}{k_disp}{m_disp}{c_disp}"
 		if args:
 			args = f" {args}"
+
 		return args
 
 

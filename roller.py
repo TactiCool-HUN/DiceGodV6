@@ -222,6 +222,26 @@ async def text_to_singles(identifier: discord.Interaction | discord.ext.commands
 	return single_rolls
 
 
+def recurse_roller(amount: int, size: int, args: c.RollArgs) -> list[list[int, bool]]:
+	results = []
+
+	for _ in range(amount):
+		roll_raw = random.randint(1, size)
+		if args.minmax_type == "min":
+			roll_raw = max(roll_raw, args.minmax_size)
+		elif args.minmax_type == "max":
+			roll_raw = min(roll_raw, args.minmax_size)
+
+		if args.exploding and roll_raw == size:
+			if size == 1:
+				raise ValueError("No infinities, hmph.")
+			results = results + [[roll_raw, True]] + recurse_roller(1, size, args)
+		else:
+			results = results + [[roll_raw, True]]
+
+	return results
+
+
 def random_roller(identifier: discord.Interaction | discord.ext.commands.Context, roll: c.SingleRoll):
 	person = c.Person(identifier)
 	args: c.RollArgs = roll.args
@@ -257,14 +277,8 @@ def random_roller(identifier: discord.Interaction | discord.ext.commands.Context
 			elif args.minmax_type == "max":
 				roll_raw = min(roll_raw, args.minmax_size)
 			roll.results.append([roll_raw, True])
-	else:
-		for _ in range(amount):
-			roll_raw = random.randint(1, size)
-			if args.minmax_type == "min":
-				roll_raw = max(roll_raw, args.minmax_size)
-			elif args.minmax_type == "max":
-				roll_raw = min(roll_raw, args.minmax_size)
-			roll.results.append([roll_raw, True])
+	else:  # ----- ----- ----- ----- actual random part ----- ----- ----- -----
+		roll.results = roll.results + recurse_roller(amount, size, args)
 
 	if args.keep_type:
 		rolls_mid = [i[0] for i in roll.results]
