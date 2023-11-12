@@ -306,7 +306,7 @@ vote type: pick [number between 0 and infinite, people will be able to choose th
 Write the text of your vote here
 ---
 Write vote options here, each should be in it's own line and each option should look like this:
-:emoji: - vote option text
+:emoji: - vote option text```
 		""",
 		"example_uses": [
 			"""-vote
@@ -316,7 +316,7 @@ vote type: pick 1
 Is drakkenheim great?
 ---
 :one: - yes!
-:two: - no :c```"""
+:two: - no :c"""
 		]
 	},
 	{
