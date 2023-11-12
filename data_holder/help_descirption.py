@@ -47,6 +47,7 @@ Each "roll" can be argumented by using one or more of the following arguments:
 - ``min[number]`` the minimum each dice can roll
 - ``max[number]`` the maximum each dice can roll
 - ``crit`` to double the number of dice
+- ``ex`` to make the die roll an "exploding" roll (does not work with adv, dis or emp).
 
 Example of argumented rolls:
 - ``-r 1d20adv``
@@ -103,7 +104,17 @@ Options:
 - access:
 - - Grant someone access to your character, they will be able to set the character and use sheet based commands.
 - - Requires: char_name, person
-- - Example: ``-pc access [character's name] [@ping of the person]``
+- - Example: ``/pc command:access char_name:[character's name] person:[@ping of the person]``
+
+- image:
+- - Add an image to your character.
+- - Requires: char_name, image_url
+- - Example: ``/pc command:image char_name:[character's name] image_url:[url]``
+
+- color:
+- - Add a custom color for your character's rolls.
+- - Requires: char_name, color (#000000 or 0x000000)
+- - Example: ``/pc command:color char_name:[character's name] color:0x040053``
 		""",
 		"example_uses": []
 	},
@@ -141,6 +152,9 @@ Options:
 
 - auto_roll_tagging:
 - - While your character is set your rolls will have a tag that is your character's name, allowing you to use the statistics command to filter it down to only the character's rolls.
+
+- markov_chance:
+- - Doesn't do anything rn sry :D
 
 - chat_ignore:
 - - While on Dice God will not react to your chat messages.
@@ -304,6 +318,98 @@ Is drakkenheim great?
 :one: - yes!
 :two: - no :c"""
 		]
+	},
+	{
+		"name": "table",
+		"call_type": "slash command",
+		"calls": ["/table"],
+		"short_description": "Manage access and settings for your tables as a GM.",
+		"long_description": """
+Permission options:
+- Add people as players
+- Add people as guests
+- Remove people from the table
+
+Settings:
+- Toggle automatic addition of guests to your threads
+		""",
+		"example_uses": []
+	},
+	{
+		"name": "create_table",
+		"call_type": "slash command",
+		"calls": ["/create_table"],
+		"short_description": "Create a new table for yourself.",
+		"long_description": "Create a new table for yourself.",
+		"example_uses": []
+	},
+	{
+		"name": "titles",
+		"call_type": "slash command",
+		"calls": ["/titles"],
+		"short_description": "Request to see your or other's titles.",
+		"long_description": "Request to see your or other's titles.",
+		"example_uses": []
+	},
+	{
+		"name": "draw",
+		"call_type": "prefix",
+		"calls": ["-draw", "-d"],
+		"short_description": "Draw from a deck.",
+		"long_description": "Draw from a deck created by the deck command.",
+		"example_uses": ["-d french", "-d d20"]
+	},
+	{
+		"name": "shuffle",
+		"call_type": "prefix",
+		"calls": ["-reshuffle", "-shuffle"],
+		"short_description": "Shuffle a deck.",
+		"long_description": "Reshuffle a deck created by the deck command.",
+		"example_uses": ["-shuffle french", "-reshuffle d20"]
+	},
+	{
+		"name": "deck",
+		"call_type": "slash command",
+		"calls": ["/deck"],
+		"short_description": "Create, edit or destroy decks.",
+		"long_description": """
+Create New Deck:
+- Allows you to create a new deck.
+
+Edit Existin Deck:
+- Allows you to edit a deck you created.
+
+Add Art to Deck:
+- Doesn't do shit cus I'm lazy.
+
+Delete Deck:
+- Allows you to delete a deck you created.
+		""",
+		"example_uses": ["/deck"]
+	},
+	{
+		"name": "veterancy",
+		"call_type": "slash command",
+		"calls": ["/veterancy"],
+		"short_description": "Allows you to get the veterancy rank of a person.",
+		"long_description": "Allows you to get the veterancy rank of a person.",
+		"example_uses": ["/veterancy", "/veterancy <@person>"]
+	},
+	{
+		"name": "request_presence",
+		"call_type": "slash command",
+		"calls": ["/request_presence"],
+		"short_description": "Requests to be in the presence of your god.",
+		"long_description": "Requests DiceGod to be in your voice channel.",
+		"example_uses": ["/request_presence"]
+	},
+	{
+		"name": "leave",
+		"call_type": "slash command",
+		"calls": ["/leave"],
+		"short_description": "Requests permission to leave your god's side.",
+		"long_description": " Due to Discord limitations this will look as if Dicegod is leaving the voice channel.",
+		"example_uses": ["/leave"]
 	},
 	{
 		"name": "help",

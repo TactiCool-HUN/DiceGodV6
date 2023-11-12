@@ -1008,24 +1008,27 @@ async def help_slash(interaction: discord.Interaction, help_type: Choice[str], e
 	elif help_type == "emoji_lookup":
 		embed = discord.Embed(
 			title = "Emoji Lookup Table",
-			description = """
+			description = f"""
 				:arrows_counterclockwise:  - reroll the same roll
 				:boom: - crit
 				:regional_indicator_q: - queue rolls
 				:wave: - one handed damage
 				:open_hands: - two handed damage
 				:muscle: - flexible damage 
-				:rosette: - zealot barb extra damage
-				:fireworks: - paladin 2d8 smite damage
-				:sparkler: - paladin 1d8 smite damage
-				:stars: - paladin improved divine smite
-				:dart: - runner precision smite
-				:eye: - runner's hunter ambush strike
-				:brain: - psychic blades
-				:drop_of_blood: - blood hunter crimson rite damage
-				[no icon yet] - charger feat (not implemented yet)
-				:four_leaf_clover: - inspiration point give
-				<:EldritchSmite:1071167194165170207> - eldritch smite
+				🎆 - paladin smite (each press is 1d8 dmg)
+				🌠 - paladin improved smite
+				🎯 - runner precision strike
+				🩸 - bloodhunter rite
+				{bot.get_emoji(1071167194165170207)} - eldritch smite
+				☀️ - zealot barb extra damage (radiant) or life domain cleric divine strike
+				🌊 - discovery or nature domain cleric divine strike
+				🗡️ - war domain cleric divine strike
+				💀 - zealot barb extra damage (necrotic) or death domain cleric divine strike
+				🔥 - forge domain cleric divine strike
+				🧠 - order domain cleric divine strike or whisper bard psi blades
+				🔊 - tempest domain cleric divine strike
+				🐍 - trickery domain cleric divine strike
+				👁️ - hunter runner precision shot
 				:magic_wand: - polearm master
 			""",
 			color = literal_eval(person.color)

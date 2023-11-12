@@ -547,7 +547,10 @@ def get_attack(sheet_inc, attack_inc: str):
 			zealot_level = int(line[2])
 			if zealot_level > 2:
 				temp = wks.acell("G14").value
-				followups.append(c.FollowupButton("🏵️", f"1d6+{math.floor(zealot_level / 2)}[{temp}]", "roll", "zealot"))
+				if temp == "radiant":
+					followups.append(c.FollowupButton("☀️", f"1d6+{math.floor(zealot_level / 2)}[{temp}]", "roll", "zealot"))
+				else:
+					followups.append(c.FollowupButton("💀", f"1d6+{math.floor(zealot_level / 2)}[{temp}]", "roll", "zealot"))
 		elif line[1] == "Hunter (r)":
 			hunter_r_level = int(line[2])
 			if hunter_r_level > 5:
