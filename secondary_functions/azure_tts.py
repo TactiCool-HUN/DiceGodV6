@@ -24,7 +24,7 @@ async def azure_tts(message: discord.Message, voice_client: discord.VoiceClient,
     audio_config = speechsdk.audio.AudioOutputConfig(filename = str(base_path / "secondary_functions/voice_temp" / filename))
 
     # The language of the voice that speaks.
-    speech_config.speech_synthesis_voice_name = "en-US-JennyNeural"
+    speech_config.speech_synthesis_voice_name = f"en-US-{person.tts_perms}Neural"
 
     speech_synthesizer = speechsdk.SpeechSynthesizer(speech_config = speech_config, audio_config = audio_config)
 
