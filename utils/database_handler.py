@@ -51,7 +51,7 @@ with DatabaseConnection("data.db") as connection:
 			'markov_chance integer,'
 			'chat_ignore integer,'
 			'uwuify integer,'
-			'tts_perms integer)'
+			'tts_perms text)'
 		)
 	except sqlite3.OperationalError:
 		print(f"people found")

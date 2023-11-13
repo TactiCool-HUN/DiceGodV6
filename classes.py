@@ -25,7 +25,7 @@ class Person:
 		self.markov_chance = 0
 		self.chat_ignore = 0
 		self.uwuify = 0
-		self.tts_perms = 0
+		self.tts_perms = ""
 
 		if t.exists(self.user.id, "person"):
 			self.load()
@@ -57,7 +57,7 @@ class Person:
 		self.markov_chance = int(raw[7])
 		self.chat_ignore = bool(raw[8])
 		self.uwuify = bool(raw[9])
-		self.tts_perms = int(raw[10])
+		self.tts_perms = raw[10]
 
 	def update(self):
 		with t.DatabaseConnection("data.db") as connection:
