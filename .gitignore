@@ -1,11 +1,5 @@
-/data_holder/service_account.json
-/data_holder/token.txt
-/data_holder/data.db
-/data_holder/old_data.db
-/data_holder/emoji_role.db
-/.idea/codeStyles/codeStyleConfig.xml
-/data_holder/card_base.db
-/data_holder/markov_studies.txt
-data_holder/markov_studies.txt
-/data_holder/speech_key.txt
+/data_holder/*.json
+/data_holder/*.txt
+/data_holder/*.db
 /secondary_functions/ffmpeg/
+/secondary_functions/voice_temp/*.wav

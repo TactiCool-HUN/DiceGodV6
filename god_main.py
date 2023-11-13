@@ -18,7 +18,9 @@ from secondary_functions import chatbot, emoji_role
 from secondary_functions.table_maker import table_maker_main
 import discord.ext
 import asyncio
+import os
 import random
+from icecream import ic
 import ast
 import re
 
@@ -1252,6 +1254,13 @@ async def recalc_veterancy_message(interaction: discord.Interaction, message_ori
 
 @bot.tree.command(name = "request_presence", description = "Request DiceGod to join your voice channel.")
 async def request_presence(interaction: discord.Interaction):
+	dir_name = "secondary_functions/voice_temp"
+	files = os.listdir(dir_name)
+
+	for file in files:
+		if file.endswith(".wav"):
+			os.remove(os.path.join(dir_name, file))
+
 	try:
 		voice_channel = interaction.user.voice.channel
 	except AttributeError:
@@ -1269,7 +1278,17 @@ async def request_presence(interaction: discord.Interaction):
 
 @bot.tree.command(name = "leave", description = "Disconnect DiceGod from the channel he is in.")
 async def leave(interaction: discord.Interaction):
-	await interaction.guild.voice_client.disconnect(force = True)
+	try:
+		await interaction.guild.voice_client.disconnect(force = True)
+	except AttributeError:
+		pass
+
+	dir_name = "secondary_functions/voice_temp"
+	files = os.listdir(dir_name)
+
+	for file in files:
+		if file.endswith(".wav"):
+			os.remove(os.path.join(dir_name, file))
 
 
 with open("data_holder/token.txt", "r") as f:
