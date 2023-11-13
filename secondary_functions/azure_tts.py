@@ -1,9 +1,10 @@
-# import azure.cognitiveservices.speech as speechsdk
+import azure.cognitiveservices.speech as speechsdk
 import discord
 import pathlib
 from icecream import ic
 import random
 import asyncio
+import classes as c
 
 base_path = pathlib.Path(__file__).parent.parent.resolve()
 temp_path = base_path / "data_holder/speech_key.txt"
@@ -16,11 +17,7 @@ speech_key = _lines_[0].strip()
 speech_region = "northeurope"
 
 
-def message_cutter():
-    pass
-
-
-async def azure_tts(message: discord.Message, voice_client: discord.VoiceClient):
+async def azure_tts(message: discord.Message, voice_client: discord.VoiceClient, person: c.Person = None):
     # This example requires environment variables named "SPEECH_KEY" and "SPEECH_REGION"
     speech_config = speechsdk.SpeechConfig(subscription = speech_key, region = speech_region)
     filename = f"tts{random.randint(1000, 9999)}.wav"
