@@ -28,7 +28,7 @@ async def bot_responses(message: discord.Message):
 	voice_client = discord.utils.get(t.bot.voice_clients, guild = message.guild)
 	try:
 		if voice_client.channel.id == message.channel.id and person.tts_perms:
-			asyncio.create_task(azure_tts(message, voice_client))
+			asyncio.create_task(azure_tts(message, voice_client, person))
 	except AttributeError:
 		pass
 
