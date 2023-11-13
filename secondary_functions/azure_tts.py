@@ -21,7 +21,7 @@ async def azure_tts(message: discord.Message, voice_client: discord.VoiceClient,
     # This example requires environment variables named "SPEECH_KEY" and "SPEECH_REGION"
     speech_config = speechsdk.SpeechConfig(subscription = speech_key, region = speech_region)
     filename = f"tts{random.randint(1000, 9999)}.wav"
-    audio_config = speechsdk.audio.AudioOutputConfig(filename = str(base_path / "secondary_functions" / filename))
+    audio_config = speechsdk.audio.AudioOutputConfig(filename = str(base_path / "secondary_functions/voice_temp" / filename))
 
     # The language of the voice that speaks.
     speech_config.speech_synthesis_voice_name = "en-US-JennyNeural"
@@ -35,13 +35,9 @@ async def azure_tts(message: discord.Message, voice_client: discord.VoiceClient,
     speech_synthesis_result = speech_synthesizer.speak_text_async(text).get()
 
     voice_client.play(discord.FFmpegPCMAudio(
-        executable = str(base_path / "secondary_functions" / "ffmpeg/bin/ffmpeg.exe"),
-        source = str(base_path / "secondary_functions" / filename)
+        executable = str(base_path / "secondary_functions/ffmpeg/bin/ffmpeg.exe"),
+        source = str(base_path / "secondary_functions/voice_temp" / filename)
     ))
-
-    while voice_client.is_playing():
-        await asyncio.sleep(1)
-    pathlib.Path.unlink(base_path / "secondary_functions" / filename)
 
     if speech_synthesis_result.reason == speechsdk.ResultReason.SynthesizingAudioCompleted:
         ic(f"Speech synthesized for text [{text}]")

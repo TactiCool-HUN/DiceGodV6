@@ -14,9 +14,7 @@ import asyncio
 
 
 async def bot_responses(message: discord.Message):
-	if bot_setup.prefix == "--" and message.guild.id != 953258116496097340:
-		return
-	elif bot_setup.prefix == "--" and message.guild.id == 953258116496097340:
+	if bot_setup.prefix == "--":
 		return
 	if isinstance(message.channel, discord.channel.DMChannel):
 		return
