@@ -981,6 +981,8 @@ help_type_fix = [
 	app_commands.Choice(name = "Emoji Lookup", value = "emoji_lookup"),
 ]
 for help_dict in help_list:
+	if len(help_type_fix) > 24:
+		break
 	help_type_fix.append(app_commands.Choice(name = help_dict["name"], value = help_dict["name"]))
 
 
@@ -1292,34 +1294,51 @@ async def leave(interaction: discord.Interaction):
 			os.remove(os.path.join(dir_name, file))
 
 
-@bot.command(name = "x_admin_voice")
-async def draw(ctx: discord.ext.commands.Context, voice: str, *, text: str):
+@bot.tree.command(name = "x_admin_voice_create")
+@app_commands.choices(voice = [
+	app_commands.Choice(name = "Jenny", value = "Jenny"),
+	app_commands.Choice(name = "Guy", value = "Guy"),
+	app_commands.Choice(name = "Aria", value = "Aria"),
+	app_commands.Choice(name = "Davis", value = "Davis"),
+	app_commands.Choice(name = "Amber", value = "Amber"),
+	app_commands.Choice(name = "Ana", value = "Ana"),
+	app_commands.Choice(name = "Andrew", value = "Andrew"),
+	app_commands.Choice(name = "Ashley", value = "Ashley"),
+	app_commands.Choice(name = "Brandon", value = "Brandon"),
+	app_commands.Choice(name = "Brian", value = "Brian"),
+	app_commands.Choice(name = "Christopher", value = "Christopher"),
+	app_commands.Choice(name = "Cora", value = "Cora"),
+	app_commands.Choice(name = "Elizabeth", value = "Elizabeth"),
+	app_commands.Choice(name = "Emma", value = "Emma"),
+	app_commands.Choice(name = "Eric", value = "Eric"),
+	app_commands.Choice(name = "Jacob", value = "Jacob"),
+	app_commands.Choice(name = "Jane", value = "Jane"),
+	app_commands.Choice(name = "Jason", value = "Jason"),
+	app_commands.Choice(name = "Michelle", value = "Michelle"),
+	app_commands.Choice(name = "Monica", value = "Monica"),
+	app_commands.Choice(name = "Nancy", value = "Nancy"),
+	app_commands.Choice(name = "Roger", value = "Roger"),
+	app_commands.Choice(name = "Sara", value = "Sara"),
+	app_commands.Choice(name = "Steffan", value = "Steffan"),
+	app_commands.Choice(name = "Tony", value = "Tony"),
+])
+@app_commands.describe(text = "text")
+@app_commands.describe(filename = "filename")
+async def draw(ctx: discord.ext.commands.Context, voice: Choice[str], text: str, filename: str):
 	person = c.Person(ctx)
 	if person.user.id not in s.ADMINS:
 		await t.send_message(ctx, "Permission denied.")
 		return
 
-	await azure_voice_studio(voice, text)
+	voice = voice.value
+
+	await azure_voice_studio(voice, text, filename)
 
 
 @bot.command(name = "x_admin_play")
 async def draw(ctx: discord.ext.commands.Context, file_name: str):
 	person = c.Person(ctx)
-	person.user: discord.Member
-	voice_channel: discord.VoiceChannel = person.user.voice.channel
-	voice_client: discord.VoiceClient = await voice_channel.connect()
-
-	base_path = pathlib.Path(__file__).parent.resolve()
-
-	voice_client.play(discord.FFmpegPCMAudio(
-		executable = str(base_path / "secondary_functions/ffmpeg/bin/ffmpeg.exe"),
-		source = str(base_path / f"secondary_functions/voice_perm/{file_name}.wav")
-	))
-
-	while voice_client.is_playing():
-		await asyncio.sleep(0.1)
-
-	await voice_client.disconnect(force = True)
+	await t.play_voice_bit(file_name, person.user)
 
 
 with open("data_holder/token.txt", "r") as f:

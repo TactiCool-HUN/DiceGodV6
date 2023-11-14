@@ -1,9 +1,10 @@
+import re
+
 import azure.cognitiveservices.speech as speechsdk
 import discord
 import pathlib
 from icecream import ic
 import random
-import asyncio
 import classes as c
 
 base_path = pathlib.Path(__file__).parent.parent.resolve()
@@ -17,13 +18,22 @@ speech_key = _lines_[0].strip()
 speech_region = "northeurope"
 
 
-async def azure_voice_studio(voice: str, text: str):
-    speech_config = speechsdk.SpeechConfig(subscription = speech_key, region = speech_region)
-    filename = f"new_voice{random.randint(10000, 99999)}.wav"
-    audio_config = speechsdk.audio.AudioOutputConfig(filename = str(base_path / "secondary_functions/voice_perm" / filename))
+async def azure_voice_studio(voice: str, text: str, filename: str):
+    speech_config = speechsdk.SpeechConfig(
+        subscription = speech_key,
+        region = speech_region
+    )
+    filename = re.split("\.", filename)[0]
+    filename = f"{filename}.wav"
+    audio_config = speechsdk.audio.AudioOutputConfig(
+        filename = str(base_path / "secondary_functions/voice_perm" / filename)
+    )
     speech_config.speech_synthesis_voice_name = f"en-US-{voice.capitalize()}Neural"
 
-    speech_synthesizer = speechsdk.SpeechSynthesizer(speech_config = speech_config, audio_config = audio_config)
+    speech_synthesizer = speechsdk.SpeechSynthesizer(
+        speech_config = speech_config,
+        audio_config = audio_config
+    )
     speech_synthesis_result = speech_synthesizer.speak_text_async(text).get()
 
     if speech_synthesis_result.reason == speechsdk.ResultReason.SynthesizingAudioCompleted:
@@ -37,11 +47,16 @@ async def azure_voice_studio(voice: str, text: str):
                 ic("Did you set the speech resource key and region values?")
 
 
-async def azure_tts(message: discord.Message, voice_client: discord.VoiceClient, person: c.Person = None):
+async def azure_tts(
+        message: discord.Message,
+        voice_client: discord.VoiceClient,
+        person: c.Person = None):
     # This example requires environment variables named "SPEECH_KEY" and "SPEECH_REGION"
     speech_config = speechsdk.SpeechConfig(subscription = speech_key, region = speech_region)
     filename = f"tts{random.randint(10000, 99999)}.wav"
-    audio_config = speechsdk.audio.AudioOutputConfig(filename = str(base_path / "secondary_functions/voice_temp" / filename))
+    audio_config = speechsdk.audio.AudioOutputConfig(
+        filename = str(base_path / "secondary_functions/voice_temp" / filename)
+    )
 
     # The language of the voice that speaks.
     if person:
@@ -49,7 +64,10 @@ async def azure_tts(message: discord.Message, voice_client: discord.VoiceClient,
     else:
         speech_config.speech_synthesis_voice_name = f"en-US-GuyNeural"
 
-    speech_synthesizer = speechsdk.SpeechSynthesizer(speech_config = speech_config, audio_config = audio_config)
+    speech_synthesizer = speechsdk.SpeechSynthesizer(
+        speech_config = speech_config,
+        audio_config = audio_config
+    )
 
     # Get text from the console and synthesize to the default speaker.
 

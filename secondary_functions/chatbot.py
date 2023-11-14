@@ -53,7 +53,6 @@ async def bot_responses(message: discord.Message):
 				markov.markov_learner(message.content)
 				break
 
-	if bot_setup.bot.user.mentioned_in(message) or "dice god" in content or "dicegod" in content:
 		# noinspection SpellCheckingInspection
 		admin_base = [
 			"Yes", 2,

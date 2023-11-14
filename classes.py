@@ -12,10 +12,10 @@ class Person:
 		if not identifier and not discord_id:
 			raise ValueError("Improper Person initiation.")
 
-		if identifier:
-			self.user: discord.Member = t.identifier_to_member(identifier)
-		else:
+		if identifier is None:
 			self.user: discord.User = bot.get_user(discord_id)
+		else:
+			self.user: discord.Member = t.identifier_to_member(identifier)
 
 		self.active = None
 		self.tag = None

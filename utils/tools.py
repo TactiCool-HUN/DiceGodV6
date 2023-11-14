@@ -728,22 +728,37 @@ async def followup_instance(ctx, sent_inc, followups):
 			active = False"""
 
 
-async def bully_nika(person: c.Person) -> None:
-	person.user: discord.Member
-	voice_channel: discord.VoiceChannel = person.user.voice.channel
-	voice_client: discord.VoiceClient = await voice_channel.connect()
+async def play_voice_bit(file_name: str, member: discord.Member = None) -> None:
+	disconnect_at_end = False
+	voice_client = discord.utils.get(bot.voice_clients, guild = bot.get_guild(562373378967732226))
+
+	if voice_client and member:
+		voice_client: discord.VoiceClient
+		if member.voice.channel.id != voice_client.channel.id:
+			raise ConnectionError("DiceGod and given member are in different voice channel. Play command stopped.")
+	elif voice_client:
+		voice_client: discord.VoiceClient
+	elif not member:
+		raise ConnectionError("DiceGod is not connected and no member is given.")
+	else:
+		voice_channel: discord.VoiceChannel = member.voice.channel
+		if voice_channel is not None:
+			voice_client: discord.VoiceClient = await voice_channel.connect()
+			disconnect_at_end = True
+		else:
+			raise ConnectionError("Neither DiceGod nor the member given is connected to a voice channel.")
 
 	base_path = pathlib.Path(__file__).parent.parent.resolve()
 
 	voice_client.play(discord.FFmpegPCMAudio(
 		executable = str(base_path / "secondary_functions/ffmpeg/bin/ffmpeg.exe"),
-		source = str(base_path / "secondary_functions/voice_perm/ana_lol.wav")
+		source = str(base_path / f"secondary_functions/voice_perm/{file_name}.wav")
 	))
 
-	while voice_client.is_playing():
-		await asyncio.sleep(0.1)
-
-	await voice_client.disconnect(force = True)
+	if disconnect_at_end:
+		while voice_client.is_playing():
+			await asyncio.sleep(0.1)
+		await voice_client.disconnect(force = True)
 
 
 async def send_pack(pack: c.Pack, is_reply: bool = True, ephemeral: bool = False):
@@ -764,7 +779,7 @@ async def send_pack(pack: c.Pack, is_reply: bool = True, ephemeral: bool = False
 					break
 				elif "lol" in roll.pre_send and person.user.id == 875753704685436938:
 					try:
-						asyncio.create_task(bully_nika(person))
+						asyncio.create_task(play_voice_bit("ana_lol", person.user))
 						break
 					except AttributeError:
 						tts = True
