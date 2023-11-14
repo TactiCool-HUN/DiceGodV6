@@ -1323,15 +1323,58 @@ async def leave(interaction: discord.Interaction):
 ])
 @app_commands.describe(text = "text")
 @app_commands.describe(filename = "filename")
-async def draw(ctx: discord.ext.commands.Context, voice: Choice[str], text: str, filename: str):
-	person = c.Person(ctx)
+async def draw(interaction: discord.Interaction, voice: Choice[str], text: str, filename: str):
+	person = c.Person(interaction)
 	if person.user.id not in s.ADMINS:
-		await t.send_message(ctx, "Permission denied.")
+		await t.send_message(interaction, "Permission denied.")
 		return
 
 	voice = voice.value
 
 	await azure_voice_studio(voice, text, filename)
+
+
+@bot.tree.command(name = "x_admin_set_voice")
+@app_commands.choices(voice = [
+	app_commands.Choice(name = "Jenny", value = "Jenny"),
+	app_commands.Choice(name = "Guy", value = "Guy"),
+	app_commands.Choice(name = "Aria", value = "Aria"),
+	app_commands.Choice(name = "Davis", value = "Davis"),
+	app_commands.Choice(name = "Amber", value = "Amber"),
+	app_commands.Choice(name = "Ana", value = "Ana"),
+	app_commands.Choice(name = "Andrew", value = "Andrew"),
+	app_commands.Choice(name = "Ashley", value = "Ashley"),
+	app_commands.Choice(name = "Brandon", value = "Brandon"),
+	app_commands.Choice(name = "Brian", value = "Brian"),
+	app_commands.Choice(name = "Christopher", value = "Christopher"),
+	app_commands.Choice(name = "Cora", value = "Cora"),
+	app_commands.Choice(name = "Elizabeth", value = "Elizabeth"),
+	app_commands.Choice(name = "Emma", value = "Emma"),
+	app_commands.Choice(name = "Eric", value = "Eric"),
+	app_commands.Choice(name = "Jacob", value = "Jacob"),
+	app_commands.Choice(name = "Jane", value = "Jane"),
+	app_commands.Choice(name = "Jason", value = "Jason"),
+	app_commands.Choice(name = "Michelle", value = "Michelle"),
+	app_commands.Choice(name = "Monica", value = "Monica"),
+	app_commands.Choice(name = "Nancy", value = "Nancy"),
+	app_commands.Choice(name = "Roger", value = "Roger"),
+	app_commands.Choice(name = "Sara", value = "Sara"),
+	app_commands.Choice(name = "Steffan", value = "Steffan"),
+	app_commands.Choice(name = "Tony", value = "Tony"),
+])
+@app_commands.describe(person = "@ the person")
+async def set_default_voice(interaction: discord.Interaction, voice: Choice[str], person: discord.Member):
+	person = c.Person(interaction)
+	if person.user.id not in s.ADMINS:
+		await t.send_message(interaction, "Permission denied.")
+		return
+
+	voice = voice.value
+
+	person.tts_perms = voice
+	person.update()
+
+	await t.send_message(interaction, "Update complete.", ephemeral = True, reply = True)
 
 
 @bot.command(name = "x_admin_play")
