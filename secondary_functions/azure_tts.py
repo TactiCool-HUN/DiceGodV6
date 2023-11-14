@@ -1,9 +1,8 @@
 import re
-
 import azure.cognitiveservices.speech as speechsdk
 import discord
 import pathlib
-from icecream import ic
+from utils import tools as t
 import random
 import classes as c
 
@@ -37,14 +36,14 @@ async def azure_voice_studio(voice: str, text: str, filename: str):
     speech_synthesis_result = speech_synthesizer.speak_text_async(text).get()
 
     if speech_synthesis_result.reason == speechsdk.ResultReason.SynthesizingAudioCompleted:
-        ic(f"Speech synthesized for text [{text}]")
+        t.ic(f"Speech synthesized for text [{text}]")
     elif speech_synthesis_result.reason == speechsdk.ResultReason.Canceled:
         cancellation_details = speech_synthesis_result.cancellation_details
-        ic(f"Speech synthesis canceled: {cancellation_details.reason}")
+        t.ic(f"Speech synthesis canceled: {cancellation_details.reason}")
         if cancellation_details.reason == speechsdk.CancellationReason.Error:
             if cancellation_details.error_details:
-                ic(f"Error details: {cancellation_details.error_details}")
-                ic("Did you set the speech resource key and region values?")
+                t.ic(f"Error details: {cancellation_details.error_details}")
+                t.ic("Did you set the speech resource key and region values?")
 
 
 async def azure_tts(
@@ -81,14 +80,14 @@ async def azure_tts(
     ))
 
     if speech_synthesis_result.reason == speechsdk.ResultReason.SynthesizingAudioCompleted:
-        ic(f"Speech synthesized for text [{text}]")
+        t.ic(f"Speech synthesized for text [{text}]")
     elif speech_synthesis_result.reason == speechsdk.ResultReason.Canceled:
         cancellation_details = speech_synthesis_result.cancellation_details
-        ic(f"Speech synthesis canceled: {cancellation_details.reason}")
+        t.ic(f"Speech synthesis canceled: {cancellation_details.reason}")
         if cancellation_details.reason == speechsdk.CancellationReason.Error:
             if cancellation_details.error_details:
-                ic(f"Error details: {cancellation_details.error_details}")
-                ic("Did you set the speech resource key and region values?")
+                t.ic(f"Error details: {cancellation_details.error_details}")
+                t.ic("Did you set the speech resource key and region values?")
 
 
 pass

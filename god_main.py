@@ -22,7 +22,6 @@ import os
 import pathlib
 import random
 from secondary_functions.azure_tts import azure_voice_studio
-from icecream import ic
 import ast
 import re
 

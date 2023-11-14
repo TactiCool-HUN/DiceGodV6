@@ -11,6 +11,7 @@ import random
 import math
 import pathlib
 from views.followup_view import FollowupView, FollowupButton
+from icecream import ic
 
 
 def identifier_to_member(identifier: discord.Interaction | discord.ext.commands.Context) -> discord.Member:
