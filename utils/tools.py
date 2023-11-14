@@ -9,6 +9,7 @@ import discord.ext
 import asyncio
 import random
 import math
+import pathlib
 from views.followup_view import FollowupView, FollowupButton
 
 
@@ -727,6 +728,24 @@ async def followup_instance(ctx, sent_inc, followups):
 			active = False"""
 
 
+async def bully_nika(person: c.Person) -> None:
+	person.user: discord.Member
+	voice_channel: discord.VoiceChannel = person.user.voice.channel
+	voice_client: discord.VoiceClient = await voice_channel.connect()
+
+	base_path = pathlib.Path(__file__).parent.parent.resolve()
+
+	voice_client.play(discord.FFmpegPCMAudio(
+		executable = str(base_path / "secondary_functions/ffmpeg/bin/ffmpeg.exe"),
+		source = str(base_path / "secondary_functions/voice_perm/ana_lol.wav")
+	))
+
+	while voice_client.is_playing():
+		await asyncio.sleep(0.1)
+
+	await voice_client.disconnect(force = True)
+
+
 async def send_pack(pack: c.Pack, is_reply: bool = True, ephemeral: bool = False):
 	person = c.Person(pack.identifier)
 	result = 0
@@ -744,8 +763,12 @@ async def send_pack(pack: c.Pack, is_reply: bool = True, ephemeral: bool = False
 				if "WAIT!" in roll.pre_send:
 					break
 				elif "lol" in roll.pre_send and person.user.id == 875753704685436938:
-					tts = True
-					reply = False
+					try:
+						asyncio.create_task(bully_nika(person))
+						break
+					except AttributeError:
+						tts = True
+						reply = False
 				else:
 					tts = False
 					reply = True

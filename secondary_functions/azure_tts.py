@@ -17,10 +17,30 @@ speech_key = _lines_[0].strip()
 speech_region = "northeurope"
 
 
+async def azure_voice_studio(voice: str, text: str):
+    speech_config = speechsdk.SpeechConfig(subscription = speech_key, region = speech_region)
+    filename = f"new_voice{random.randint(10000, 99999)}.wav"
+    audio_config = speechsdk.audio.AudioOutputConfig(filename = str(base_path / "secondary_functions/voice_perm" / filename))
+    speech_config.speech_synthesis_voice_name = f"en-US-{voice.capitalize()}Neural"
+
+    speech_synthesizer = speechsdk.SpeechSynthesizer(speech_config = speech_config, audio_config = audio_config)
+    speech_synthesis_result = speech_synthesizer.speak_text_async(text).get()
+
+    if speech_synthesis_result.reason == speechsdk.ResultReason.SynthesizingAudioCompleted:
+        ic(f"Speech synthesized for text [{text}]")
+    elif speech_synthesis_result.reason == speechsdk.ResultReason.Canceled:
+        cancellation_details = speech_synthesis_result.cancellation_details
+        ic(f"Speech synthesis canceled: {cancellation_details.reason}")
+        if cancellation_details.reason == speechsdk.CancellationReason.Error:
+            if cancellation_details.error_details:
+                ic(f"Error details: {cancellation_details.error_details}")
+                ic("Did you set the speech resource key and region values?")
+
+
 async def azure_tts(message: discord.Message, voice_client: discord.VoiceClient, person: c.Person = None):
     # This example requires environment variables named "SPEECH_KEY" and "SPEECH_REGION"
     speech_config = speechsdk.SpeechConfig(subscription = speech_key, region = speech_region)
-    filename = f"tts{random.randint(1000, 9999)}.wav"
+    filename = f"tts{random.randint(10000, 99999)}.wav"
     audio_config = speechsdk.audio.AudioOutputConfig(filename = str(base_path / "secondary_functions/voice_temp" / filename))
 
     # The language of the voice that speaks.

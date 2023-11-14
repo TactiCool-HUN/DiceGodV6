@@ -19,7 +19,9 @@ from secondary_functions.table_maker import table_maker_main
 import discord.ext
 import asyncio
 import os
+import pathlib
 import random
+from secondary_functions.azure_tts import azure_voice_studio
 from icecream import ic
 import ast
 import re
@@ -1262,12 +1264,11 @@ async def request_presence(interaction: discord.Interaction):
 			os.remove(os.path.join(dir_name, file))
 
 	try:
-		voice_channel = interaction.user.voice.channel
+		voice_channel: discord.VoiceChannel = interaction.user.voice.channel
 	except AttributeError:
 		await t.send_message(interaction, "You are not in a voice channel.", ephemeral = True)
 		return
 
-	voice_channel: discord.VoiceChannel
 	if voice_channel.guild.id != 562373378967732226:
 		await t.send_message(interaction, "Sorry, I can only join voice channels in the corner.", ephemeral = True)
 		return
@@ -1289,6 +1290,36 @@ async def leave(interaction: discord.Interaction):
 	for file in files:
 		if file.endswith(".wav"):
 			os.remove(os.path.join(dir_name, file))
+
+
+@bot.command(name = "x_admin_voice")
+async def draw(ctx: discord.ext.commands.Context, voice: str, *, text: str):
+	person = c.Person(ctx)
+	if person.user.id not in s.ADMINS:
+		await t.send_message(ctx, "Permission denied.")
+		return
+
+	await azure_voice_studio(voice, text)
+
+
+@bot.command(name = "x_admin_play")
+async def draw(ctx: discord.ext.commands.Context, file_name: str):
+	person = c.Person(ctx)
+	person.user: discord.Member
+	voice_channel: discord.VoiceChannel = person.user.voice.channel
+	voice_client: discord.VoiceClient = await voice_channel.connect()
+
+	base_path = pathlib.Path(__file__).parent.resolve()
+
+	voice_client.play(discord.FFmpegPCMAudio(
+		executable = str(base_path / "secondary_functions/ffmpeg/bin/ffmpeg.exe"),
+		source = str(base_path / f"secondary_functions/voice_perm/{file_name}.wav")
+	))
+
+	while voice_client.is_playing():
+		await asyncio.sleep(0.1)
+
+	await voice_client.disconnect(force = True)
 
 
 with open("data_holder/token.txt", "r") as f:
