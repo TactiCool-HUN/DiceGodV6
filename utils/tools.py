@@ -888,11 +888,11 @@ async def send_pack(pack: c.Pack, is_reply: bool = True, ephemeral: bool = False
 	sent = await send_message(pack.identifier, embed = embed, reply = is_reply, followups = pack.followups, ephemeral = ephemeral)
 
 	if debt:
-		await send_message(pack.identifier, text = "# WAIT!", reply = False, tts = True)
+		await send_message(pack.identifier, text = "# WAIT!", reply = True, tts = True)
 		await asyncio.sleep(3)
-		await send_message(pack.identifier, text = "# I bear a message from Lady Luck herself.", reply = True, tts = False)
+		await send_message(pack.identifier, text = "**I bear a message from Lady Luck herself.**", reply = True, tts = False)
 		await asyncio.sleep(5)
-		await send_message(pack.identifier, text = "# Scorpio. There is a debt to be paid.", reply = True, tts = False)
+		await send_message(pack.identifier, text = "***Scorpio. There is a debt to be paid.***", reply = True, tts = False)
 		await sent.delete()
 		new_single_rolls = []
 		for roll in pack.single_rolls:

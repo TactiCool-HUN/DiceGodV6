@@ -2745,7 +2745,10 @@ async def clear_sheet(interaction, sheet, player, dm):
 			await asyncio.sleep(timer)
 	progress['Notes'][1] += i % 5
 	asyncio.create_task(t.clear_progress(player, sheet, progress, start_time, current, i % 5, sent))
-	await asyncio.sleep(timer // (i % 5))
+	if i == 0:
+		await asyncio.sleep(timer)
+	else:
+		await asyncio.sleep(timer // (i % 5))
 
 	filler = [
 		['', '', '', '', '', '', '', '', '', 'Importance', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', 'Standing', '', '', '', ''],
@@ -2761,7 +2764,10 @@ async def clear_sheet(interaction, sheet, player, dm):
 			await asyncio.sleep(timer)
 	progress['Notes'][1] += i % 5
 	asyncio.create_task(t.clear_progress(player, sheet, progress, start_time, current, i % 5, sent))
-	await asyncio.sleep(timer // (i % 5))
+	if i == 0:
+		await asyncio.sleep(timer)
+	else:
+		await asyncio.sleep(timer // (i % 5))
 
 	for i in range(((other_row - places_row) - 3) // 4):
 		wks.update(f"B{places_row + 2 + i * 4}:AH{places_row + 5 + i * 4}", filler)
@@ -2771,7 +2777,10 @@ async def clear_sheet(interaction, sheet, player, dm):
 			await asyncio.sleep(timer)
 	progress['Notes'][1] += i % 5
 	asyncio.create_task(t.clear_progress(player, sheet, progress, start_time, current, i % 5, sent))
-	await asyncio.sleep(timer // (i % 5))
+	if i == 0:
+		await asyncio.sleep(timer)
+	else:
+		await asyncio.sleep(timer // (i % 5))
 
 	filler = []
 	for _ in range(end_rows):
