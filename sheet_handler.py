@@ -1668,7 +1668,7 @@ async def get_spell(identifier: discord.Interaction | discord.ext.commands.Conte
 			if to_find == spell[0].lower().replace(" ", ""):
 				list_o_spells.append(spell[0])
 				found = "exact"
-				print("found in phase one")
+				t.ic("found in phase one")
 				break
 		#  - - - - - phase two  - - - - - (looking at player spells)
 		else:  # if not found
@@ -1677,7 +1677,7 @@ async def get_spell(identifier: discord.Interaction | discord.ext.commands.Conte
 					list_o_spells.append(spell[56])
 			if len(list_o_spells) == 1 and check_player:
 				found = "exact"
-				print("found in phase two")
+				t.ic("found in phase two")
 			else:
 				list_o_spells = []
 		#  - - - - - phase three - - - - - (looking at all spells)
@@ -1686,10 +1686,10 @@ async def get_spell(identifier: discord.Interaction | discord.ext.commands.Conte
 						list_o_spells.append(spell[0])
 				if len(list_o_spells) == 1:
 					found = "exact"
-					print("found in phase three")
+					t.ic("found in phase three")
 				elif len(list_o_spells) > 1:
 					found = "multiple"
-					print("found in phase three")
+					t.ic("found in phase three")
 
 	match found:
 		case "multiple":
@@ -1849,7 +1849,7 @@ async def clear_sheet(interaction, sheet, player, dm):
 	await t.send_message(interaction, text = "Clearing started.")
 	# - - - - - - - - - - - - - - - - - - - - SETUP - - - - - - - - - - - - - - - - - - - -
 	current = "Setup"
-	print(sheet + ": " + current)
+	t.ic(sheet + ": " + current)
 	wks = sh.worksheet(current)
 	filler = [
 		['Name', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', 'Player', '', '', '', '', '', '', '', '', '', '', '', '', '', '', 'Sheet by TactiCool'],
@@ -1932,7 +1932,7 @@ async def clear_sheet(interaction, sheet, player, dm):
 	await asyncio.sleep(timer)
 	# - - - - - - - - - - - - - - - - - - - - FEATURES - - - - - - - - - - - - - - - - - - - -
 	current = "Features"
-	print(sheet + ": " + current)
+	t.ic(sheet + ": " + current)
 	wks = sh.worksheet(current)
 	filler = [
 		['- - choose an option - -'],
@@ -2070,7 +2070,7 @@ async def clear_sheet(interaction, sheet, player, dm):
 	asyncio.create_task(t.clear_progress(player, sheet, progress, start_time, current, 1, sent))
 	# - - - - - - - - - - - - - - - - - - - - MAIN - - - - - - - - - - - - - - - - - - - -
 	current = "Main"
-	print(sheet + ": " + current)
+	t.ic(sheet + ": " + current)
 	wks = sh.worksheet(current)
 	wks.update("F20", False)
 	wks.update("K12:K20", [['AUTO'], ['AUTO'], ['AUTO'], ['AUTO'], ['AUTO'], ['AUTO'], ['AUTO'], ['AUTO'], ['AUTO']])
@@ -2231,7 +2231,7 @@ async def clear_sheet(interaction, sheet, player, dm):
 	asyncio.create_task(t.clear_progress(player, sheet, progress, start_time, current, 4, sent))
 	# - - - - - - - - - - - - - - - - - - - - Limited Use - - - - - - - - - - - - - - - - - - - -
 	current = "LimitedUse"
-	print(sheet + ": " + current)
+	t.ic(sheet + ": " + current)
 	wks = sh.worksheet(current)
 	filler = [
 		[None, 'Name', '', '', ''],
@@ -2298,7 +2298,7 @@ async def clear_sheet(interaction, sheet, player, dm):
 	asyncio.create_task(t.clear_progress(player, sheet, progress, start_time, current, 1, sent))
 	# - - - - - - - - - - - - - - - - - - - - Spells - - - - - - - - - - - - - - - - - - - -
 	current = "Spells"
-	print(sheet + ": " + current)
+	t.ic(sheet + ": " + current)
 	wks = sh.worksheet(current)
 	match wks.acell("B2").value:
 		case "Spell Slots":
@@ -2643,7 +2643,7 @@ async def clear_sheet(interaction, sheet, player, dm):
 	asyncio.create_task(t.clear_progress(player, sheet, progress, start_time, current, 4, sent))
 	# - - - - - - - - - - - - - - - - - - - - INVENTORY - - - - - - - - - - - - - - - - - - - -
 	current = "Inventory"
-	print(sheet + ": " + current)
+	t.ic(sheet + ": " + current)
 	wks = sh.worksheet(current)
 	await asyncio.sleep(timer)
 	wks.update("I2", True)
@@ -2661,7 +2661,7 @@ async def clear_sheet(interaction, sheet, player, dm):
 	asyncio.create_task(t.clear_progress(player, sheet, progress, start_time, current, 1, sent))
 	# - - - - - - - - - - - - - - - - - - - - MONEY TRACKER - - - - - - - - - - - - - - - - - - - -
 	current = "MoneyTracker"
-	print(sheet + ": " + current)
+	t.ic(sheet + ": " + current)
 	wks = sh.worksheet(current)
 	temp = ['', '', '', '', '', '', '', '']
 	filler = [
@@ -2675,7 +2675,7 @@ async def clear_sheet(interaction, sheet, player, dm):
 	asyncio.create_task(t.clear_progress(player, sheet, progress, start_time, current, 1, sent))
 	# - - - - - - - - - - - - - - - - - - - - NOTES - - - - - - - - - - - - - - - - - - - -
 	current = "Notes"
-	print(sheet + ": " + current)
+	t.ic(sheet + ": " + current)
 	wks = sh.worksheet(current)
 	filler = [
 		['Age', '', '', '', '', '', '', 'Alignment', '', '', '', ''],
@@ -2789,7 +2789,7 @@ async def clear_sheet(interaction, sheet, player, dm):
 	asyncio.create_task(t.clear_progress(player, sheet, progress, start_time, current, 1, sent))
 	# - - - - - - - - - - - - - - - - - - - - MODIFIERS - - - - - - - - - - - - - - - - - - - -
 	current = "Modifiers"
-	print(sheet + ": " + current)
+	t.ic(sheet + ": " + current)
 	wks = sh.worksheet(current)
 	filler = [[False, '', '', '', False, '', '', '', False, '', '', '', False, '', '', '', False, '', '', '', False, '', '', '', False, '', '', '', False, '', '', '', False]]
 	for i in range(174):
@@ -2799,7 +2799,7 @@ async def clear_sheet(interaction, sheet, player, dm):
 	asyncio.create_task(t.clear_progress(player, sheet, progress, start_time, current, 1, sent))
 	# - - - - - - - - - - - - - - - - - - - - ABILITY PICKER - - - - - - - - - - - - - - - - - - - -
 	current = "AbilityPicker"
-	print(sheet + ": " + current)
+	t.ic(sheet + ": " + current)
 	wks = sh.worksheet(current)
 	# noinspection SpellCheckingInspection
 	filler = [
@@ -2914,7 +2914,7 @@ async def clear_sheet(interaction, sheet, player, dm):
 	asyncio.create_task(t.clear_progress(player, sheet, progress, start_time, current, 1, sent))
 	# - - - - - - - - - - - - - - - - - - - - COMPANION - - - - - - - - - - - - - - - - - - - -
 	current = "Companion"
-	print(sheet + ": " + current)
+	t.ic(sheet + ": " + current)
 	wks = sh.worksheet(current)
 	wks.update("F2", '')
 	wks.update("H9:AL10", [[10, '', '', '', '', 10, '', '', '', '', 10, '', '', '', '', 10, '', '', '', '', 10, '', '', '', '', 10, '', '', '', '', 10]])
@@ -3050,7 +3050,7 @@ async def clear_sheet(interaction, sheet, player, dm):
 	asyncio.create_task(t.clear_progress(player, sheet, progress, start_time, current, 2, sent))
 	# - - - - - - - - - - - - - - - - - - - - SPELLBOOK - - - - - - - - - - - - - - - - - - - -
 	current = "Spellbook"
-	print(sheet + ": " + current)
+	t.ic(sheet + ": " + current)
 	wks = sh.worksheet(current)
 	wks.update("I3", False)
 	filler = [
@@ -3311,7 +3311,7 @@ async def clear_sheet(interaction, sheet, player, dm):
 	asyncio.create_task(t.clear_progress(player, sheet, progress, start_time, current, 1, sent))
 	# - - - - - - - - - - - - - - - - - - - - SPELLSEARCH - - - - - - - - - - - - - - - - - - - -
 	current = "SpellSearch"
-	print(sheet + ": " + current)
+	t.ic(sheet + ": " + current)
 	wks = sh.worksheet(current)
 	wks.update("AG3:AL5", [['', 'Use Filter', '', '', '', False], [False, 'B. Action', '', '', '', False], [False, 'Other', '', '', '', False]])
 	wks.update("AH7:AH13", [['- -'], ['- -'], ['- -'], [], ['- -'], ['- -'], ['- -']])
@@ -3331,7 +3331,7 @@ async def clear_sheet(interaction, sheet, player, dm):
 		text = f"One of your players got a new sheet, here is the access link:\n{sheet}\n<{link}>"
 		await t.send_message(c.Person(discord_id = dm.id), text = text)
 	await t.send_message(interaction, text = "Done.")
-	print("- - - - - - - - done - - - - - - - -")
+	t.ic("- - - - - - - - done - - - - - - - -")
 
 
 pass

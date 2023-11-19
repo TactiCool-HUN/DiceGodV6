@@ -1,4 +1,5 @@
 import sqlite3
+from icecream import ic
 
 
 class DatabaseConnection:
@@ -30,9 +31,9 @@ with DatabaseConnection("emoji_role.db") as connection:
 			'role_id integer)'  # 5
 		)
 	except sqlite3.OperationalError:
-		print(f"emoji_roles found")
+		ic(f"emoji_roles found")
 
-print("--------")
+ic("--------")
 
 with DatabaseConnection("data.db") as connection:
 	cursor = connection.cursor()
@@ -54,7 +55,7 @@ with DatabaseConnection("data.db") as connection:
 			'tts_perms text)'
 		)
 	except sqlite3.OperationalError:
-		print(f"people found")
+		ic(f"people found")
 
 	# - - - dice - - -
 	try:
@@ -66,7 +67,7 @@ with DatabaseConnection("data.db") as connection:
 			'roll text)'
 		)
 	except sqlite3.OperationalError:
-		print(f"dice found")
+		ic(f"dice found")
 
 	# - - - sheets - - -
 	try:
@@ -81,7 +82,7 @@ with DatabaseConnection("data.db") as connection:
 			'last_warning timestamp)'
 		)
 	except sqlite3.OperationalError:
-		print(f"sheets found")
+		ic(f"sheets found")
 
 	# - - - sheet rents - - -
 	try:
@@ -93,7 +94,7 @@ with DatabaseConnection("data.db") as connection:
 			'character text)'
 		)
 	except sqlite3.OperationalError:
-		print(f"sheet_rents found")
+		ic(f"sheet_rents found")
 
 	# - - - statistics - - -
 	try:
@@ -109,7 +110,7 @@ with DatabaseConnection("data.db") as connection:
 			'date timestamp)'
 		)
 	except sqlite3.OperationalError:
-		print(f"statistics found")
+		ic(f"statistics found")
 
 	# - - - table - - -
 	try:
@@ -123,7 +124,7 @@ with DatabaseConnection("data.db") as connection:
 			'main_channel_id integer)'  # 5
 		)
 	except sqlite3.OperationalError:
-		print(f"tables found")
+		ic(f"tables found")
 
 	# - - - role_bot - - -
 	try:
@@ -135,7 +136,7 @@ with DatabaseConnection("data.db") as connection:
 			'emoji text, role_id text)'
 		)
 	except sqlite3.OperationalError:
-		print(f"role_bot found")
+		ic(f"role_bot found")
 
 	# - - - titles - - -
 	try:
@@ -146,7 +147,7 @@ with DatabaseConnection("data.db") as connection:
 			'rank text)'
 		)
 	except sqlite3.OperationalError:
-		print(f"titles found")
+		ic(f"titles found")
 
 	# - - - title-people connector - - -
 	try:
@@ -157,7 +158,7 @@ with DatabaseConnection("data.db") as connection:
 			'title_id integer)'
 		)
 	except sqlite3.OperationalError:
-		print(f"title-people found")
+		ic(f"title-people found")
 
 	# - - - alignment - - -
 	try:
@@ -171,9 +172,9 @@ with DatabaseConnection("data.db") as connection:
 			'chaos integer)'
 		)"""
 	except sqlite3.OperationalError:
-		print(f"alignment found")
+		ic(f"alignment found")
 
-print("--------")
+ic("--------")
 
 with DatabaseConnection("card_base.db") as connection:
 	cursor = connection.cursor()
@@ -187,7 +188,7 @@ with DatabaseConnection("card_base.db") as connection:
 			'name text)'
 		)
 	except sqlite3.OperationalError as e:
-		print(f"decks found")
+		ic(f"decks found")
 
 	# - - - cards - - -
 	try:
@@ -200,7 +201,7 @@ with DatabaseConnection("card_base.db") as connection:
 			'art_url text)'
 		)
 	except sqlite3.OperationalError as e:
-		print(f"cards found")
+		ic(f"cards found")
 
 
 pass

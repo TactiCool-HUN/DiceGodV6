@@ -81,14 +81,14 @@ sync = False
 async def on_ready():
 	asyncio.create_task(activity_changer())
 
-	print(f"{bot.user.name.upper()} is online!")
+	t.ic(f"{bot.user.name.upper()} is online!")
 
 	if sync:
 		try:
 			synced = await bot.tree.sync()
-			print(f"Synced {len(synced)} command(s)")
+			t.ic(f"Synced {len(synced)} command(s)")
 		except Exception as e:
-			print(e)
+			t.ic(e)
 
 
 @bot.event
@@ -279,12 +279,12 @@ async def pong_command(ctx: discord.ext.commands.Context):
 
 @bot.command(name = 'emoji')
 async def emoji_command(ctx: discord.ext.commands.Context):
-	print(ctx.message.clean_content)
+	t.ic(ctx.message.clean_content)
 
 
 @bot.command(name = "kill")
 async def kill_command(ctx: discord.ext.commands.Context, *, other = None):
-	print(f'{ctx.author} said "{other}", how rude...')
+	t.ic(f'{ctx.author} said "{other}", how rude...')
 	# noinspection SpellCheckingInspection
 	await ctx.message.add_reaction("<:angycat:817122720227524628>")
 	if ctx.author.id in s.ADMINS and ctx.message.mentions:
@@ -424,7 +424,7 @@ async def settings(interaction: discord.Interaction, change_name: Choice[int] = 
 				try:
 					await t.identifier_to_member(interaction).edit(nick = person.set_name())
 				except Exception as e:
-					print(e)
+					t.ic(e)
 			person.change_name = True
 			response += "\nFrom now on your name will be set by the bot as you change characters."
 			ephemeral = True
@@ -433,7 +433,7 @@ async def settings(interaction: discord.Interaction, change_name: Choice[int] = 
 			try:
 				await t.identifier_to_member(interaction).edit(nick = person.clear_name())
 			except Exception as e:
-				print(e)
+				t.ic(e)
 			response += "\nFrom now on your name will not be set by the bot (it is also reset)."
 			ephemeral = True
 		person.update()
