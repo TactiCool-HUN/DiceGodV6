@@ -2764,7 +2764,7 @@ async def clear_sheet(interaction, sheet, player, dm):
 			await asyncio.sleep(timer)
 	progress['Notes'][1] += i % 5
 	asyncio.create_task(t.clear_progress(player, sheet, progress, start_time, current, i % 5, sent))
-	if i == 0:
+	if i % 5 == 0:
 		await asyncio.sleep(timer)
 	else:
 		await asyncio.sleep(timer // (i % 5))
