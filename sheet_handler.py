@@ -451,9 +451,11 @@ def get_attack(sheet_inc, attack_inc: str):
 				followups.append(c.FollowupButton("🎯", "2d8", "roll", "2d8"))
 			elif runner_level > 4:
 				followups.append(c.FollowupButton("🎯", "2d6", "roll", "2d6"))
-		elif line[0] == "Blood Hunter":
+		elif line[0] in ["Blood Hunter", "Proper Blood Hunter"]:
 			blood_level = int(line[2])
-			if blood_level > 16:
+			if blood_level > 19:
+				followups.append(c.FollowupButton("🩸", "1d10adv", "roll", "rite"))
+			elif blood_level > 16:
 				followups.append(c.FollowupButton("🩸", "1d10", "roll", "rite"))
 			elif blood_level > 10:
 				followups.append(c.FollowupButton("🩸", "1d8", "roll", "rite"))
