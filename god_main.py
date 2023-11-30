@@ -49,12 +49,14 @@ async def activity_changer():
 					"the joy of a laughing GM", 1,
 					"the joy of slaughter", 1,
 					"the growing hum of the cult", 2,
-					"the what Mag has to say", 0.1,
+					"intrusive thoughts", 1,
+					"what Izzy has to say", 0.1,
 				]
 				activity = discord.Activity(name = t.choice(choices), type = 2)
 			case 2:  # watching
 				choices = [
 					"PCs die", 1,
+					"your back", 1,
 					"from above", 1,
 					"Fanki rolling nat1s", 0.4,
 					"Popa rolling nat20s", 0.4,
@@ -93,13 +95,17 @@ async def on_ready():
 
 @bot.event
 async def on_message(message: discord.Message):
-	if message.author != bot.user:
+	if message.author.id in s.BAN_LIST:
+		await message.reply("Authorization error.")
+	elif message.author != bot.user:
 		asyncio.create_task(chatbot.bot_responses(message))
 		asyncio.create_task(bot.process_commands(message))
 
 
 @bot.event
 async def on_raw_reaction_add(reaction: discord.RawReactionActionEvent):
+	if reaction.member.id in s.BAN_LIST:
+		return
 	if reaction.member != bot.user:
 		txt = await emoji_role.emoji_role_command(reaction)
 		if txt == "empty":
@@ -128,6 +134,8 @@ async def on_raw_thread_update(thread_update_event: discord.RawThreadUpdateEvent
 
 @bot.event
 async def on_member_update(before: discord.Member, after: discord.Member):
+	if before.id in s.BAN_LIST:
+		return
 	if before.roles == after.roles:
 		return
 
@@ -248,6 +256,10 @@ async def _thingy(message: discord.Message):
 
 @bot.tree.command(name = "thing")
 async def __thingy(interaction: discord.Interaction):
+	if interaction.user.id in s.BAN_LIST:
+		await t.send_message(interaction, "Authorization error.")
+		return
+
 	c.Person(interaction)
 
 
@@ -348,6 +360,10 @@ async def coin_old(ctx: discord.ext.commands.Context):
 
 @bot.tree.command(name = "coinflip", description = "Flip a coin! (such complexity, but hey if you read it here is a tip: -coin has 1% more tails)")
 async def coin_slash(interaction: discord.Interaction):
+	if interaction.user.id in s.BAN_LIST:
+		await t.send_message(interaction, "Authorization error.")
+		return
+
 	response_list = [
 		f"{c.Person(interaction).user.display_name} flipped a coin and it landed on... it's side?", 1,
 		f"{c.Person(interaction).user.display_name} flipped a coin and it landed on **heads**!", 51,
@@ -378,6 +394,10 @@ async def pc_old(ctx: discord.ext.commands.Context, command, char_name = None, s
 @discord.app_commands.describe(person = "Ping a person. Only needed for the Access command.")
 @discord.app_commands.describe(color = "Custom color for this PC")
 async def pc_slash(interaction: discord.Interaction, command: Choice[str], char_name: str = None, sheet_name: str = None, image_url: str = None, person: discord.Member = None, color: str = None):
+	if interaction.user.id in s.BAN_LIST:
+		await t.send_message(interaction, "Authorization error.")
+		return
+
 	await com.pc_command(interaction, command.value, char_name, sheet_name, image_url, person, color)
 
 
@@ -403,6 +423,10 @@ async def die_slash(interaction: discord.Interaction):
 @discord.app_commands.describe(color = "Set your color! (use #000000 or 0x000000 hex code)")
 @discord.app_commands.describe(tag = 'Set which tag your rolls will be saved! (use "clear" to empty it)')
 async def settings(interaction: discord.Interaction, change_name: Choice[int] = None, auto_roll_tagging: Choice[int] = None, markov_chance: str = None, chat_ignore: Choice[int] = None, uwuify_messages: Choice[int] = None, color: str = None, tag: str = None):
+	if interaction.user.id in s.BAN_LIST:
+		await t.send_message(interaction, "Authorization error.")
+		return
+
 	person = c.Person(interaction)
 	ephemeral = True
 	test_roll = False
@@ -526,6 +550,10 @@ async def settings(interaction: discord.Interaction, change_name: Choice[int] = 
 	app_commands.Choice(name = "up", value = "up"),
 	app_commands.Choice(name = "down", value = "down"), ])
 async def condition(interaction: discord.Interaction, conditions: Choice[str], on_or_off: Choice[str] = None, exhaustion_level: Choice[str] = None):
+	if interaction.user.id in s.BAN_LIST:
+		await t.send_message(interaction, "Authorization error.")
+		return
+
 	if conditions:
 		conditions = conditions.value
 	if on_or_off:
@@ -553,6 +581,10 @@ async def condition(interaction: discord.Interaction, conditions: Choice[str], o
 @app_commands.describe(copper = "Amount of copper pieces")
 @app_commands.describe(multiplier = "Multiplier, default: 1")
 async def money_tracking(interaction: discord.Interaction, name: str, income_loss: Choice[str], platinum: int = 0, gold: int = 0, electrum: int = 0, silver: int = 0, copper: int = 0, multiplier: int = 1):
+	if interaction.user.id in s.BAN_LIST:
+		await t.send_message(interaction, "Authorization error.")
+		return
+
 	person = c.Person(interaction)
 	if person.active:
 		await interaction.response.defer(ephemeral = True)
@@ -600,6 +632,10 @@ async def money_tracking(interaction: discord.Interaction, name: str, income_los
 	app_commands.Choice(name = "8th", value = 8),
 	app_commands.Choice(name = "9th", value = 9), ])
 async def spell_points(interaction: discord.Interaction, command: Choice[str], amount: int = 0, spell_level: Choice[int] = None):
+	if interaction.user.id in s.BAN_LIST:
+		await t.send_message(interaction, "Authorization error.")
+		return
+
 	await interaction.response.defer(ephemeral = True)
 	if spell_level:
 		spell_level = int(spell_level.value)
@@ -658,6 +694,10 @@ async def rest_old(ctx: discord.ext.commands.Context, length = "long", hit_dice 
 	app_commands.Choice(name = "long", value = "long"), ])
 @app_commands.describe(hit_dice = 'Write in how many and what hit dice you want to use, example: "2d8"')
 async def rest_slash(interaction: discord.Interaction, length: Choice[str], hit_dice: str = None):
+	if interaction.user.id in s.BAN_LIST:
+		await t.send_message(interaction, "Authorization error.")
+		return
+
 	await interaction.response.defer()
 	await com.rest_command(interaction, length.value, hit_dice)
 
@@ -675,6 +715,10 @@ async def rest_slash(interaction: discord.Interaction, length: Choice[str], hit_
 	app_commands.Choice(name = "public", value = 0),
 ])
 async def listing(interaction: discord.Interaction, what_to_list: Choice[str], based_on: str = None, ephemeral: Choice[int] = None):
+	if interaction.user.id in s.BAN_LIST:
+		await t.send_message(interaction, "Authorization error.")
+		return
+
 	if ephemeral is None:
 		ephemeral = True
 	else:
@@ -736,6 +780,10 @@ async def listing(interaction: discord.Interaction, what_to_list: Choice[str], b
 @bot.tree.command(name = "spell", description = "Get the full description and properties of a spell.")
 @app_commands.describe(spell_name = "can be partial")
 async def spell_slash(interaction: discord.Interaction, spell_name: str):
+	if interaction.user.id in s.BAN_LIST:
+		await t.send_message(interaction, "Authorization error.")
+		return
+
 	await interaction.response.defer()
 	await com.spell_command(interaction, spell_name, None)
 
@@ -759,6 +807,10 @@ async def spell_old(ctx: discord.ext.commands.Context, *, spell_name):
 	app_commands.Choice(name = "9th", value = 9),
 ])
 async def cast_slash(interaction: discord.Interaction, spell_name: str, spell_level: Choice[int]):
+	if interaction.user.id in s.BAN_LIST:
+		await t.send_message(interaction, "Authorization error.")
+		return
+
 	await interaction.response.defer()
 	await com.cast_command(interaction, spell_name, None, spell_level.value)
 
@@ -788,6 +840,10 @@ async def cast_old(ctx: discord.ext.commands.Context, *, spell_name):
 	app_commands.Choice(name = "public", value = 0),
 ])
 async def statistics(interaction: discord.Interaction, person: discord.Member = None, tag: str = None, get_all_rolls: Choice[int] = None, ephemeral: Choice[int] = None):
+	if interaction.user.id in s.BAN_LIST:
+		await t.send_message(interaction, "Authorization error.")
+		return
+
 	if get_all_rolls is None:
 		get_all_rolls = False
 	else:
@@ -894,6 +950,10 @@ async def statistics(interaction: discord.Interaction, person: discord.Member = 
 @app_commands.describe(player = "@player")
 @app_commands.describe(dm = "@dm (optional)")
 async def clear_command(interaction: discord.Interaction, sheet: str, player: discord.Member, dm: discord.Member = None):
+	if interaction.user.id in s.BAN_LIST:
+		await t.send_message(interaction, "Authorization error.")
+		return
+
 	await interaction.response.defer(ephemeral = True)
 	admin = c.Person(interaction)
 	if admin.user.id not in s.ADMINS:
@@ -910,6 +970,10 @@ async def clear_command(interaction: discord.Interaction, sheet: str, player: di
 @app_commands.describe(old_sheet = "Old sheet name")
 @app_commands.describe(new_sheet = "New sheet name")
 async def transfer_slash(interaction: discord.Interaction, what_to_transfer: Choice[str], old_sheet: str, new_sheet: str):
+	if interaction.user.id in s.BAN_LIST:
+		await t.send_message(interaction, "Authorization error.")
+		return
+
 	await interaction.response.defer(ephemeral = True)
 
 	if not com.sh.ping_sheet(old_sheet):
@@ -950,6 +1014,10 @@ async def transfer_slash(interaction: discord.Interaction, what_to_transfer: Cho
 	app_commands.Choice(name = "No", value = 0)
 ])
 async def sort_inventory_slash(interaction: discord.Interaction, based_on: Choice[str], leave_spaces_between_types: Choice[int] = None, reverse_order: Choice[int] = None):
+	if interaction.user.id in s.BAN_LIST:
+		await t.send_message(interaction, "Authorization error.")
+		return
+
 	await interaction.response.defer(ephemeral = True)
 	person = c.Person(interaction)
 	if not person.active:
@@ -992,6 +1060,10 @@ for help_dict in help_list:
 	app_commands.Choice(name = "public", value = 0),
 ])
 async def help_slash(interaction: discord.Interaction, help_type: Choice[str], ephemeral: Choice[int] = None):
+	if interaction.user.id in s.BAN_LIST:
+		await t.send_message(interaction, "Authorization error.")
+		return
+
 	person = c.Person(interaction)
 	help_type = help_type.value
 	if not ephemeral:
@@ -1076,6 +1148,10 @@ async def help_slash(interaction: discord.Interaction, help_type: Choice[str], e
 @app_commands.describe(guest_role = "guest role")
 @app_commands.describe(main_channel = "channel")
 async def table_admin(interaction: discord.Interaction, command: Choice[str], table_name: str, gm: discord.Member = None, player_role: discord.Role = None, guest_role: discord.Role = None, main_channel: discord.TextChannel = None):
+	if interaction.user.id in s.BAN_LIST:
+		await t.send_message(interaction, "Authorization error.")
+		return
+
 	person = c.Person(interaction)
 	if person.user.id not in s.ADMINS:
 		await t.send_message(interaction, text = "This command is made for admins only. Please use /table to manage your tables.", ephemeral = True)
@@ -1118,6 +1194,10 @@ async def table_admin(interaction: discord.Interaction, command: Choice[str], ta
 @app_commands.describe(emoji = "emoji")
 @app_commands.describe(role = "role")
 async def emoji_role_setup(interaction: discord.Interaction, channel_id: str, message_id: str, emoji: str, role: discord.Role):
+	if interaction.user.id in s.BAN_LIST:
+		await t.send_message(interaction, "Authorization error.")
+		return
+
 	person = c.Person(interaction)
 	if person.user.id in s.ADMINS:
 		with t.DatabaseConnection("emoji_role.db") as connection:
@@ -1142,6 +1222,10 @@ async def table_slash(interaction: discord.Interaction):
 
 @bot.tree.command(name = "create_table", description = "Create your own table! (send it in empty)")
 async def create_table(interaction: discord.Interaction):
+	if interaction.user.id in s.BAN_LIST:
+		await t.send_message(interaction, "Authorization error.")
+		return
+
 	await table_maker_main(interaction)
 
 
@@ -1152,6 +1236,10 @@ async def vote_slash(ctx, *, text_dump_):
 
 @bot.tree.command(name = "x_admin_title", description = "Admin command to manage titles")
 async def title_admin(interaction: discord.Interaction):
+	if interaction.user.id in s.BAN_LIST:
+		await t.send_message(interaction, "Authorization error.")
+		return
+
 	person = c.Person(interaction)
 	if person.user.id in s.ADMINS:
 		await title_command(interaction)
@@ -1160,6 +1248,10 @@ async def title_admin(interaction: discord.Interaction):
 @bot.tree.command(name = "titles", description = "Request someone's titles.")
 @app_commands.describe(person = "@ the person")
 async def title_request(interaction: discord.Interaction, person: discord.User = None):
+	if interaction.user.id in s.BAN_LIST:
+		await t.send_message(interaction, "Authorization error.")
+		return
+
 	if not person:
 		person = interaction.user
 		outside_call = False
@@ -1216,18 +1308,30 @@ async def shuffle(ctx: discord.ext.commands.Context, deck: str):
 
 @bot.tree.command(name = "deck", description = "Create, edit, or remove your decks.")
 async def deck_slash(interaction: discord.Interaction):
+	if interaction.user.id in s.BAN_LIST:
+		await t.send_message(interaction, "Authorization error.")
+		return
+
 	await deck_command(interaction)
 
 
 @bot.tree.command(name = "veterancy", description = "Get the veterancy rank of a person.")
 @app_commands.describe(person = "@ the person")
 async def veterancy(interaction: discord.Interaction, person: discord.User = None):
+	if interaction.user.id in s.BAN_LIST:
+		await t.send_message(interaction, "Authorization error.")
+		return
+
 	await com.veterancy_command(interaction, person)
 
 
 @bot.tree.command(name = "x_admin_veterancy_person", description = "Recalculates the veterancy of a person.")
 @app_commands.describe(person = "@ the person")
 async def recalc_veterancy_person(interaction: discord.Interaction, person: discord.User = None):
+	if interaction.user.id in s.BAN_LIST:
+		await t.send_message(interaction, "Authorization error.")
+		return
+
 	await com.veterancy_command(interaction, person, True)
 
 
@@ -1238,6 +1342,10 @@ async def recalc_veterancy_person(interaction: discord.Interaction, person: disc
 ])
 @app_commands.describe(message_id = "message_id")
 async def recalc_veterancy_message(interaction: discord.Interaction, message_origin: Choice[str], message_id: str):
+	if interaction.user.id in s.BAN_LIST:
+		await t.send_message(interaction, "Authorization error.")
+		return
+
 	message_id = int(message_id)
 	message_origin = int(message_origin.value)
 	guild = bot.get_guild(562373378967732226)
@@ -1257,6 +1365,10 @@ async def recalc_veterancy_message(interaction: discord.Interaction, message_ori
 
 @bot.tree.command(name = "request_presence", description = "Request DiceGod to join your voice channel.")
 async def request_presence(interaction: discord.Interaction):
+	if interaction.user.id in s.BAN_LIST:
+		await t.send_message(interaction, "Authorization error.")
+		return
+
 	dir_name = "secondary_functions/voice_temp"
 	files = os.listdir(dir_name)
 
@@ -1280,6 +1392,10 @@ async def request_presence(interaction: discord.Interaction):
 
 @bot.tree.command(name = "leave", description = "Disconnect DiceGod from the channel he is in.")
 async def leave(interaction: discord.Interaction):
+	if interaction.user.id in s.BAN_LIST:
+		await t.send_message(interaction, "Authorization error.")
+		return
+
 	try:
 		await interaction.guild.voice_client.disconnect(force = True)
 	except AttributeError:
@@ -1324,6 +1440,10 @@ async def leave(interaction: discord.Interaction):
 @app_commands.describe(text = "text")
 @app_commands.describe(filename = "filename")
 async def draw(interaction: discord.Interaction, voice: Choice[str], text: str, filename: str):
+	if interaction.user.id in s.BAN_LIST:
+		await t.send_message(interaction, "Authorization error.")
+		return
+
 	person = c.Person(interaction)
 	if person.user.id not in s.ADMINS:
 		await t.send_message(interaction, "Permission denied.")
@@ -1364,6 +1484,10 @@ async def draw(interaction: discord.Interaction, voice: Choice[str], text: str, 
 ])
 @app_commands.describe(person = "@ the person")
 async def set_default_voice(interaction: discord.Interaction, voice: Choice[str], person: discord.Member):
+	if interaction.user.id in s.BAN_LIST:
+		await t.send_message(interaction, "Authorization error.")
+		return
+
 	person = c.Person(interaction)
 	if person.user.id not in s.ADMINS:
 		await t.send_message(interaction, "Permission denied.")

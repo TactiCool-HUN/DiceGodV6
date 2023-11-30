@@ -217,16 +217,6 @@ class TableMakerModalTwo(discord.ui.Modal, title = "Create Table"):
         await bs_channel.edit(sync_permissions = True)
         await asyncio.sleep(5)
 
-        perm_overwrites[main_role] = discord.PermissionOverwrite(send_messages = False)
-        perm_overwrites[guest_role] = discord.PermissionOverwrite(send_messages = False)
-        await guild.create_text_channel(
-            name = self.lore_channel_name,
-            overwrites = perm_overwrites,
-            reason = f"Requested by {interaction.user.name}.",
-            position = (archive_position - 1),
-            category = category_channel
-        )
-
         voice_channel = await guild.create_voice_channel(
             name = self.voice_channel_name,
             overwrites = perm_overwrites,
@@ -235,6 +225,16 @@ class TableMakerModalTwo(discord.ui.Modal, title = "Create Table"):
             category = category_channel
         )
         await voice_channel.edit(sync_permissions = True)
+
+        perm_overwrites[main_role] = discord.PermissionOverwrite(view_channel = True, send_messages = False)
+        perm_overwrites[guest_role] = discord.PermissionOverwrite(view_channel = True, send_messages = False)
+        await guild.create_text_channel(
+            name = self.lore_channel_name,
+            overwrites = perm_overwrites,
+            reason = f"Requested by {interaction.user.name}.",
+            position = (archive_position - 1),
+            category = category_channel
+        )
         await asyncio.sleep(5)
 
         with t.DatabaseConnection("data.db") as connection:
