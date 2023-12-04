@@ -220,7 +220,7 @@ async def pc_command(identifier: discord.Interaction | discord.ext.commands.Cont
 					try:
 						await person.user.edit(nick = person.set_name())
 					except Exception as e:
-						ic(e)
+						t.ic(e)
 				if person.auto_tag:
 					person.tag = person.active
 				person.update()
@@ -237,7 +237,7 @@ async def pc_command(identifier: discord.Interaction | discord.ext.commands.Cont
 				try:
 					await person.user.edit(nick = person.clear_name())
 				except Exception as e:
-					ic(e)
+					t.ic(e)
 			if person.auto_tag:
 				person.tag = None
 			person.active = None
@@ -267,7 +267,7 @@ async def pc_command(identifier: discord.Interaction | discord.ext.commands.Cont
 						try:
 							await t.identifier_to_member(identifier).edit(nick = person.clear_name())
 						except Exception as e:
-							ic(e)
+							t.ic(e)
 					if person.auto_tag:
 						person.tag = None
 					person.active = None
@@ -312,7 +312,7 @@ async def pc_command(identifier: discord.Interaction | discord.ext.commands.Cont
 						try:
 							await t.identifier_to_member(identifier).edit(nick = person.clear_name())
 						except Exception as e:
-							ic(e)
+							t.ic(e)
 						person.active = None
 					if person_inc.tag == sheet.character:
 						person_inc.tag = None
