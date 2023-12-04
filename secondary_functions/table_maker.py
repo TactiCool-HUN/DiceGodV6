@@ -24,28 +24,28 @@ class TableMakerModalOne(discord.ui.Modal, title = "Create Table"):
     category_name = discord.ui.TextInput(
         label = "Category Name",
         style = discord.TextStyle.short,
-        placeholder = "Name of the category (will be full uppercase)",
+        placeholder = "Name of the category (write proper capitalisation)",
         required = True,
         min_length = 3
     )
     main_channel_name = discord.ui.TextInput(
         label = "Main Channel Name",
         style = discord.TextStyle.short,
-        placeholder = "Name of the main channel (will be all lowercase)",
+        placeholder = "Name of the main channel (write proper capitalisation)",
         required = True,
         min_length = 3
     )
     bs_channel_name = discord.ui.TextInput(
         label = "Bullshitery Channel Name",
         style = discord.TextStyle.short,
-        placeholder = "Name of the bullshitery channel (will be all lowercase)",
+        placeholder = "Name of the bullshitery channel (write proper capitalisation)",
         required = True,
         min_length = 3
     )
     lore_channel_name = discord.ui.TextInput(
         label = "Lore Channel Name",
         style = discord.TextStyle.short,
-        placeholder = "Name of the lore channel (will be all lowercase)",
+        placeholder = "Name of the lore channel (write proper capitalisation)",
         required = True,
         min_length = 3
     )

@@ -102,11 +102,10 @@ async def pc_command(identifier: discord.Interaction | discord.ext.commands.Cont
 				error = True
 
 			if not error:
-				sheet = c.Sheet(identifier, char_name, sheet_name, True)
-				if color:
-					sheet.color = color
-					sheet.update()
+				c.Sheet(identifier, char_name, sheet_name, True)
 				txt = f"Character successfully created!\nUse the ``-pc set {char_name}`` or the ``/pc`` command to set your new character!"
+				if color:
+					await pc_command(identifier, "color", char_name, sheet_name, image_url, person_inc, color)
 		case "update":
 			txt = "An error has occurred!"
 			error = False
@@ -178,16 +177,21 @@ async def pc_command(identifier: discord.Interaction | discord.ext.commands.Cont
 				txt += f"\nThere is no sheet under the character name {char_name}. Use ``-pc create`` to make a new PC."
 				error = True
 
+			if color == "clear":
+				color = None
+			elif color[0] == "#":
+				color = f"0x{color[1:]}"
+			elif color[:2] != "0x":
+				txt += f"\nWhat you have given is not a color code, please use hex notation (#000000)!\nColor has __not__ been set."
+				error = True
+
 			sheet = c.Sheet(identifier, char_name)
 
 			if sheet.user != sheet.owner and person.user.id not in s.ADMINS:
 				txt += f"\nThe character is {sheet.owner.user.mention}'s property, you cannot edit it!"
 				error = True
+
 			if not error:
-				if color == "clear":
-					color = None
-				elif color[0] == "#":
-					color = f"0x{color[1:]}"
 				sheet.color = color
 				sheet.update()
 				txt = f"Character color set, try it out with a roll!"
