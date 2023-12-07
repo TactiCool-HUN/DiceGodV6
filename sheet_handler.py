@@ -1435,7 +1435,7 @@ async def rest(identifier: discord.Interaction | discord.ext.commands.Context, l
 
 	if length == "long":  # | | | | | | | | | | | | | | | | | | | | long rest | | | | | | | | | | | | | | | | | | | |
 		if sheet.character == "Ashildr":
-			responses.append("Roll a D20 for mental trauma!")
+			responses.append("**Roll a D20 for mental trauma!**")
 		# - - - - - - - - - - exhaustion - - - - - - - - - -
 		exhaustion = int(main.acell("K45").value)
 		exhaustion = max(0, exhaustion - 1)
