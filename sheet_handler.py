@@ -376,7 +376,7 @@ def get_attack(sheet_inc, attack_inc: str):
 	line = None
 	extra_die = []
 
-	if wks.acell("F28").acell == "TRUE":
+	if wks.acell("F28").value == "TRUE":
 		extra_die.append("1d4")
 
 	for line in attacks:
