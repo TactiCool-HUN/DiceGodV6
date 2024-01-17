@@ -38,7 +38,7 @@ async def text_to_singles(identifier: discord.Interaction | discord.ext.commands
 
 	splits_raw = re.findall("[+-][^+-]+", roll_txt)
 	current_single = None
-	extra_die = None
+	extra_die = []
 	sheet = None
 
 	for split in splits_raw:
