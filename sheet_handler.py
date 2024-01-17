@@ -815,6 +815,7 @@ def get_spell_attack(sheet_inc, spell_attack_inc: str):
 
 	add = 0
 	adv = None
+	extra_die = []
 
 	for line in spell_attacks:
 		while len(line) < 5:
@@ -825,7 +826,10 @@ def get_spell_attack(sheet_inc, spell_attack_inc: str):
 			adv = line[2]
 			break
 
-	return int(add), adv
+	if wks.acell("F28").value == "TRUE":
+		extra_die.append("1d4")
+
+	return int(add), adv, extra_die
 
 
 def get_spell_mod(sheet_inc, spell_mod_inc: str):

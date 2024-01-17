@@ -137,7 +137,7 @@ async def text_to_singles(identifier: discord.Interaction | discord.ext.commands
 				case "SPELL_ATTACK":
 					if current_single:
 						single_rolls.append(current_single)
-					add, adv = sh.get_spell_attack(sheet, split_cut)
+					add, adv, extra_die = sh.get_spell_attack(sheet, split_cut)
 					current_single = c.SingleRoll(split, "dynamic roll", split_cut, 1, 20, add, True)
 					current_single.args.merge_args(adv)
 				case "SPELL_MOD":
