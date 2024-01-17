@@ -338,7 +338,12 @@ def get_save(sheet_inc, save_inc: str):
 	else:
 		speciality = None
 
-	return add, adv, pre_send, speciality
+	if wks.acell("G41").value == "TRUE":
+		blessed = ["1d4"]
+	else:
+		blessed = []
+
+	return add, adv, pre_send, speciality, blessed
 
 
 def get_attack(sheet_inc, attack_inc: str):
@@ -369,7 +374,10 @@ def get_attack(sheet_inc, attack_inc: str):
 	adv = None
 	properties = None
 	line = None
-	extra_die = None
+	extra_die = []
+
+	if wks.acell("F28").acell == "TRUE":
+		extra_die.append("1d4")
 
 	for line in attacks:
 		while len(line) < 8:
@@ -482,9 +490,9 @@ def get_attack(sheet_inc, attack_inc: str):
 		if line[1] == "Slain":
 			slain_level = int(line[2])
 			if slain_level > 17:
-				extra_die = "1d6"
+				extra_die.append("1d6")
 			elif slain_level > 6:
-				extra_die = "1d4"
+				extra_die.append("1d4")
 		elif line[1] == "Twilight":
 			twilight_level = int(line[2])
 			if twilight_level > 13:

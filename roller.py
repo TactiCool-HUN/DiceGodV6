@@ -83,7 +83,7 @@ async def text_to_singles(identifier: discord.Interaction | discord.ext.commands
 				case "SAVES":
 					if current_single:
 						single_rolls.append(current_single)
-					add, adv, pre_send, speciality = sh.get_save(sheet, split_cut)
+					add, adv, pre_send, speciality, extra_die = sh.get_save(sheet, split_cut)
 					current_single = c.SingleRoll(split, "dynamic roll", split_cut, 1, 20, add, True, pre_send)
 					current_single.args.merge_args(adv)
 					current_single.speciality = speciality
@@ -213,8 +213,8 @@ async def text_to_singles(identifier: discord.Interaction | discord.ext.commands
 	if current_single:
 		single_rolls.append(current_single)
 
-	if extra_die:
-		single_rolls += await text_to_singles(identifier, extra_die)
+	for die in extra_die:
+		single_rolls += await text_to_singles(identifier, die)
 
 	if flexible_warning:
 		single_rolls[0].roll_note.append("Damage bonuses that solely apply to 1 or 2 handed attacks are NOT automatically added to Flexible damage rolls.")
