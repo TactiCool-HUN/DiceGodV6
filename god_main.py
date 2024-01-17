@@ -533,6 +533,8 @@ async def settings(interaction: discord.Interaction, change_name: Choice[int] = 
 	app_commands.Choice(name = "restrained", value = "restrained"),
 	app_commands.Choice(name = "unconscious", value = "unconscious"),
 	app_commands.Choice(name = "invisible", value = "invisible"),
+	app_commands.Choice(name = "hasted", value = "hasted"),
+	app_commands.Choice(name = "blessed", value = "blessed"),
 	app_commands.Choice(name = "exhaustion", value = "exhaustion"),
 	app_commands.Choice(name = "clear_all", value = "clear"), ])
 @app_commands.choices(on_or_off=[

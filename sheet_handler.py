@@ -901,7 +901,7 @@ async def set_condition(identifier: discord.Interaction | discord.ext.commands.C
 			txt = f"Exhaustion set to ``{exhaustion_level}``!"
 			return txt
 		else:
-			conditions = main.get("B26:G39")
+			conditions = main.get("B26:G41")
 			for i, con in enumerate(conditions):
 				if con[0].lower() == condition:
 					place = f"G{i + 26}"
