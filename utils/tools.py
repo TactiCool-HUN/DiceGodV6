@@ -18,9 +18,11 @@ def identifier_to_member(identifier: discord.Interaction | discord.ext.commands.
 	if isinstance(identifier, discord.Interaction):
 		identifier: discord.Interaction
 		return identifier.user
-	else:
+	elif isinstance(identifier, discord.ext.commands.Context):
 		identifier: discord.ext.commands.Context
 		return identifier.author
+	else:
+		raise TypeError(f"Identifier is of not supported type: {type(identifier)}")
 
 
 def exists(identifier, data_type: str) -> bool:
