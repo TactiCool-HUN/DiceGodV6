@@ -14,13 +14,16 @@ from views.followup_view import FollowupView, FollowupButton
 from icecream import ic
 
 
-def identifier_to_member(identifier: discord.Interaction | discord.ext.commands.Context) -> discord.Member:
+def identifier_to_member(identifier: discord.Interaction | discord.member.Member | discord.ext.commands.Context) -> discord.Member:
 	if isinstance(identifier, discord.Interaction):
 		identifier: discord.Interaction
 		return identifier.user
 	elif isinstance(identifier, discord.ext.commands.Context):
 		identifier: discord.ext.commands.Context
 		return identifier.author
+	elif isinstance(identifier, discord.member.Member):
+		identifier: discord.member.Member
+		return identifier
 	else:
 		raise TypeError(f"Identifier is of not supported type: {type(identifier)}")
 
