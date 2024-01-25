@@ -511,11 +511,16 @@ async def shuffle_deck(ctx: discord.ext.commands.Context, deck: str):
 	await t.send_message(ctx, "Deck shuffled.")
 
 
-async def veterancy_command(interaction: discord.Interaction, person: discord.Member = None, change_rank = False, send_message = True):
+async def veterancy_command(
+		interaction: discord.Interaction,
+		person: discord.Member = None,
+		change_rank = False,
+		send_message = True
+):
 	if person is None:
 		person = c.Person(interaction)
 	else:
-		person = c.Person(person.id)
+		person = c.Person(person)
 
 	guild = t.bot.get_guild(562373378967732226)
 	hall_of_fame = guild.get_channel(911770517533507604)
