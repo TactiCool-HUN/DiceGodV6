@@ -432,6 +432,14 @@ def get_attack(sheet_inc, attack_inc: str):
 			if rogue_level > 0:
 				sneak_dmg = f"{math.ceil(rogue_level / 2)}d6"
 				followups.append(c.FollowupButton("\U0001F52A", sneak_dmg, "roll", sneak_dmg))
+		elif line[1] == "Rune Knight":
+			rune_level = int(line[2])
+			if rune_level > 17:
+				followups.append(c.FollowupButton(bot.get_emoji(1200913795632074772), "1d10", "roll", "1d10"))
+			elif rune_level > 9:
+				followups.append(c.FollowupButton(bot.get_emoji(1200913795632074772), "1d8", "roll", "1d8"))
+			elif rune_level > 2:
+				followups.append(c.FollowupButton(bot.get_emoji(1200913795632074772), "1d6", "roll", "1d6"))
 		elif line[0] == "Proper Rogue":
 			p_rogue_level = int(line[2])
 			if p_rogue_level > 0:
