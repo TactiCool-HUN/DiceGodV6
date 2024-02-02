@@ -346,7 +346,7 @@ def get_save(sheet_inc, save_inc: str):
 	return add, adv, pre_send, speciality, blessed
 
 
-def get_attack(sheet_inc, attack_inc: str):
+def get_attack(sheet_inc: c.Sheet, attack_inc: str):
 	sh = sheet_inc.google_sheet
 	wks = sh.worksheet("BotRead")
 	attacks = wks.get("G2:N7")
@@ -432,14 +432,6 @@ def get_attack(sheet_inc, attack_inc: str):
 			if rogue_level > 0:
 				sneak_dmg = f"{math.ceil(rogue_level / 2)}d6"
 				followups.append(c.FollowupButton("\U0001F52A", sneak_dmg, "roll", sneak_dmg))
-		elif line[1] == "Rune Knight":
-			rune_level = int(line[2])
-			if rune_level > 17:
-				followups.append(c.FollowupButton(bot.get_emoji(1200913795632074772), "1d10", "roll", "1d10"))
-			elif rune_level > 9:
-				followups.append(c.FollowupButton(bot.get_emoji(1200913795632074772), "1d8", "roll", "1d8"))
-			elif rune_level > 2:
-				followups.append(c.FollowupButton(bot.get_emoji(1200913795632074772), "1d6", "roll", "1d6"))
 		elif line[0] == "Proper Rogue":
 			p_rogue_level = int(line[2])
 			if p_rogue_level > 0:
@@ -488,12 +480,17 @@ def get_attack(sheet_inc, attack_inc: str):
 						followups.append(c.FollowupButton(bot.get_emoji(1071167194165170207), "6d8[force]", "roll", "eldritch"))
 					elif eldritch_level > 6:
 						followups.append(c.FollowupButton(bot.get_emoji(1071167194165170207), "5d8[force]", "roll", "eldritch"))
-					elif eldritch_level > 4:
+					else:
 						followups.append(c.FollowupButton(bot.get_emoji(1071167194165170207), "4d8[force]", "roll", "eldritch"))
-					elif eldritch_level > 2:
-						followups.append(c.FollowupButton(bot.get_emoji(1071167194165170207), "3d8[force]", "roll", "eldritch"))
-					elif eldritch_level > 0:
-						followups.append(c.FollowupButton(bot.get_emoji(1071167194165170207), "2d8[force]", "roll", "eldritch"))
+		elif line[0] == "Ranger":
+			ranger_level = int(line[2])
+			if wks.acell("I14").value == "TRUE":
+				if ranger_level > 13:
+					followups.append(c.FollowupButton("🎯", "1d8", "roll", "Foe"))
+				elif ranger_level > 5:
+					followups.append(c.FollowupButton("🎯", "1d6", "roll", "Foe"))
+				else:
+					followups.append(c.FollowupButton("🎯", "1d4", "roll", "Foe"))
 
 		if line[1] == "Slain":
 			slain_level = int(line[2])
@@ -501,6 +498,19 @@ def get_attack(sheet_inc, attack_inc: str):
 				extra_die.append("1d6")
 			elif slain_level > 6:
 				extra_die.append("1d4")
+		elif line[1] == "Rune Knight":
+			rune_level = int(line[2])
+			if sheet_inc.character == "Karra":
+				temp_emoji = bot.get_emoji(1200913795632074772)
+			else:
+				temp_emoji = "⛰️"
+
+			if rune_level > 17:
+				followups.append(c.FollowupButton(temp_emoji, "1d10", "roll", "1d10"))
+			elif rune_level > 9:
+				followups.append(c.FollowupButton(temp_emoji, "1d8", "roll", "1d8"))
+			elif rune_level > 2:
+				followups.append(c.FollowupButton(temp_emoji, "1d6", "roll", "1d6"))
 		elif line[1] == "Twilight":
 			twilight_level = int(line[2])
 			if twilight_level > 13:
