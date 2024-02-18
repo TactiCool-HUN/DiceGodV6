@@ -80,17 +80,6 @@ async def bot_responses(message: discord.Message):
 			None, 1,
 		]
 		# noinspection SpellCheckingInspection
-		kriszta = [
-			"Yes", 2,
-			"No.", 2,
-			"Maybe?", 1,
-			"<:Kyrihihihi:1058348961523576872>", 1,
-			"kinda busy rn", 1,
-			"X gon' give it to you", 1,
-			"Its always nice to meet other ancients, most of us already left for the far planes.", 1,
-			markov.markovifier(), 0.5,
-		]
-		# noinspection SpellCheckingInspection
 		mag = [
 			"Yes", 1,
 			"No.", 1,
@@ -245,21 +234,11 @@ async def bot_responses(message: discord.Message):
 			None, 6
 		]
 		responses.append(choice(response_list))
-	if "twink" in content and author.id == 161207648497172480:  # - - - - - Kevin - - - - -
-		temp = content.replace("twink", "**twink**")
-		# noinspection SpellCheckingInspection
-		responses.append(f"> {temp}\nmhmm, mhmm")
-	if "dicey" in content and author.id == 145980699961196544 and random.randint(1, 5) == 1:  # - - - - - Kriszta - - - - -
-		# noinspection SpellCheckingInspection
-		responses.append("Yes, Ancy One?")
+
 	if "meme" in content and random.randint(1, 5) == 1 and not is_admin:
 		responses.append("The DNA of the soul.")
-	try:
-		if content[0] == "<" and content[-1] == ">" and author.id in settings.POLICE_CREW and "police" in content and "line" in content:
-			await message.add_reaction("👮")
-	except IndexError:
-		pass
 
+	# message stealth
 	for response in responses:
 		if response is not None:
 			if content[0] == "(" and content[-1] == ")" and response[0] != ">":
@@ -267,6 +246,7 @@ async def bot_responses(message: discord.Message):
 			else:
 				await send_message(message, text = response)
 
+	# UwUification
 	if person.uwuify:
 		embed = discord.Embed(
 			description = uwu(message.clean_content),
@@ -275,11 +255,14 @@ async def bot_responses(message: discord.Message):
 		embed.set_author(name = person.user.display_name, icon_url = person.user.avatar.url)
 		await send_message(message, embed = embed, silent = True)
 		await message.delete()
-	else:
-		if random.randint(1, 250) == 169:
-			emoji = random.choice(s.EMOJIS)
-			await message.add_reaction(emoji)
+		return
 
+	# random emoji spam
+	if random.randint(1, 250) == 169:
+		emoji = random.choice(s.EMOJIS)
+		await message.add_reaction(emoji)
+
+	# mentioning major titles
 	if not responses:
 		content = message.content
 		direct_mentions = []
@@ -293,25 +276,20 @@ async def bot_responses(message: discord.Message):
 		if direct_mentions and random.randint(1, 25) == 1:
 			person = random.choice(direct_mentions)
 
-			titles = t.get_titles(person)
+			titles: list[c.Title] = t.get_titles(person, "major")
 
-			major = []
-			for title in titles:
-				if title.rank == "Major":
-					major.append(title.name)
-
-			if major:
+			if titles:
 				text = "Did you mean..."
-				for title in major:
+				for title in titles:
 					ending = t.choice([
 						"?", 3,
 						"!", 1,
 						"?!", 1,
 					])
 					if ending == "?!":
-						text = f"{text}\nThe {title.upper()}{ending}"
+						text = f"{text}\nThe {title.name.upper()}{ending}"
 					else:
-						text = f"{text}\nThe {title}{ending}"
+						text = f"{text}\nThe {title.name}{ending}"
 
 				await t.send_message(message, text = text, reply = True)
 

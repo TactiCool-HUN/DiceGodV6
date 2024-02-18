@@ -431,10 +431,21 @@ async def load(ctx: discord.ext.commands.Context, load_message = None) -> discor
 			await sent.edit(content = "Load expired. We'll get 'em next time.")"""
 
 
-def _get_titles(person: discord.User) -> list[c.Title]:
+def _get_titles(person: discord.User, title_rank: str) -> list[c.Title]:
 	with DatabaseConnection("data.db") as connection:
 		cursor = connection.cursor()
-		cursor.execute("SELECT * FROM title_people WHERE discord_id = ?", (person.id,))
+		if title_rank:
+			cursor.execute(
+				"SELECT *"
+				"FROM title_people"
+				"INNER JOIN titles ON title_people.title_id = titles.id"
+				"WHERE discord_id = ? AND titles.id = ?",
+				(
+					person.id, title_rank
+				)
+			)
+		else:
+			cursor.execute("SELECT * FROM title_people WHERE discord_id = ?", (person.id,))
 		raw = cursor.fetchall()
 
 	if raw:
@@ -447,10 +458,13 @@ def _get_titles(person: discord.User) -> list[c.Title]:
 		return []
 
 
-def get_titles(people: list[discord.User] | discord.User | discord.Member) -> list[c.Title]:
+def get_titles(people: list[discord.User] | discord.User | discord.Member, title_rank: str = None) -> list[c.Title]:
 	if not isinstance(people, list):
 		people = [people]
-	titles = _get_titles(people[0])
+	if not (isinstance(title_rank, str) and title_rank.lower() in ["major", "minor"]):
+		raise ValueError(f"title_rank has a non-rank string: {title_rank}")
+
+	titles = _get_titles(people[0], title_rank.capitalize())
 
 	temp = titles[:]
 	for title in temp:

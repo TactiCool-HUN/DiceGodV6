@@ -62,7 +62,7 @@ async def activity_changer():
 					"as people derail the campaign", 1,
 				]
 				activity = discord.Activity(name = t.choice(choices), type = 3)
-				"""case 3:  # competing in
+				"""case 3:  # competing in (has been removed from dc)
 					choices = [
 						"for a T-Rex", 1,
 						"a TPK competition", 1,
@@ -94,9 +94,9 @@ async def on_ready():
 
 @bot.event
 async def on_message(message: discord.Message):
-	if message.author.id in s.BAN_LIST:
-		await message.reply("Authorization error.")
-	elif message.author != bot.user:
+	"""if message.author.id in s.BAN_LIST:  # nooo not here xD
+		await message.reply("Authorization error.")"""
+	if message.author != bot.user:
 		asyncio.create_task(chatbot.bot_responses(message))
 		asyncio.create_task(bot.process_commands(message))
 
