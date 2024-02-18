@@ -19,7 +19,6 @@ from secondary_functions.table_maker import table_maker_main
 import discord.ext
 import asyncio
 import os
-import pathlib
 import random
 from secondary_functions.azure_tts import azure_voice_studio
 import ast

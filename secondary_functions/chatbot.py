@@ -18,10 +18,10 @@ async def bot_responses(message: discord.Message):
 		return
 	if isinstance(message.channel, discord.channel.DMChannel):
 		return
-	if message.channel.category_id == 996065301055688794:
+	if message.channel.category_id == 996065301055688794:  # no talking in dicegod sanctuary
 		return
 
-	person = c.Person(message)
+	person = c.Person(message.author)
 	if person.chat_ignore:
 		return
 

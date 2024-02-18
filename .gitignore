@@ -3,3 +3,5 @@
 /data_holder/*.db
 /secondary_functions/ffmpeg/
 /secondary_functions/voice_temp/*.wav
+/.idea/*
+/venv/*
