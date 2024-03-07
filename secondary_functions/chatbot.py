@@ -203,6 +203,9 @@ async def bot_responses(message: discord.Message):
 	if "say what?" in content:
 		responses.append("what?")
 
+	if "no u" in content or "no you" in content and random.randint(1, 5) == 1:
+		responses.append("no u")
+
 	if ("god" in content_splits or "goddess" in content_splits) and author.id in [875753704685436938, 332925665424834560]:  # - - - - - Nika or Eszter- - - - -
 		response_list = [
 			"You mention gods, yet you refuse to worship Lady Luck herself.\nHow insulting...", 1,
