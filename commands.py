@@ -28,6 +28,8 @@ async def roll_command(identifier: discord.Interaction | discord.ext.commands.Co
 	elif text[:4] == "coin":
 		followups = [c.FollowupButton("✅", None, "coin"), c.FollowupButton("❎", None, "disable")]
 		await t.send_message(identifier, text = f"Did you want to use ``{prefix}coin``?", reply = True, followups = followups)
+	elif text[:4] == "dick":
+		await t.send_message(identifier, text = f"in u", reply = True)
 	else:
 		loader = None
 		try:

@@ -68,6 +68,7 @@ async def bot_responses(message: discord.Message):
 			"Maybe?", 1,
 			"<:Kyrihihihi:1058348961523576872>", 1,
 			"Be careful when you speak my name, mortal.", 1,
+			"Kinky :3", 0.8,
 			markov.markovifier(), 0.2,
 			None, 1,
 		]
@@ -108,18 +109,6 @@ async def bot_responses(message: discord.Message):
 			markov.markovifier(), 0.5,
 		]
 		# noinspection SpellCheckingInspection
-		becca = [
-			"Yes", 2,
-			"No.", 2,
-			"Maybe?", 1,
-			"<:Kyrihihihi:1058348961523576872>", 1,
-			"Be careful when you speak my name, mortal.", 1,
-			'A "Partner in Crime"? To whom? a trashcan?', 0.8,
-			"Who hurt you?", 1,
-			None, 1,
-			markov.markovifier(), 0.5,
-		]
-		# noinspection SpellCheckingInspection
 		anna = [
 			"Yes", 1,
 			"No.", 1,
@@ -155,6 +144,7 @@ async def bot_responses(message: discord.Message):
 			"<:NikaSticker:960105630989955173>", 0.5,
 			"Be careful when you speak my name, mortal.", 2,
 			"Who hurt you?", 2,
+			"Kinky :3", 0.8,
 			"The one who wages a war with Lady Luck herself. Your efforts are cute, but futile.", 0.3,
 			"I can feel you are slowly giving in. You see? Peace is an option.\n**Now kneel before me!**", 0.2,
 			markov.markovifier(), 0.5,
@@ -172,16 +162,6 @@ async def bot_responses(message: discord.Message):
 			markov.markovifier(), 0.5,
 		]
 		# noinspection SpellCheckingInspection
-		kevin = [
-			"Yes", 1,
-			"No.", 1,
-			"Maybe?", 1,
-			"<:Kyrihihihi:1058348961523576872>", 1,
-			"<:KevinSticker:960105629987536948>", 0.5,
-			"Be careful when you speak my name, mortal.", 1,
-			markov.markovifier(), 0.5,
-		]
-		# noinspection SpellCheckingInspection
 		rego = [
 			"Yes", 1,
 			"No.", 1,
@@ -192,14 +172,10 @@ async def bot_responses(message: discord.Message):
 			markov.markovifier(), 0.5,
 		]
 		match author.id:
-			case 145980699961196544:
-				pack = kriszta
 			case 334249775652274177:
 				pack = mag
 			case 332925665424834560:
 				pack = eszter
-			case 856260405248524328:
-				pack = becca
 			case 520697326679883808:
 				pack = anna
 			case 463641084971712514:
@@ -208,8 +184,6 @@ async def bot_responses(message: discord.Message):
 				pack = nika
 			case 377469395007438849:
 				pack = mark
-			case 161207648497172480:
-				pack = kevin
 			case 618475228695232532:
 				pack = rego
 			case _:
