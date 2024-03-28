@@ -349,7 +349,7 @@ def get_save(sheet_inc, save_inc: str):
 def get_attack(sheet_inc: c.Sheet, attack_inc: str):
 	sh = sheet_inc.google_sheet
 	wks = sh.worksheet("BotRead")
-	attacks = wks.get("G2:N7")
+	attacks = wks.get("G2:P7")
 	feats = wks.get("A50:B200")
 	class_area = wks.get("A2:D5")
 
@@ -375,17 +375,19 @@ def get_attack(sheet_inc: c.Sheet, attack_inc: str):
 	properties = None
 	line = None
 	extra_die = []
+	elven = False
 
 	if wks.acell("F28").value == "TRUE":
 		extra_die.append("1d4")
 
 	for line in attacks:
-		while len(line) < 8:
+		while len(line) < 10:
 			line.append("")
 		if int(line[0]) == slot:
 			add = int(line[1])
 			adv = line[2].lower()
 			properties = line[3].lower()
+			elven = line[9] == "TRUE"
 			break
 
 	if properties:
@@ -597,7 +599,7 @@ def get_attack(sheet_inc: c.Sheet, attack_inc: str):
 	if heavy:
 		add = add - get_prof(sheet_inc)
 
-	return add, adv, followups, extra_die
+	return add, adv, followups, extra_die, elven
 
 
 def get_damage(sheet_inc, damage_inc: str):

@@ -482,6 +482,7 @@ class RollArgs:
 		self.crit = False
 		self.spell_level = None
 		self.exploding = False
+		self.elven = False
 		if text:
 			self.override_args(text.lower())
 

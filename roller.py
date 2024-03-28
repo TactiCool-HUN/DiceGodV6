@@ -90,9 +90,10 @@ async def text_to_singles(identifier: discord.Interaction | discord.ext.commands
 				case "ATTACKS":
 					if current_single:
 						single_rolls.append(current_single)
-					add, adv, followups, extra_die = sh.get_attack(sheet, split_cut)
+					add, adv, followups, extra_die, elven = sh.get_attack(sheet, split_cut)
 					current_single = c.SingleRoll(split, "dynamic roll", split_cut, 1, 20, add, True, followups = followups)
 					current_single.args.merge_args(adv)
+					current_single.args.elven = elven
 				case "DAMAGE":
 					if current_single:
 						single_rolls.append(current_single)
@@ -252,7 +253,9 @@ def random_roller(identifier: discord.Interaction | discord.ext.commands.Context
 	else:
 		amount = roll.dice_number
 
-	if (args.adv == "adv" or args.adv == "dis" or args.adv == "emp") and roll.dice_number == 1:
+	if args.adv == "adv" and args.elven and roll.dice_number < 2:
+		amount = 3
+	elif (args.adv == "adv" or args.adv == "dis" or args.adv == "emp") and roll.dice_number == 1:
 		amount = 2
 
 	roll.results = []
