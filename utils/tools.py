@@ -99,9 +99,8 @@ def choice(incoming):  # weighted list or dict
 			else:
 				choice_list.append(item)
 	else:
-		for item in incoming:
-			choice_list.append(item)
-			weight_list.append(incoming[item])
+		choice_list = incoming.keys()
+		weight_list = incoming.values()
 
 	result = random.choices(choice_list, weights = weight_list)[0]
 	return result
