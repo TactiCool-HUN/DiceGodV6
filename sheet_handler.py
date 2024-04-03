@@ -477,7 +477,7 @@ def get_attack(sheet_inc: c.Sheet, attack_inc: str):
 			warlock_invocations = wks.get("C50:D200")
 			for invocation in warlock_invocations:
 				if invocation[0] == "Lifedrinker":
-					followups.append(c.FollowupButton("🍼", "cha", "roll", "lifedrinker"))
+					followups.append(c.FollowupButton(bot.get_emoji(691399147516985384), "cha[necrotic]", "roll", "lifedrinker"))
 				if invocation[0] == "Eldritch Smite" and invocation[1]:
 					eldritch_level = int(line[2])
 					if eldritch_level > 8:
