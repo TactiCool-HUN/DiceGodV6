@@ -455,12 +455,26 @@ def get_attack(sheet_inc: c.Sheet, attack_inc: str):
 				followups.append(c.FollowupButton("🌠", "1d8[radiant]", "roll", "1d8"))
 		elif line[0] == "Runner":
 			runner_level = int(line[2])
+			if line[1] == "Hunter (r)":
+				hunter_r_level = int(line[2])
+				if hunter_r_level > 5 and runner_level > 12:
+					followups.append(c.FollowupButton("👁️", "2d6", "roll", "home"))
+					followups.append(c.FollowupButton("🩸", "prof", "roll", "thrill/weaponry", discord.ButtonStyle.blurple, True))
+				if hunter_r_level > 5:
+					followups.append(c.FollowupButton("👁️", "2d6", "roll", "home"))
+				elif hunter_r_level > 2:
+					followups.append(c.FollowupButton("🩸", "prof", "roll", "weaponry"))
+			else:
+				hunter_r_level = 0
+
 			if runner_level > 16:
-				followups.append(c.FollowupButton("🎯", "2d10", "roll", "2d10"))
+				followups.append(c.FollowupButton("🎯", "4d10", "roll", "(if 24+)"))
 			elif runner_level > 10:
-				followups.append(c.FollowupButton("🎯", "2d8", "roll", "2d8"))
+				followups.append(c.FollowupButton("🎯", "3d8", "roll", "(if 22+)"))
 			elif runner_level > 4:
-				followups.append(c.FollowupButton("🎯", "2d6", "roll", "2d6"))
+				followups.append(c.FollowupButton("🎯", "2d6", "roll", "(if 20+)"))
+			if runner_level > 12 and hunter_r_level == 0:
+				followups.append(c.FollowupButton("🩸", "prof", "roll", "thrill"))
 		elif line[0] in ["Blood Hunter", "Proper Blood Hunter"]:
 			blood_level = int(line[2])
 			if blood_level > 19:
@@ -583,10 +597,6 @@ def get_attack(sheet_inc: c.Sheet, attack_inc: str):
 					followups.append(c.FollowupButton("☀️", f"1d6+{math.floor(zealot_level / 2)}[{temp}]", "roll", "zealot"))
 				else:
 					followups.append(c.FollowupButton("💀", f"1d6+{math.floor(zealot_level / 2)}[{temp}]", "roll", "zealot"))
-		elif line[1] == "Hunter (r)":
-			hunter_r_level = int(line[2])
-			if hunter_r_level > 5:
-				followups.append(c.FollowupButton("👁️", "1d6", "roll", "1d6"))
 		elif line[1] == "Whispers":
 			whisper_level = int(line[2])
 			if whisper_level > 14:
