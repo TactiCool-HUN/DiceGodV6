@@ -1675,12 +1675,11 @@ async def get_spell(identifier: discord.Interaction | discord.ext.commands.Conte
 
 	if not sheet:
 		try:
-			try:
-				sheet = c.Sheet(identifier)
-				sh = sa.open(sheet.sheet)
-			except IndexError:
-				sh = sa.open("MainV5")
-				check_player = False
+			sheet = c.Sheet(identifier)
+			sh = sa.open(sheet.sheet)
+		except IndexError:
+			sh = sa.open("MainV5")
+			check_player = False
 		except gspread.exceptions.SpreadsheetNotFound:
 			sh = sa.open("MainV5")
 			check_player = False

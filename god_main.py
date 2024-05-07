@@ -899,7 +899,11 @@ async def statistics(interaction: discord.Interaction, person: discord.Member = 
 			new_order[k] = rolls_dict[k]
 	rolls_dict = new_order
 
+	key_num = 0
 	for key in rolls_dict:
+		key_num = key_num + 1
+		if key_num > 20:
+			break
 		minimum = 0
 		maximum = 0
 		frequent_num = 0

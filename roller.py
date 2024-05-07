@@ -192,6 +192,7 @@ async def text_to_singles(identifier: discord.Interaction | discord.ext.commands
 					sheet.get_sheet(sa)
 			except IndexError:
 				pass
+
 			spell_out, found, remainder = await sh.get_spell(identifier, spell_inc = split[1:], sheet = sheet, exact_search = True)
 			if found == "exact" and len(spell_out.followups) > 1:
 				args = c.RollArgs(remainder)
