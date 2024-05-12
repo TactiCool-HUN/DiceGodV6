@@ -106,34 +106,30 @@ def choice(incoming):  # weighted list or dict
 	return result
 
 
-def num2word(num):
+def _num2emoji_recursion(num: int) -> str:
+	numbers = [":zero:", ":one:", ":two:", ":three:", ":four:", ":five:", ":six:", ":seven:", ":eight:", ":nine:", ":ten:"]
+	if num < 10:
+		return numbers[num]
+	else:
+		return f'{_num2emoji_recursion(num // 10)}{numbers[num % 10]}'
+
+
+def num2emoji(num: int) -> str:
+	"""
+	Turns a given integer into a string of continuous discord emojis.
+	:param num:
+	:return:
+	"""
 	if num < 0:
 		negative = True
 		num = -1 * num
-	elif num == 0:
-		return ":zero:"
 	else:
 		negative = False
-	numbers = [":zero:", ":one:", ":two:", ":three:", ":four:", ":five:", ":six:", ":seven:", ":eight:", ":nine:", ":ten:"]
-	one = num % 10  # singles digit
-	two = int(((num % 100) - one) / 10)  # tens digit
-	three = int(((num % 1000) - (two * 10) - one) / 100)  # hundreds digit
-	four = int(((num % 10000) - (three * 100) - (two * 10) - one) / 1000)  # thousands digit
-	five = int(((num % 100000) - (four * 1000) - (three * 100) - (two * 10) - one) / 10000)  # ten thousand digit
-	six = int(((num % 1000000) - (five * 10000) - (four * 1000) - (three * 100) - (two * 10) - one) / 100000)  # a hundred thousand digit
-	values = [six, five, four, three, two, one]
-	#  values = [1, 2, 0, 4]
-	while True:
-		if values[0] == 0:
-			values.remove(values[0])
-		else:
-			break
+
+	word = _num2emoji_recursion(num)
+
 	if negative:
-		word = ":no_entry:"
-	else:
-		word = ""
-	for word_raw in values:
-		word += numbers[word_raw]
+		word = f':no_entry:{word}'
 	return word
 
 
