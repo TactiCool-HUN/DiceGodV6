@@ -1523,14 +1523,15 @@ async def list_servers(ctx: discord.ext.commands.Context):
 @bot.command(name = 'cypher')
 async def cypher(ctx: discord.ext.commands.Context, *, txt: str):
 	translated: str = translate.translate_to_symbols(txt)
-	await t.send_message(ctx, translated)
+	await ctx.message.delete()
+	await t.send_message(ctx, translated, reply = False)
 
 
 @bot.command(name = 'translate')
 async def translate(ctx: discord.ext.commands.Context):
 	# noinspection PyTypeChecker
 	translated: str = translate.translate_to_text(ctx.message.reference.resolved.clean_content)
-	await t.send_message(ctx, translated)
+	await t.send_message(ctx, translated, reply = True)
 
 
 with open("data_holder/token.txt", "r") as f:
