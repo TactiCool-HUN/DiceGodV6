@@ -874,7 +874,7 @@ async def send_pack(pack: c.Pack, is_reply: bool = True, ephemeral: bool = False
 		color = literal_eval(person.color)
 
 	embed = discord.Embed(
-		title = f"**Roll Result:** {num2word(result)} {''.join(all_damage_types)}",
+		title = f"**Roll Result:** {num2emoji(result)} {''.join(all_damage_types)}",
 		description = complex_roll,
 		color = color
 	)

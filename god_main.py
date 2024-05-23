@@ -16,6 +16,7 @@ from views.deck_command import deck_command
 from views.title_handler import title_command
 from secondary_functions import chatbot, emoji_role
 from secondary_functions.table_maker import table_maker_main
+import secondary_functions.translator as translate
 import discord.ext
 import asyncio
 import os
@@ -1510,6 +1511,26 @@ async def set_default_voice(interaction: discord.Interaction, voice: Choice[str]
 async def draw(ctx: discord.ext.commands.Context, file_name: str):
 	person = c.Person(ctx)
 	await t.play_voice_bit(file_name, person.user)
+
+
+@bot.command(name = 'drop_servers')
+async def list_servers(ctx: discord.ext.commands.Context):
+	for guild in bot.guilds:
+		if guild.id in []:
+			pass
+
+
+@bot.command(name = 'cypher')
+async def cypher(ctx: discord.ext.commands.Context, *, txt: str):
+	translated: str = translate.translate_to_symbols(txt)
+	await t.send_message(ctx, translated)
+
+
+@bot.command(name = 'translate')
+async def translate(ctx: discord.ext.commands.Context):
+	# noinspection PyTypeChecker
+	translated: str = translate.translate_to_text(ctx.message.reference.resolved.clean_content)
+	await t.send_message(ctx, translated)
 
 
 with open("data_holder/token.txt", "r") as f:
