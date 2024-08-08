@@ -313,36 +313,19 @@ def get_prof(sheet_inc):
 
 
 def get_save(sheet_inc, save_inc: str):
-	sh = sheet_inc.google_sheet
-	wks = sh.worksheet("BotRead")
-	saves = wks.get("A29:D37")
-	looking_for = save_inc.replace("save", "")
-
-	add = 0
-	adv = None
+	add, adv = 0, 0
 	pre_send = []
-
-	for line in saves:
-		while len(line) < 4:
-			line.append("")
-
-		if line[0] == looking_for:
+	for line in sheet_inc.google_sheet.worksheet("BotRead"):
+		while len(line) < 4: line.append("")
+		if line[0] == save_inc.replace("save", ""):
 			add = int(line[1])
 			adv = line[2].lower()
-			if adv == "fail":
-				pre_send.append("WARNING!\nThe skill check is set to \"FAIL\" the roll will still happen in case you need it.")
+			if adv == "fail": pre_send.append("WARNING!\nThe skill check is set to \"FAIL\" the roll will still happen in case you need it.")
 			break
-
-	if looking_for == "death":
-		speciality = "deathsave"
-	else:
-		speciality = None
-
-	if wks.acell("G41").value == "TRUE":
-		blessed = ["1d4"]
-	else:
-		blessed = []
-
+	if save_inc.replace("save", "") == "death": speciality = "deathsave"
+	else: speciality = None
+	if sheet_inc.google_sheet.worksheet("BotRead").acell("G41").value == "TRUE": blessed = ["1d4"]
+	else: blessed = []
 	return add, adv, pre_send, speciality, blessed
 
 
@@ -607,6 +590,9 @@ def get_attack(sheet_inc: c.Sheet, attack_inc: str):
 				followups.append(c.FollowupButton("🧠", "3d6[psychic]", "roll", "psi blades"))
 			elif whisper_level > 2:
 				followups.append(c.FollowupButton("🧠", "2d6[psychic]", "roll", "psi blades"))
+
+	if sheet_inc.character == "Fajī":
+		followups.append(c.FollowupButton("❄️", "2d8[cold]", "roll", "2d8"))
 
 	if heavy:
 		add = add - get_prof(sheet_inc)
