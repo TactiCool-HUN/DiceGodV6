@@ -241,6 +241,9 @@ def recurse_roller(amount: int, size: int, args: c.RollArgs) -> list[list[int, b
 		else:
 			results = results + [[roll_raw, True]]
 
+	if t.s.DICE_OVERRIDE[0]:
+		results = [[t.s.DICE_OVERRIDE[1], True] for _ in results]
+
 	return results
 
 
@@ -379,8 +382,12 @@ def random_roller(identifier: discord.Interaction | discord.ext.commands.Context
 	if roll.full_result == 69:
 		pre_send.append("Nice")
 
+	if t.s.DICE_OVERRIDE[0]:
+		pre_send.append(f"{t.s.DICE_OVERRIDE[2]}\n||This roll was predetermined by an Admin and not actually random.||")
+
 	roll.pre_send += pre_send
 	roll.add_results(roll.results)
+	t.s.DICE_OVERRIDE[0] = False
 	return roll
 
 

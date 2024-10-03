@@ -1534,6 +1534,23 @@ async def translate(ctx: discord.ext.commands.Context):
 	await t.send_message(ctx, translated, reply = True)
 
 
+@bot.tree.command(name = "x_admin_predetermine")
+@app_commands.describe(message = "")
+@app_commands.describe(number = "")
+async def predetermine(interaction: discord.Interaction, message: str, number: int):
+	if interaction.user.id in s.BAN_LIST:
+		await t.send_message(interaction, "Authorization error.")
+		return
+
+	person = c.Person(interaction)
+	if person.user.id not in s.ADMINS:
+		await t.send_message(interaction, "Permission denied.")
+		return
+
+	t.s.DICE_OVERRIDE = [True, number, message]
+	await t.send_message(interaction, "Predetermined.")
+
+
 with open("data_holder/token.txt", "r") as f:
 	_lines_ = f.readlines()
 
