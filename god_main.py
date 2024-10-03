@@ -1535,8 +1535,8 @@ async def translate(ctx: discord.ext.commands.Context):
 
 
 @bot.tree.command(name = "x_admin_predetermine")
-@app_commands.describe(message = "")
-@app_commands.describe(number = "")
+@app_commands.describe(message = "message")
+@app_commands.describe(number = "number")
 async def predetermine(interaction: discord.Interaction, message: str, number: int):
 	if interaction.user.id in s.BAN_LIST:
 		await t.send_message(interaction, "Authorization error.")
