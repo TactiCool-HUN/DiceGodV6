@@ -1488,7 +1488,7 @@ async def rest(identifier: discord.Interaction | discord.ext.commands.Context, l
 		extra_hp = main.acell("AP17").value
 		if extra_hp in ["Arcane Ward", name]:
 			extra_max = main.acell("AT19").value
-			main.update("AP17", extra_max)
+			main.update("AP19", extra_max)
 		# - - - - - - - - - - hit dice - - - - - - - - - -
 		area = main.get("AS24:AU27")
 		for i, line in enumerate(area):
