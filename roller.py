@@ -383,7 +383,7 @@ def random_roller(identifier: discord.Interaction | discord.ext.commands.Context
 		pre_send.append("Nice")
 
 	if t.s.DICE_OVERRIDE[0]:
-		pre_send.append(f"{t.s.DICE_OVERRIDE[2]}\n||This roll was predetermined by an Admin and not actually random.||")
+		pre_send.append(f"{t.s.DICE_OVERRIDE[2]}\n||This roll was predetermined by an Admin and is not actually random.||")
 
 	roll.pre_send += pre_send
 	roll.add_results(roll.results)
