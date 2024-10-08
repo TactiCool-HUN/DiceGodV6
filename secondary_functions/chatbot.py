@@ -61,7 +61,7 @@ async def bot_responses(message: discord.Message):
 			"No.", 1,
 			"Maybe?", 1,
 			"<:Kyrihihihi:1058348961523576872>", 1,
-			markov.markovifier(), 0.2
+			markov.markovifier(), 0.3
 		]
 		# noinspection SpellCheckingInspection
 		cultist_base = [
@@ -69,9 +69,9 @@ async def bot_responses(message: discord.Message):
 			"No.", 1,
 			"Maybe?", 1,
 			"<:Kyrihihihi:1058348961523576872>", 1,
-			"Be careful when you speak my name, mortal.", 1,
+			"Be careful when you speak my name, mortal.", 0.5,
 			"Kinky :3", 0.8,
-			markov.markovifier(), 0.2,
+			markov.markovifier(), 0.3,
 			None, 1,
 		]
 		# noinspection SpellCheckingInspection
@@ -79,7 +79,8 @@ async def bot_responses(message: discord.Message):
 			"No.", 1,
 			"Maybe?", 1,
 			"<:Kyrihihihi:1058348961523576872>", 1,
-			"Be careful when you speak my name, mortal.", 1,
+			"Be careful when you speak my name, mortal.", 0.5,
+			markov.markovifier(), 0.2,
 			None, 1,
 		]
 		# noinspection SpellCheckingInspection
@@ -172,10 +173,49 @@ async def bot_responses(message: discord.Message):
 			"Kinky :3", 0.4,
 			"<:Kyrihihihi:1058348961523576872>", 1,
 			"<:RegoSticker:960106779998580757>", 0.6,
-			"Be careful when you speak my name, mortal.", 1,
+			"Be careful when you speak my name, mortal.", 0.5,
+			markov.markovifier(), 0.5,
+		]
+		# noinspection SpellCheckingInspection
+		natus = [
+			"Yes", 1,
+			"No.", 1,
+			"Maybe?", 1,
+			"<:Kyrihihihi:1058348961523576872>", 1,
+			"Be careful when you speak my name, mortal.", 0.3,
+			"You know you could've made more responses for me but naaaah, pfff", 0.5,
+			"Kinky :3", 0.8,
+			markov.markovifier(), 0.5,
+		]
+		# noinspection SpellCheckingInspection
+		vodka = [
+			"Yes", 1,
+			"No.", 2,
+			"Maybe?", 1,
+			"<:Kyrihihihi:1058348961523576872>", 1,
+			"Be careful when you speak my name, mortal.", 0.3,
+			"Ewww, a black ***cat***... even I might start to drink if I see you around again.", 0.2,
+			"Kinky :3", 0.8,
+			markov.markovifier(), 0.5,
+		]
+		# noinspection SpellCheckingInspection
+		casual = [
+			"Yes", 1,
+			"No.", 1,
+			"Maybe?", 1,
+			"<:Kyrihihihi:1058348961523576872>", 1,
+			"Be careful when you speak my name, mortal.", 0.3,
+			"Casual? At least not that generic, I'll allow you to worship me.", 0.2,
+			"Kinky :3", 0.8,
 			markov.markovifier(), 0.5,
 		]
 		match author.id:
+			case 509390185226829827:
+				pack = casual
+			case 302793255911948289:
+				pack = natus
+			case 550917109496938496:
+				pack = vodka
 			case 334249775652274177:
 				pack = mag
 			case 332925665424834560:
