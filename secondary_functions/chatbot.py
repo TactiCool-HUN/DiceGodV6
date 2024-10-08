@@ -27,6 +27,8 @@ async def bot_responses(message: discord.Message):
 	if person.chat_ignore:
 		return
 
+	markov.markov_learner(message.content, message.guild.id)
+
 	voice_client = discord.utils.get(t.bot.voice_clients, guild = message.guild)
 	try:
 		if voice_client.channel.id == message.channel.id and person.tts_perms:
@@ -50,11 +52,6 @@ async def bot_responses(message: discord.Message):
 			responses.append(choice(response_list))
 
 	if bot_setup.bot.user.mentioned_in(message) or "dice god" in content or "dicegod" in content:
-		for role in author.roles:
-			if role.id == 992398146942550116:
-				markov.markov_learner(message.content)
-				break
-
 		# noinspection SpellCheckingInspection
 		admin_base = [
 			"Yes", 2,

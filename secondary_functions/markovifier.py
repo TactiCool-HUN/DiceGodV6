@@ -1,15 +1,15 @@
 import markovify
 
 
-def markov_learner(text: str):
+def markov_learner(text: str, guild: int):
     text = text.replace("<@953258800759070720> ", "")
-    with open("data_holder/markov_studies.txt", "a") as f:
+    with open(f"data_holder/markov_studies/{guild}.txt", "a") as f:
         f.write(f"{text}\n")
 
 
 # noinspection SpellCheckingInspection
-def markovifier():
-    with open("data_holder/markov_studies.txt", "r") as f:
+def markovifier(guild: int):
+    with open(f"data_holder/markov_studies/{guild}.txt", "r") as f:
         text = f.readlines()
     text = "\n".join(text)
 
