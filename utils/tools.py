@@ -220,9 +220,11 @@ async def send_message(
 
 				try:
 					# noinspection PyUnresolvedReferences
-					sent = await identifier.response.send_message(content = text, embed = embed, view = view, silent = silent, tts = tts, ephemeral = ephemeral)
+					await identifier.response.send_message(content = text, embed = embed, view = view, silent = silent, tts = tts, ephemeral = ephemeral)
+					sent = identifier.original_response()
 				except discord.InteractionResponded:
-					sent = await identifier.followup.send(content = text, embed = embed, view = view, silent = silent, tts = tts, ephemeral = ephemeral)
+					await identifier.followup.send(content = text, embed = embed, view = view, silent = silent, tts = tts, ephemeral = ephemeral)
+					sent = identifier.original_response()
 			elif isinstance(identifier, discord.Message) or isinstance(identifier, discord.ext.commands.Context):
 				if isinstance(identifier, discord.ext.commands.Context):
 					message: discord.Message = identifier.message
