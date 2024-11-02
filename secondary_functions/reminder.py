@@ -9,7 +9,7 @@ import utils.tools as t
 
 async def trigger_reminder(reminder_id: int, guild: int, channel: int, message: int, remind_date: datetime, discord_id: int, text: str):
 	person = Person(discord_id = discord_id)
-	message: discord.Message = bot.get_guild(guild).get_channel(channel).fetch_message(message)
+	message: discord.Message = await bot.get_guild(guild).get_channel(channel).fetch_message(message)
 
 	delta = datetime.now() - remind_date
 	await asyncio.sleep(delta.total_seconds())
