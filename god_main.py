@@ -1577,7 +1577,7 @@ async def reminder_slash(interaction: discord.Interaction, amount: int, timescal
 
 	remind_at = reminder.add_reminder(amount, timescale.value, sent, c.Person(interaction))
 
-	await sent.edit(content = f"Reminder set.\You will be pinged with ``{remind_text}``\nAt: {remind_at.strftime('%Y/%m/%d, %H:%M:%S')}")
+	await sent.edit(content = f"Reminder set.\You will be pinged with ``{remind_text}``\nAt: {remind_at.strftime('%Y/%m/%d, %H:%M:%S')} (GMT+1, Budapest time)")
 
 
 with open("data_holder/token.txt", "r") as f:
