@@ -36,6 +36,7 @@ async def reminder_checker():
 			await asyncio.sleep(60)
 
 		for reminder in raw:
+			reminder = list(reminder)
 			reminder[4]: datetime = datetime.strptime(reminder[4], '%Y/%m/%d, %H:%M:%S')
 			if reminder[4] < datetime.now() + timedelta(seconds = 90):
 				# noinspection PyAsyncCall
