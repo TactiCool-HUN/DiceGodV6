@@ -196,7 +196,13 @@ def get_followup_view(followups: list[FollowupButton], identifier: discord.Messa
 	return view
 
 
-async def send_message(identifier: discord.Message | discord.Interaction | discord.ext.commands.Context | discord.Member | c.Person, text: str = None, embed: discord.Embed = None, followups: list[FollowupButton] = None, **kwargs: bool):
+async def send_message(
+		identifier: discord.Message | discord.Interaction | discord.ext.commands.Context | discord.Member | c.Person,
+		text: str = None,
+		embed: discord.Embed = None,
+		followups: list[FollowupButton] = None,
+		**kwargs: bool
+) -> discord.Message:
 	ephemeral = kwargs.get("ephemeral", False)
 	reply = kwargs.get("reply", False)
 	silent = kwargs.get("silent", True)

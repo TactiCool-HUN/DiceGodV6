@@ -14,7 +14,7 @@ from views.die_command import die_command
 from views.table_command import table_command
 from views.deck_command import deck_command
 from views.title_handler import title_command
-from secondary_functions import chatbot, emoji_role
+from secondary_functions import chatbot, emoji_role, reminder
 from secondary_functions.table_maker import table_maker_main
 import secondary_functions.translator as translate
 import discord.ext
@@ -82,6 +82,7 @@ sync = False
 @bot.event
 async def on_ready():
 	asyncio.create_task(activity_changer())
+	asyncio.create_task(reminder.reminder_checker())
 
 	t.ic(f"{bot.user.name.upper()} is online!")
 
@@ -1549,6 +1550,34 @@ async def predetermine(interaction: discord.Interaction, message: str, number: i
 
 	t.s.DICE_OVERRIDE = [True, number, message]
 	await t.send_message(interaction, "Predetermined.")
+
+
+@bot.command(name = "xmas")
+async def xmas(ctx: discord.ext.commands.Context):
+	pass
+
+
+@bot.tree.command(name = "reminder", description = "Set a reminder some time away.")
+@app_commands.describe(amount = "number")
+@app_commands.choices(timescale = [
+	app_commands.Choice(name = "minutes", value = "minutes"),
+	app_commands.Choice(name = "hours", value = "hours"),
+	app_commands.Choice(name = "days", value = "days"),
+	app_commands.Choice(name = "weeks", value = "weeks"),
+	app_commands.Choice(name = "months", value = "months"),
+	app_commands.Choice(name = "years", value = "years"),
+])
+@app_commands.describe(remind_text = "text to be reminded about")
+async def reminder_slash(interaction: discord.Interaction, amount: int, timescale: Choice[str], remind_text: str):
+	if interaction.user.id in s.BAN_LIST:
+		await t.send_message(interaction, "Authorization error.")
+		return
+
+	sent = await t.send_message(interaction, "Setting Reminder...")
+
+	remind_at = reminder.add_reminder(amount, timescale.value, sent, c.Person(interaction))
+
+	await sent.edit(content = f"Reminder set.\You will be pinged with ``{remind_text}``\nAt: {remind_at.strftime('%Y/%m/%d, %H:%M:%S')}")
 
 
 with open("data_holder/token.txt", "r") as f:

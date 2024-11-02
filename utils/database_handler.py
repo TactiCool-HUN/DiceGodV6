@@ -35,6 +35,26 @@ with DatabaseConnection("emoji_role.db") as connection:
 
 ic("--------")
 
+with DatabaseConnection("reminders.db") as connection:
+	cursor = connection.cursor()
+	try:
+		cursor.execute(
+			'CREATE TABLE IF NOT EXISTS remind_date('
+			'id integer,'
+			'guild_id integer,'
+			'channel_id integer,'
+			'message_id integer,'
+			'date text,'
+			'discord_id integer,'
+			'remind_text text'
+			'PRIMARY KEY (id)'
+			')'
+		)
+	except sqlite3.OperationalError:
+		ic(f"reminders table failed")
+
+ic("--------")
+
 with DatabaseConnection("data.db") as connection:
 	cursor = connection.cursor()
 
