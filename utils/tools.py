@@ -251,7 +251,7 @@ async def send_message(
 			channel: discord.DMChannel = await member.create_dm()
 			sent = await channel.send(content = text, embed = embed, silent = silent, tts = tts)
 		case _:
-			raise AttributeError
+			raise AttributeError(f"{type(identifier)} is not handled")
 
 	return sent
 
