@@ -1575,7 +1575,7 @@ async def reminder_slash(interaction: discord.Interaction, amount: int, timescal
 
 	sent = await t.send_message(interaction, "Setting Reminder...")
 
-	remind_at = reminder.add_reminder(amount, timescale.value, sent, c.Person(interaction))
+	remind_at = reminder.add_reminder(amount, timescale.value, sent, c.Person(interaction), remind_text)
 
 	await sent.edit(content = f"Reminder set.\nYou will be pinged with ``{remind_text}``\nAt: {remind_at.strftime('%Y/%m/%d, %H:%M:%S')} (GMT+1, Budapest time)")
 

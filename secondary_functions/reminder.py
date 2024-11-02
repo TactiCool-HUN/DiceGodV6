@@ -45,7 +45,7 @@ async def reminder_checker():
 		await asyncio.sleep(60)
 
 
-def add_reminder(amount: int, timescale: str, sent: discord.Message, person: Person) -> datetime:
+def add_reminder(amount: int, timescale: str, sent: discord.Message, person: Person, remind_text) -> datetime:
 	now = datetime.now()
 	future: datetime
 
@@ -89,14 +89,16 @@ def add_reminder(amount: int, timescale: str, sent: discord.Message, person: Per
 			'channel_id,'
 			'message_id,'
 			'date,'
-			'discord_id'
-			') VALUES (?, ?, ?, ?, ?)',
+			'discord_id,'
+			'remind_text'
+			') VALUES (?, ?, ?, ?, ?, ?)',
 			(
 				sent.guild.id,
 				sent.channel.id,
 				sent.id,
 				future.strftime('%Y/%m/%d, %H:%M:%S'),
-				person.user.id
+				person.user.id,
+				remind_text
 			)
 		)
 
