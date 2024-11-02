@@ -19,7 +19,7 @@ async def trigger_reminder(reminder_id: int, guild: int, channel: int, message: 
 	with DatabaseConnection("reminders.db") as connection:
 		cursor = connection.cursor()
 		cursor.execute(
-			'DELETE * FROM remind_date WHERE id = ?', (reminder_id,)
+			'DELETE FROM remind_date WHERE id = ?', (reminder_id,)
 		)
 
 
