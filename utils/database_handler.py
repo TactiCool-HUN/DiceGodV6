@@ -46,7 +46,7 @@ with DatabaseConnection("reminders.db") as connection:
 			'message_id integer,'
 			'date text,'
 			'discord_id integer,'
-			'remind_text text'
+			'remind_text text,'
 			'PRIMARY KEY (id)'
 			')'
 		)
