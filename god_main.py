@@ -1,3 +1,5 @@
+import copy
+
 from discord import app_commands
 from discord.app_commands import Choice
 from ast import literal_eval
@@ -1552,9 +1554,62 @@ async def predetermine(interaction: discord.Interaction, message: str, number: i
 	await t.send_message(interaction, "Predetermined.")
 
 
+"""identify_santa = {
+	520697326679883808: 'Anna',
+	152824369805131776: 'Bence',
+	886672003396927530: 'Dani',
+	282869456664002581: 'Endre',
+	377469395007438849: 'Márk',
+	875753704685436938: 'Nika',
+	618475228695232532: 'Regő',
+	463641084971712514: 'Ági',
+}
+
+secret_santa_peeps = [
+	520697326679883808,
+	152824369805131776,
+	886672003396927530,
+	282869456664002581,
+	377469395007438849,
+	875753704685436938,
+	618475228695232532,
+	463641084971712514,
+]"""
+
+
+identify_santa = {
+	886672003396927530: 'Dani',
+	282869456664002581: 'Endre',
+	463641084971712514: 'Ági',
+}
+
+secret_santa_peeps = [
+	886672003396927530,
+	282869456664002581,
+	463641084971712514
+]
+
+
 @bot.command(name = "xmas")
 async def xmas(ctx: discord.ext.commands.Context):
-	pass
+	if ctx.author.id in s.BAN_LIST:
+		await t.send_message(ctx, "Authorization error.")
+		return
+
+	person = c.Person(ctx)
+	if person.user.id not in s.ADMINS:
+		await t.send_message(ctx, "Permission denied.")
+		return
+
+	random.shuffle(secret_santa_peeps)
+
+	for i in range(len(secret_santa_peeps)):
+		try:
+			txt = f"You are gifting to {identify_santa[secret_santa_peeps[i + 1]]}"
+		except IndexError:
+			txt = f"You are gifting to {identify_santa[secret_santa_peeps[0]]}"
+
+		await t.send_message(c.Person(secret_santa_peeps[i]), txt, silent = False)
 
 
 @bot.tree.command(name = "reminder", description = "Set a reminder some time away.")
