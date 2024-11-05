@@ -1609,7 +1609,7 @@ async def xmas(ctx: discord.ext.commands.Context):
 		except IndexError:
 			txt = f"You are gifting to {identify_santa[secret_santa_peeps[0]]}"
 
-		await t.send_message(c.Person(secret_santa_peeps[i]), txt, silent = False)
+		await t.send_message(c.Person(discord_id = secret_santa_peeps[i]), txt, silent = False)
 
 
 @bot.tree.command(name = "reminder", description = "Set a reminder some time away.")
