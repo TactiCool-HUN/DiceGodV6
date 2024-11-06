@@ -1554,7 +1554,7 @@ async def predetermine(interaction: discord.Interaction, message: str, number: i
 	await t.send_message(interaction, "Predetermined.")
 
 
-"""identify_santa = {
+identify_santa = {
 	520697326679883808: 'Anna',
 	152824369805131776: 'Bence',
 	886672003396927530: 'Dani',
@@ -1565,29 +1565,7 @@ async def predetermine(interaction: discord.Interaction, message: str, number: i
 	463641084971712514: 'Ági',
 }
 
-secret_santa_peeps = [
-	520697326679883808,
-	152824369805131776,
-	886672003396927530,
-	282869456664002581,
-	377469395007438849,
-	875753704685436938,
-	618475228695232532,
-	463641084971712514,
-]"""
-
-
-identify_santa = {
-	886672003396927530: 'Dani',
-	282869456664002581: 'Endre',
-	463641084971712514: 'Ági',
-}
-
-secret_santa_peeps = [
-	886672003396927530,
-	282869456664002581,
-	463641084971712514
-]
+secret_santa_peeps = list(identify_santa.keys())
 
 
 @bot.command(name = "xmas")
