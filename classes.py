@@ -196,7 +196,7 @@ class Die:
 		self.die_id = None
 		self.name = name
 		self.owner_id = None
-		self.roll = roll
+		self.roll = roll.replace(" ", "")
 
 		if new:
 			self.create(owner_id)
