@@ -206,7 +206,7 @@ class Die:
 	def create(self, owner_id):
 		with t.DatabaseConnection("data.db") as connection:
 			cursor = connection.cursor()
-			cursor.execute("INSERT INTO dice(name, owner_id, roll) VALUES (?, ?, ?)", (self.name.replace(" ", ""), owner_id, self.roll))
+			cursor.execute("INSERT INTO dice(name, owner_id, roll) VALUES (?, ?, ?)", (self.name, owner_id, self.roll.replace(" ", "")))
 		self.load()
 
 	def load(self):
