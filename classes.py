@@ -196,7 +196,7 @@ class Die:
 		self.die_id = None
 		self.name = name
 		self.owner_id = None
-		self.roll = roll.replace(" ", "")
+		self.roll = roll
 
 		if new:
 			self.create(owner_id)
@@ -206,7 +206,7 @@ class Die:
 	def create(self, owner_id):
 		with t.DatabaseConnection("data.db") as connection:
 			cursor = connection.cursor()
-			cursor.execute("INSERT INTO dice(name, owner_id, roll) VALUES (?, ?, ?)", (self.name, owner_id, self.roll))
+			cursor.execute("INSERT INTO dice(name, owner_id, roll) VALUES (?, ?, ?)", (self.name.replace(" ", ""), owner_id, self.roll))
 		self.load()
 
 	def load(self):
