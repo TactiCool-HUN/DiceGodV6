@@ -98,11 +98,11 @@ async def on_ready():
 
 @bot.event
 async def on_message(message: discord.Message):
-	"""if message.author.id in s.BAN_LIST:  # nooo not here xD
-		await message.reply("Authorization error.")"""
-	if message.author != bot.user:
-		asyncio.create_task(chatbot.bot_responses(message))
-		asyncio.create_task(bot.process_commands(message))
+	if message.author.bot:
+		return
+	
+	asyncio.create_task(chatbot.bot_responses(message))
+	asyncio.create_task(bot.process_commands(message))
 
 
 @bot.event

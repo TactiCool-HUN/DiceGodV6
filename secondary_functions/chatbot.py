@@ -51,7 +51,7 @@ async def bot_responses(message: discord.Message):
 			]
 			responses.append(choice(response_list))
 
-	if bot_setup.bot.user.mentioned_in(message) or "dice god" in content or "dicegod" in content:
+	if bot_setup.bot.user.mentioned_in(message) or "dg" in content or "dice god" in content or "dicegod" in content:
 		# noinspection SpellCheckingInspection
 		admin_base = [
 			"Yes", 2,
