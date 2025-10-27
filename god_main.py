@@ -1554,16 +1554,26 @@ async def predetermine(interaction: discord.Interaction, message: str, number: i
 	await t.send_message(interaction, "Predetermined.")
 
 
+"""identify_santa = {
+	520697326679883808: ['Anna',   []],
+	152824369805131776: ['Bence',  []],
+	886672003396927530: ['Dani',   []],
+	282869456664002581: ['Endre',  []],
+	377469395007438849: ['Márk',   []],
+	875753704685436938: ['Nika',   []],
+	618475228695232532: ['Regő',   []],
+	463641084971712514: ['Ági',    []],
+	242727379447971840: ['Andris', []],
+	1426619260893003937:['Csenge', []],
+}"""
+
 identify_santa = {
-	520697326679883808: 'Anna',
-	152824369805131776: 'Bence',
-	886672003396927530: 'Dani',
-	282869456664002581: 'Endre',
-	377469395007438849: 'Márk',
-	875753704685436938: 'Nika',
-	618475228695232532: 'Regő',
-	463641084971712514: 'Ági',
+	282869456664002581: ['Endre',  [951125025942016031]],
+	951125025942016031: ['Endre2',  [282869456664002581]],
+	242727379447971840: ['Andris', []],
+	886672003396927530: ['Dani',   []],
 }
+
 
 secret_santa_peeps = list(identify_santa.keys())
 
@@ -1579,15 +1589,28 @@ async def xmas(ctx: discord.ext.commands.Context):
 		await t.send_message(ctx, "Permission denied.")
 		return
 
-	random.shuffle(secret_santa_peeps)
-
+	while True:
+		random.shuffle(secret_santa_peeps)
+		
+		for i in range(len(secret_santa_peeps)):
+			try:
+				for partner in range(len(identify_santa[i + 1][1])):
+					if partner == secret_santa_peeps[i]:
+						continue
+			except IndexError:
+				for partner in range(len(identify_santa[0][1])):
+					if partner == secret_santa_peeps[i]:
+						continue
+		break
+	
 	for i in range(len(secret_santa_peeps)):
 		try:
-			txt = f"You are gifting to {identify_santa[secret_santa_peeps[i + 1]]}"
+			txt = f"You are gifting to {identify_santa[secret_santa_peeps[i + 1][0]]}"
 		except IndexError:
-			txt = f"You are gifting to {identify_santa[secret_santa_peeps[0]]}"
+			txt = f"You are gifting to {identify_santa[secret_santa_peeps[0][0]]}"
 
-		await t.send_message(c.Person(discord_id = secret_santa_peeps[i]), txt, silent = False)
+		print(txt)
+		#await t.send_message(c.Person(discord_id = secret_santa_peeps[i]), txt, silent = False)
 
 
 @bot.tree.command(name = "reminder", description = "Set a reminder some time away.")
