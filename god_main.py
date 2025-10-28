@@ -1592,14 +1592,13 @@ async def xmas(ctx: discord.ext.commands.Context):
 		random.shuffle(secret_santa_keys)
 		
 		for i in range(len(secret_santa_keys) - 1):
+			_, partners = identify_santa[secret_santa_keys[i]]
 			pass
-			for what in identify_santa[secret_santa_keys[i]]:
+			for partner in partners:
 				pass
-				for partner in what[1]:
-					pass
-					if partner == secret_santa_keys[i + 1]:
-						partner_match = True
-						break
+				if partner == secret_santa_keys[i + 1]:
+					partner_match = True
+					break
 		
 		for partner in identify_santa[secret_santa_keys[-1]][1]:
 			pass
