@@ -26,6 +26,7 @@ import random
 from secondary_functions.azure_tts import azure_voice_studio
 import ast
 import re
+from datetime import datetime, timedelta
 
 
 async def activity_changer():
@@ -78,6 +79,24 @@ async def activity_changer():
 		await asyncio.sleep(timer)
 
 
+def get_this_weeks_thursday_5pm():
+	now = datetime.now()
+	days_until_thursday = (3 - now.weekday()) % 7
+
+	thursday = now + timedelta(days=days_until_thursday)
+	thursday_5pm = thursday.replace(hour=16, minute=0, second=0, microsecond=0)
+
+	return int(thursday_5pm.timestamp())
+
+async def ben_reminder():
+	while True:
+		current = datetime.now()
+		if current.weekday() == 2 or (current.weekday() == 3 and current.hour < 16):
+			await t.send_message(c.Person(discord_id = 300985974857662466), f'Project: Aurora session <t:{get_this_weeks_thursday_5pm()}:R>!')
+			await t.send_message(c.Person(discord_id = 1413501686231601215), f'Project: Aurora session <t:{get_this_weeks_thursday_5pm()}:R>!')
+		await asyncio.sleep(60 * 15)
+
+
 sync = False
 
 
@@ -85,6 +104,7 @@ sync = False
 async def on_ready():
 	asyncio.create_task(activity_changer())
 	asyncio.create_task(reminder.reminder_checker())
+	#asyncio.create_task(ben_reminder())
 
 	t.ic(f"{bot.user.name.upper()} is online!")
 
@@ -253,8 +273,9 @@ async def on_thread_create(thread: discord.Thread):
 
 
 @bot.command(name = 'thing')
-async def _thingy(message: discord.Message):
-	c.Person(message)
+async def _thingy(ctx: discord.ext.commands.Context):
+	await t.send_message(ctx, '# Be Not Afraid')
+	await ctx.message.delete()
 
 
 @bot.tree.command(name = "thing")
@@ -1525,7 +1546,7 @@ async def list_servers(ctx: discord.ext.commands.Context):
 
 @bot.command(name = 'cypher')
 async def cypher(ctx: discord.ext.commands.Context, *, txt: str):
-	translated: str = translate.translate_to_symbols(txt)
+	translated: str = translator.translate_to_symbols(txt)
 	await ctx.message.delete()
 	await t.send_message(ctx, translated, reply = False)
 
@@ -1533,7 +1554,7 @@ async def cypher(ctx: discord.ext.commands.Context, *, txt: str):
 @bot.command(name = 'translate')
 async def translate(ctx: discord.ext.commands.Context):
 	# noinspection PyTypeChecker
-	translated: str = translate.translate_to_text(ctx.message.reference.resolved.clean_content)
+	translated: str = translator.translate_to_text(ctx.message.reference.resolved.clean_content)
 	await t.send_message(ctx, translated, reply = True)
 
 
@@ -1590,7 +1611,7 @@ async def xmas(ctx: discord.ext.commands.Context):
 	while True:
 		partner_match = False
 		random.shuffle(secret_santa_keys)
-		
+
 		for i in range(len(secret_santa_keys) - 1):
 			_, partners = identify_santa[secret_santa_keys[i]]
 			pass
@@ -1599,13 +1620,13 @@ async def xmas(ctx: discord.ext.commands.Context):
 				if partner == secret_santa_keys[i + 1]:
 					partner_match = True
 					break
-		
+
 		for partner in identify_santa[secret_santa_keys[-1]][1]:
 			pass
 			if partner == secret_santa_keys[0]:
 				partner_match = True
 				break
-						
+
 		if partner_match: break
 
 	for i in range(len(secret_santa_keys)):
@@ -1617,6 +1638,15 @@ async def xmas(ctx: discord.ext.commands.Context):
 		print(txt)
 
 		# await t.send_message(c.Person(discord_id = secret_santa_keys[i]), txt, silent = False)
+
+
+@bot.command(name = "pop")
+async def popper(ctx: discord.ext.commands.Context):
+	if ctx.author.id in s.BAN_LIST:
+		await t.send_message(ctx, "Authorization error.")
+		return
+
+	await t.send_message(ctx, "||pop|| ||pop|| ||pop|| ||pop|| ||pop|| ||pop|| ||pop|| ||pop|| ||pop|| ||pop|| ||pop|| ||pop|| ||pop|| ||pop|| ||pop|| ||pop|| ||pop|| ||pop|| ||pop|| ||pop|| ||pop|| ||pop|| ||pop|| ||pop|| ||pop|| ||pop|| ||pop|| ||pop|| ||pop|| ||pop|| ||pop|| ||pop|| ||pop|| ||pop|| ||pop|| ||pop|| ||pop|| ||pop|| ||pop|| ||pop|| ||pop|| ||pop|| ||pop|| ||pop|| ||pop|| ||pop|| ||pop|| ||pop|| ||pop|| ||pop|| ||pop|| ||pop|| ||pop|| ||pop|| ||pop|| ||pop|| ||pop|| ||pop|| ||pop|| ||pop|| ||pop|| ||pop|| ||pop|| ||pop|| ||pop|| ||pop|| ||pop|| ||pop|| ||pop|| ||pop|| ||pop|| ||pop|| ||pop|| ||pop|| ||pop|| ||pop|| ||pop|| ||pop|| ||pop|| ||pop|| ||pop|| ||pop|| ||pop|| ||pop|| ||pop|| ||pop|| ||pop|| ||pop|| ||pop|| ||pop|| ||pop|| ||pop|| ||pop|| ||pop|| ||pop|| ||pop|| ||pop|| ||pop|| ||pop|| ||pop|| ||pop|| ||pop|| ||pop|| ||pop|| ||pop|| ||pop|| ||pop|| ||pop|| ||pop|| ||pop|| ||pop|| ||pop|| ||pop|| ||pop|| ||pop|| ||pop|| ||pop|| ||pop|| ||pop|| ||pop|| ||pop|| ||pop|| ||pop|| ||pop|| ||pop|| ||pop|| ||pop|| ||pop|| ||pop|| ||pop|| ||pop|| ||pop|| ||pop|| ||pop|| ||pop|| ||pop|| ||pop|| ||pop||")
 
 
 @bot.tree.command(name = "reminder", description = "Set a reminder some time away.")
