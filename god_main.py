@@ -1586,24 +1586,18 @@ async def xmas(ctx: discord.ext.commands.Context):
 		await t.send_message(ctx, "Permission denied.")
 		return
 
-	"""identify_santa = {
-		520697326679883808: ['Anna',   []],
-		152824369805131776: ['Bence',  []],
-		886672003396927530: ['Dani',   []],
-		282869456664002581: ['Endre',  []],
-		377469395007438849: ['Márk',   []],
-		875753704685436938: ['Nika',   []],
-		618475228695232532: ['Regő',   []],
-		463641084971712514: ['Ági',    []],
-		242727379447971840: ['Andris', []],
-		1426619260893003937:['Csenge', []],
-	}"""
-
 	identify_santa = {
-		282869456664002581: ['Endre', [951125025942016031]],
-		951125025942016031: ['Endre2', [282869456664002581]],
+		520697326679883808: ['Anna',   []],
+		152824369805131776: ['Bence',  [463641084971712514]],
+		886672003396927530: ['Dani',   [1426619260893003937]],
+		282869456664002581: ['Endre',  []],
+		#377469395007438849: ['Márk',   []],
+		875753704685436938: ['Nika',   []],
+		#618475228695232532: ['Regő',   []],
+		463641084971712514: ['Ági',    [152824369805131776]],
 		242727379447971840: ['Andris', []],
-		886672003396927530: ['Dani', []],
+		1426619260893003937:['Csenge', [886672003396927530]],
+		332925665424834560: ['Eszter', []],
 	}
 
 	secret_santa_keys = list(identify_santa.keys())
@@ -1627,7 +1621,7 @@ async def xmas(ctx: discord.ext.commands.Context):
 				partner_match = True
 				break
 
-		if partner_match: break
+		if not partner_match: break
 
 	for i in range(len(secret_santa_keys)):
 		try:
@@ -1635,9 +1629,7 @@ async def xmas(ctx: discord.ext.commands.Context):
 		except IndexError:
 			txt = f"You are gifting to {identify_santa[secret_santa_keys[0]][0]}"
 
-		print(txt)
-
-		# await t.send_message(c.Person(discord_id = secret_santa_keys[i]), txt, silent = False)
+		await t.send_message(c.Person(discord_id = secret_santa_keys[i]), txt, silent = False)
 
 
 @bot.command(name = "pop")
