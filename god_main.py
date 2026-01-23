@@ -18,12 +18,12 @@ from views.deck_command import deck_command
 from views.title_handler import title_command
 from secondary_functions import chatbot, emoji_role, reminder
 from secondary_functions.table_maker import table_maker_main
-import secondary_functions.translator as translate
+import secondary_functions.translator as translator
 import discord.ext
 import asyncio
 import os
 import random
-from secondary_functions.azure_tts import azure_voice_studio
+# from secondary_functions.azure_tts import azure_voice_studio
 import ast
 import re
 from datetime import datetime, timedelta
@@ -43,6 +43,7 @@ async def activity_changer():
 					"with PCs' lives", 1,
 					"DnD 5e", 0.2,
 					"Pathfinder 2e", 0.8,
+					"Starfinder 2e", 0.8,
 					"Pathfinder 5e", 0.05,
 				]
 				activity = discord.Game(t.choice(choices))
@@ -1470,6 +1471,7 @@ async def leave(interaction: discord.Interaction):
 @app_commands.describe(text = "text")
 @app_commands.describe(filename = "filename")
 async def draw(interaction: discord.Interaction, voice: Choice[str], text: str, filename: str):
+	return
 	if interaction.user.id in s.BAN_LIST:
 		await t.send_message(interaction, "Authorization error.")
 		return

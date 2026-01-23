@@ -5,3 +5,4 @@
 /secondary_functions/voice_temp/*.wav
 /.idea/*
 /venv/*
+/data_holder/markov_studies/
