@@ -18,7 +18,7 @@ async def markov_learner(text: str, guild: int):
 
 async def markov_saver():
 	while True:
-		await asyncio.sleep(15)
+		await asyncio.sleep(300)
 		for guild in files_dict:
 			with open(f"data_holder/markov_studies/{guild}.txt", "w", encoding="cp1252") as f:
 				f.write(files_dict[guild])
