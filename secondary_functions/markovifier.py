@@ -5,22 +5,22 @@ import asyncio
 
 folder = Path("data_holder/markov_studies")
 files_dict = {
-	int(f.stem): f.read_text(encoding="utf-8")
+	int(f.stem): f.read_text(encoding="cp1252")
 	for f in folder.iterdir()
 	if f.is_file() and f.suffix == ".txt"
 }
 
 
-def markov_learner(text: str, guild: int):
+async def markov_learner(text: str, guild: int):
 	text = text.replace("<@953258800759070720> ", "")
 	files_dict[guild] = f"{files_dict[guild]}\n{text}"
 
 
 async def markov_saver():
 	while True:
-		await asyncio.sleep(300)
+		await asyncio.sleep(15)
 		for guild in files_dict:
-			with open(f"data_holder/markov_studies/{guild}.txt", "w") as f:
+			with open(f"data_holder/markov_studies/{guild}.txt", "w", encoding="cp1252") as f:
 				f.write(files_dict[guild])
 
 

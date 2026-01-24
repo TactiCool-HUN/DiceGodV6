@@ -1,5 +1,5 @@
 import copy
-
+from secondary_functions.markovifier import markov_saver
 from discord import app_commands
 from discord.app_commands import Choice
 from ast import literal_eval
@@ -37,34 +37,34 @@ async def activity_changer():
 		match act_type:
 			case 0:  # playing
 				choices = [
-					"with people's nerves", 1,
-					"with the Deathnote", 1,
-					"the innocent", 1,
-					"with PCs' lives", 1,
-					"DnD 5e", 0.2,
-					"Pathfinder 2e", 0.8,
-					"Starfinder 2e", 0.8,
-					"Pathfinder 5e", 0.05,
+					"Playing with people's nerves", 1,
+					"Playing with the Deathnote", 1,
+					"Playing the innocent", 1,
+					"Playing with PCs' lives", 1,
+					"Playing DnD 5e", 0.2,
+					"Playing Pathfinder 2e", 0.8,
+					"Playing Starfinder 2e", 0.8,
+					"Playing Pathfinder 5e", 0.05,
 				]
 				activity = discord.Game(t.choice(choices))
 			case 1:  # listening to
 				choices = [
-					"cries of agony", 1,
-					"the joy of a laughing GM", 1,
-					"the joy of slaughter", 1,
-					"the growing hum of the cult", 2,
-					"intrusive thoughts", 1,
-					"what Izzy has to say", 0.1,
+					"Listening to cries of agony", 1,
+					"Listening to the joy of a laughing GM", 1,
+					"Listening to the joy of slaughter", 1,
+					"Listening to the growing hum of the cult", 2,
+					"Listening to intrusive thoughts", 1,
+					"Listening to what Izzy has to say", 0.1,
 				]
 				activity = discord.Activity(name = t.choice(choices), type = 2)
 			case 2:  # watching
 				choices = [
-					"PCs die", 1,
-					"your back", 1,
-					"from above", 1,
-					"Fanki rolling nat1s", 0.4,
-					"Popa rolling nat20s", 0.4,
-					"as people derail the campaign", 1,
+					"Watching PCs die", 1,
+					"Watching your back", 1,
+					"Watching from above", 1,
+					"Watching Fanki rolling nat1s", 0.4,
+					"Watching Popa rolling nat20s", 0.4,
+					"Watching as people derail the campaign", 1,
 				]
 				activity = discord.Activity(name = t.choice(choices), type = 3)
 				"""case 3:  # competing in (has been removed from dc)
@@ -105,7 +105,7 @@ sync = False
 async def on_ready():
 	asyncio.create_task(activity_changer())
 	asyncio.create_task(reminder.reminder_checker())
-	#asyncio.create_task(ben_reminder())
+	asyncio.create_task(markov_saver())
 
 	t.ic(f"{bot.user.name.upper()} is online!")
 

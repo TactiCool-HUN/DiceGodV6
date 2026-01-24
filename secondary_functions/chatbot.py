@@ -27,7 +27,7 @@ async def bot_responses(message: discord.Message):
 	if person.chat_ignore:
 		return
 
-	markov.markov_learner(message.content, message.guild.id)
+	asyncio.create_task(markov.markov_learner(message.content, message.guild.id))
 
 	voice_client = discord.utils.get(t.bot.voice_clients, guild = message.guild)
 	try:
@@ -59,7 +59,7 @@ async def bot_responses(message: discord.Message):
 			"No.", 1,
 			"Maybe?", 1,
 			"<:Kyrihihihi:1058348961523576872>", 1,
-			markov.markovifier(message.guild.id), 0.3
+			'markovify', 0.3
 		]
 		# noinspection SpellCheckingInspection
 		cultist_base = [
@@ -69,7 +69,7 @@ async def bot_responses(message: discord.Message):
 			"<:Kyrihihihi:1058348961523576872>", 1,
 			"Be careful when you speak my name, mortal.", 0.5,
 			"Kinky :3", 0.8,
-			markov.markovifier(message.guild.id), 0.3,
+			'markovify', 0.3,
 			None, 1,
 		]
 		# noinspection SpellCheckingInspection
@@ -78,7 +78,7 @@ async def bot_responses(message: discord.Message):
 			"Maybe?", 1,
 			"<:Kyrihihihi:1058348961523576872>", 1,
 			"Be careful when you speak my name, mortal.", 0.5,
-			markov.markovifier(message.guild.id), 0.2,
+			'markovify', 0.2,
 			None, 1,
 		]
 		# noinspection SpellCheckingInspection
@@ -90,7 +90,7 @@ async def bot_responses(message: discord.Message):
 			"Be careful when you speak my name, mortal.", 1,
 			"A Sister of Silence? Hmm, I feel like we might have a lot in common...", 1,
 			None, 1,
-			markov.markovifier(message.guild.id), 0.5,
+			'markovify', 0.5,
 		]
 		# noinspection SpellCheckingInspection
 		eszter = [
@@ -107,7 +107,7 @@ async def bot_responses(message: discord.Message):
 			"The one who wages a war with Lady Luck herself. Your efforts are cute, but futile.", 1,
 			'Wtf is "crosswalk talk", like c\'mon', 1,
 			None, 1,
-			markov.markovifier(message.guild.id), 0.5,
+			'markovify', 0.5,
 		]
 		# noinspection SpellCheckingInspection
 		anna = [
@@ -121,7 +121,7 @@ async def bot_responses(message: discord.Message):
 			"Stop arguing, you know I'm right.", 1,
 			'"Ethyrin"? What kind of name is that?', 1,
 			"Who hurt you?", 1,
-			markov.markovifier(message.guild.id), 0.5,
+			'markovify', 0.5,
 		]
 		# noinspection SpellCheckingInspection
 		agi = [
@@ -135,7 +135,7 @@ async def bot_responses(message: discord.Message):
 			"Kinky :3", 0.6,
 			"🧂", 0.75,
 			"I remember the times when you were dead set on never praying to me. I'm glad you changed your mind", 0.25,
-			markov.markovifier(message.guild.id), 0.5,
+			'markovify', 0.5,
 		]
 		# noinspection SpellCheckingInspection
 		nika = [
@@ -149,7 +149,7 @@ async def bot_responses(message: discord.Message):
 			"Kinky :3", 1,
 			"The one who wages a war with Lady Luck herself. Your efforts are cute, but futile.", 0.3,
 			"I can feel you are slowly giving in. You see? Peace is an option.\n**Now kneel before me!**", 0.2,
-			markov.markovifier(message.guild.id), 0.5,
+			'markovify', 0.5,
 		]
 		# noinspection SpellCheckingInspection
 		mark = [
@@ -161,7 +161,7 @@ async def bot_responses(message: discord.Message):
 			"shut", 1,
 			"You are always looking for animals to copy. Not accepting that you are useless either way.", 0.2,
 			"🐸", 1,
-			markov.markovifier(message.guild.id), 0.5,
+			'markovify', 0.5,
 		]
 		# noinspection SpellCheckingInspection
 		rego = [
@@ -172,48 +172,19 @@ async def bot_responses(message: discord.Message):
 			"<:Kyrihihihi:1058348961523576872>", 1,
 			"<:RegoSticker:960106779998580757>", 0.6,
 			"Be careful when you speak my name, mortal.", 0.5,
-			markov.markovifier(message.guild.id), 0.5,
+			'markovify', 0.5,
 		]
-		# noinspection SpellCheckingInspection
-		natus = [
+		will = [
 			"Yes", 1,
 			"No.", 1,
 			"Maybe?", 1,
 			"<:Kyrihihihi:1058348961523576872>", 1,
-			"Be careful when you speak my name, mortal.", 0.3,
-			"You know you could've made more responses for me but naaaah, pfff", 0.5,
-			"Kinky :3", 0.8,
-			markov.markovifier(message.guild.id), 0.5,
-		]
-		# noinspection SpellCheckingInspection
-		vodka = [
-			"Yes", 1,
-			"No.", 2,
-			"Maybe?", 1,
-			"<:Kyrihihihi:1058348961523576872>", 1,
-			"Be careful when you speak my name, mortal.", 0.3,
-			"Ewww, a black ***cat***... even I might start to drink if I see you around again.", 0.2,
-			"Kinky :3", 0.8,
-			markov.markovifier(message.guild.id), 0.5,
-		]
-		# noinspection SpellCheckingInspection
-		casual = [
-			"Yes", 1,
-			"No.", 1,
-			"Maybe?", 1,
-			"<:Kyrihihihi:1058348961523576872>", 1,
-			"Be careful when you speak my name, mortal.", 0.3,
-			"Casual? At least not that generic, I'll allow you to worship me.", 0.2,
-			"Kinky :3", 0.8,
-			markov.markovifier(message.guild.id), 0.5,
+			"Be careful when you speak my name, mortal.", 0.5,
+			"markovify", 1.5,
 		]
 		match author.id:
-			case 509390185226829827:
-				pack = casual
-			case 302793255911948289:
-				pack = natus
-			case 550917109496938496:
-				pack = vodka
+			case 1030881161796403251:
+				pack = will
 			case 334249775652274177:
 				pack = mag
 			case 332925665424834560:
@@ -238,7 +209,10 @@ async def bot_responses(message: discord.Message):
 							break
 					else:
 						pack = comonner_base
-		responses.append(choice(pack))
+		chosen = choice(pack)
+		if chosen == 'markovify':
+			chosen = markov.markovifier(message.guild.id)
+		responses.append(chosen)
 
 	if "say what?" in content:
 		responses.append("what?")
