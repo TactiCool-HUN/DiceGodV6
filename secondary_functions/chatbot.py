@@ -181,6 +181,8 @@ async def bot_responses(message: discord.Message):
 			"<:Kyrihihihi:1058348961523576872>", 1,
 			"Be careful when you speak my name, mortal.", 0.5,
 			"markovify", 1.5,
+			"🐸", 1,
+			"Dave says hi!", 0.8,
 		]
 		match author.id:
 			case 1030881161796403251:
